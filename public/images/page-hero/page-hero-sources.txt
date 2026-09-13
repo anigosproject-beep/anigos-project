@@ -1,0 +1,16 @@
+PAGE HERO IMAGE SOURCES
+
+Use one image per internal page hero. Keep the image paths in the page data
+or page component and do not change the PageHero component itself:
+
+- /images/page-hero/tentang-kami.webp
+- /images/page-hero/produk.webp
+- /images/page-hero/jangkauan.webp
+- /images/page-hero/artikel.webp
+- /images/page-hero/keberlanjutan.webp
+
+Recommended:
+- Format: WebP or AVIF
+- Desktop ratio: 16:9 or wider
+- Recommended source size: at least 1920 x 720 px
+- Use images with enough contrast for white overlay text

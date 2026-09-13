@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 960">
+  <defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#4d321f"/><stop offset="1" stop-color="#d59a4b"/></linearGradient></defs>
+  <rect width="1400" height="960" fill="url(#g)"/>
+  <circle cx="1080" cy="200" r="260" fill="#fff" opacity=".14"/>
+  <path d="M0 790c230-130 360-100 540-240 180-140 320-50 440-180 150-160 250-100 420-220v810H0z" fill="#fff" opacity=".1"/>
+  <text x="80" y="790" fill="#fff" font-family="Arial" font-size="76" font-weight="700">B40</text>
+  <text x="84" y="850" fill="#fff" opacity=".75" font-family="Arial" font-size="30">BIOSOLAR</text>
+</svg>

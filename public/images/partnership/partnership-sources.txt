@@ -1,0 +1,9 @@
+Mock assets for the homepage partnership section.
+
+Replace these files with final photography while keeping the same paths:
+- partnership-transportation.svg
+- partnership-distribution.svg
+- partnership-business.svg
+
+Recommended final image ratio: 5:6 portrait.
+Recommended format: WebP or AVIF.

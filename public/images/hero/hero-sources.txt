@@ -1,0 +1,16 @@
+HOME HERO IMAGE SOURCES
+
+Place the four homepage hero images in this folder using these exact public
+paths, or update the image values in components/sections/home-hero.tsx:
+
+1. /images/hero/home-01.webp
+2. /images/hero/home-02.webp
+3. /images/hero/home-03.webp
+4. /images/hero/home-04.webp
+
+Recommended:
+- Format: WebP or AVIF
+- Desktop ratio: 16:9 or wider
+- Recommended source size: at least 1920 x 1080 px
+- Keep the main subject away from the left text area
+- Use compressed images suitable for a full-bleed background

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 880">
+  <defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#163b38"/><stop offset="1" stop-color="#87a85a"/></linearGradient></defs>
+  <rect width="1200" height="880" fill="url(#g)"/>
+  <circle cx="900" cy="210" r="170" fill="#fff" opacity=".16"/>
+  <path d="M0 720c190-220 340-110 500-220 170-118 260-40 390-170 120-120 190-80 310-160v710H0z" fill="#fff" opacity=".12"/>
+  <text x="70" y="750" fill="#fff" font-family="Arial" font-size="54" font-weight="700">ENERGI</text>
+</svg>
