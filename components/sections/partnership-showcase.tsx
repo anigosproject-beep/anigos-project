@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import * as React from "react"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, Handshake, ShipWheel, Truck } from "lucide-react"
 
 import { Heading, Text } from "@/components/typography"
@@ -29,48 +30,49 @@ import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "cn"
 import { DistributionLinePattern } from "@/components/patterns/distribution-line-pattern"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 const partnershipOpportunities = [
   {
     id: "transportasi",
-    title: "Kemitraan Transportasi BBM",
-    description:
-      "Terbuka bagi mitra transportir yang ingin mendukung pengangkutan Bahan Bakar Minyak secara aman, tepat waktu, dan profesional.",
+    title: "partnershipTransportTitle",
+    description: "partnershipTransportDescription",
     image: "/images/partnership/partnership-transportation.svg",
     imageAlt: "Ilustrasi kemitraan transportasi BBM",
     icon: Truck,
-    label: "Transportasi",
-    detail: "Pengangkutan Bahan Bakar Minyak",
+    label: "partnershipTransportLabel",
+    detail: "partnershipTransportDetail",
   },
   {
     id: "distribusi",
-    title: "Distribusi Antarwilayah",
-    description:
-      "Membangun kerja sama untuk memperkuat penyediaan dan distribusi BBM industri ke berbagai wilayah di Indonesia.",
+    title: "partnershipDistributionTitle",
+    description: "partnershipDistributionDescription",
     image: "/images/partnership/partnership-distribution.svg",
     imageAlt: "Ilustrasi distribusi BBM antarwilayah",
     icon: ShipWheel,
-    label: "Distribusi",
-    detail: "Jaringan layanan antarwilayah",
+    label: "partnershipDistributionLabel",
+    detail: "partnershipDistributionDetail",
   },
   {
     id: "usaha",
-    title: "Peluang Kerja Sama Usaha",
-    description:
-      "Kami terbuka untuk menjajaki peluang bersama perusahaan atau instansi yang membutuhkan mitra distribusi BBM industri.",
+    title: "partnershipBusinessTitle",
+    description: "partnershipBusinessDescription",
     image: "/images/partnership/partnership-business.svg",
     imageAlt: "Ilustrasi peluang kerja sama usaha",
     icon: Handshake,
-    label: "Kemitraan usaha",
-    detail: "Kolaborasi yang saling menguntungkan",
+    label: "partnershipBusinessLabel",
+    detail: "partnershipBusinessDetail",
   },
 ] as const
 
 export function PartnershipShowcase() {
+  const { locale } = useLocale()
   const [api, setApi] = React.useState<CarouselApi>()
   const [activeIndex, setActiveIndex] = React.useState(0)
   const activeOpportunity = partnershipOpportunities[activeIndex]
   const ActiveIcon = activeOpportunity.icon
+  const prefersReducedMotion = useReducedMotion()
 
   React.useEffect(() => {
     if (!api) return
@@ -103,7 +105,7 @@ export function PartnershipShowcase() {
           <Carousel
             setApi={setApi}
             opts={{ loop: true }}
-            aria-label="Peluang kemitraan Petro Anigos"
+            aria-label={translate(locale, "partnershipCarouselLabel")}
           >
             <CarouselContent>
               {partnershipOpportunities.map((opportunity) => (
@@ -126,7 +128,7 @@ export function PartnershipShowcase() {
                         Petro Anigos
                       </p>
                       <p className="mt-2 text-xl font-medium">
-                        {opportunity.label}
+                        {translate(locale, opportunity.label)}
                       </p>
                     </div>
                   </AspectRatio>
@@ -147,42 +149,61 @@ export function PartnershipShowcase() {
               href="/tentang-kami/kemitraan"
               className={buttonVariants({ className: "mt-5 w-full" })}
             >
-              Pelajari Kemitraan
+              {translate(locale, "partnershipAction")}
               <ArrowRight data-icon="inline-end" />
             </Link>
           </Carousel>
         </ScrollFloat>
 
-        <Reveal className="lg:flex lg:h-full lg:flex-col lg:justify-center" delay={0.08}>
-          <Badge variant="secondary">Kemitraan Petro Anigos</Badge>
-          <Heading level={2} className="mt-5 max-w-2xl">
-            Bertumbuh melalui kolaborasi yang terpercaya.
-          </Heading>
-          <Text variant="lead" className="mt-6 max-w-2xl">
-            Kami membuka ruang kerja sama dengan perusahaan dan instansi yang
-            memiliki semangat untuk membangun layanan distribusi energi yang
-            aman, profesional, dan saling menguatkan.
-          </Text>
+        <div className="lg:flex lg:h-full lg:flex-col lg:justify-center">
+          <Reveal delay={0.08}>
+            <Badge variant="secondary">
+              {translate(locale, "partnershipSectionLabel")}
+            </Badge>
+            <Heading level={2} className="mt-5 max-w-2xl">
+              {translate(locale, "partnershipTitle")}
+            </Heading>
+            <Text variant="lead" className="mt-6 max-w-2xl">
+              {translate(locale, "partnershipDescription")}
+            </Text>
+          </Reveal>
 
-          <Card className="mt-8 overflow-hidden border-border/80 shadow-sm">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeOpportunity.id}
+              initial={
+                prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 14 }
+              }
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
+              transition={{
+                duration: prefersReducedMotion ? 0.2 : 0.45,
+                ease: "easeOut",
+              }}
+            >
+            <Card className="mt-8 overflow-hidden border-border/80 shadow-sm">
             <CardHeader className="gap-4">
               <div className="flex items-start justify-between gap-4">
-                <Badge variant="outline">{activeOpportunity.label}</Badge>
+                <Badge variant="outline">
+                  {translate(locale, activeOpportunity.label)}
+                </Badge>
                 <ActiveIcon className="size-5 text-muted-foreground" />
               </div>
               <CardTitle className="text-2xl">
-                {activeOpportunity.title}
+                {translate(locale, activeOpportunity.title)}
               </CardTitle>
               <CardDescription className="text-base leading-7">
-                {activeOpportunity.description}
+                {translate(locale, activeOpportunity.description)}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Separator className="mb-5" />
               <p className="text-sm font-medium text-muted-foreground">
-                Fokus kemitraan
+                {translate(locale, "partnershipFocus")}
               </p>
-              <p className="mt-2 font-medium">{activeOpportunity.detail}</p>
+              <p className="mt-2 font-medium">
+                {translate(locale, activeOpportunity.detail)}
+              </p>
               <div className="mt-6 flex items-center gap-2">
                 {partnershipOpportunities.map((opportunity, index) => (
                   <span
@@ -202,9 +223,10 @@ export function PartnershipShowcase() {
                 </span>
               </div>
             </CardContent>
-          </Card>
-
-        </Reveal>
+            </Card>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   )

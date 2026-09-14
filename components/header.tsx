@@ -204,8 +204,6 @@ export function Header() {
   }
 
   useEffect(() => {
-    if (prefersReducedMotion) return
-
     let previousScrollY = window.scrollY
 
     const handleScroll = () => {
@@ -223,7 +221,12 @@ export function Header() {
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
+    const frame = window.requestAnimationFrame(handleScroll)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", handleScroll)
+    }
   }, [prefersReducedMotion])
 
   return (

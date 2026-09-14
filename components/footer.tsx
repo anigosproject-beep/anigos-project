@@ -1,11 +1,16 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 
 import { navigationItems } from "@/components/navigation-config"
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 export function Footer() {
+  const { locale } = useLocale()
   const companyLinks = navigationItems.find(
     (item) => item.label === "Tentang Kami"
   )
@@ -35,8 +40,7 @@ export function Footer() {
               <span className="font-semibold tracking-tight">Petro Anigos</span>
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-6 text-background/70">
-              Mitra terpercaya untuk solusi energi dan kebutuhan industri yang
-              berkelanjutan.
+              {translate(locale, "footerDescription")}
             </p>
             <Link
               href="/produk/penawaran"
@@ -45,13 +49,13 @@ export function Footer() {
                   "mt-6 bg-background text-foreground hover:bg-background/90",
               })}
             >
-              Ajukan Penawaran
+              {translate(locale, "footerOffer")}
             </Link>
           </div>
 
-          <FooterLinkGroup title="Perusahaan" items={companyLinks?.children} />
-          <FooterLinkGroup title="Produk" items={productLinks?.children} />
-          <FooterLinkGroup title="Informasi" items={informationLinks} />
+          <FooterLinkGroup title={translate(locale, "footerCompany")} items={companyLinks?.children} />
+          <FooterLinkGroup title={translate(locale, "products")} items={productLinks?.children} />
+          <FooterLinkGroup title={translate(locale, "footerInformation")} items={informationLinks} />
         </div>
 
         <Separator className="my-10 bg-background/15" />

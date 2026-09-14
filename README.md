@@ -44,3 +44,23 @@ Studio mengelola schema `Newsroom Category` dan `Newsroom Article`. Client
 read-only aplikasi berada di `lib/sanity-client.ts`, sedangkan adapter data
 newsroom berada di `lib/sanity-newsroom.ts`. Data lokal tetap tersedia sebagai
 fallback sampai dokumen pertama dipublikasikan di Sanity.
+
+## Firebase roles
+
+Firebase digunakan untuk data operasional, bukan untuk menggantikan Sanity:
+
+- **Sanity**: newsroom, kategori artikel, dan konten editorial publik.
+- **Firebase Authentication**: akun internal untuk admin dan recruiter.
+- **Cloud Firestore**: data lamaran dan status proses rekrutmen.
+- **Cloud Storage**: file CV dan dokumen pendukung; Firestore hanya menyimpan metadata
+  dan referensi file.
+- **Vercel**: menjalankan aplikasi Next.js dan endpoint server.
+
+Kandidat dapat mengirim lamaran tanpa akun. Endpoint server akan memvalidasi data
+dan menulis ke Firebase menggunakan Firebase Admin SDK. Akses dashboard internal
+dibatasi oleh custom claim `role` dengan nilai `admin` atau `recruiter`.
+
+Konfigurasi Firebase berada di `firebase.json`, `firestore.rules`, dan
+`storage.rules`. Gunakan variabel `NEXT_PUBLIC_FIREBASE_*` untuk konfigurasi
+browser dan `FIREBASE_ADMIN_*` hanya di environment server Vercel. Jangan
+menaruh private key Admin SDK pada repository atau variabel `NEXT_PUBLIC_*`.

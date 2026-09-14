@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -10,12 +12,17 @@ import {
   ProductShowcase,
   ResourceGrid,
 } from "@/components/sections"
+import { CountUp } from "@/components/count-up"
 import { Heading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 export default function Page() {
+  const { locale } = useLocale()
+
   return (
     <div>
       <HomeHero />
@@ -40,41 +47,31 @@ export default function Page() {
           </div>
 
           <div className="max-w-3xl">
-            <Badge variant="secondary">Harapan &amp; Cita-Cita</Badge>
+            <Badge variant="secondary">
+              {translate(locale, "aspirationsBadge")}
+            </Badge>
             <Heading level={2} className="mt-5">
-              Distribusi Hari Ini, Kontribusi untuk Negeri
+              {translate(locale, "aspirationsTitle")}
             </Heading>
             <Text variant="lead" className="mt-6">
-              PT. Anigos Jaya Perkasa memandang distribusi Bahan Bakar Minyak
-              bukan sekadar aktivitas niaga, melainkan bagian dari perjalanan
-              untuk menggerakkan roda industri dan kehidupan masyarakat di
-              seluruh penjuru Indonesia. Melalui brand Petro Anigos, kami
-              menghadirkan layanan distribusi yang mengutamakan kualitas,
-              ketepatan waktu, keselamatan kerja, dan keandalan bagi setiap
-              konsumen serta mitra usaha.
+              {translate(locale, "aspirationsDescription")}
             </Text>
             <Text variant="body-muted" className="mt-5">
-              Sejak berdiri pada 18 Juli 2019, kami terus mengembangkan diri
-              secara profesional dengan menjaga hubungan baik, menjunjung
-              transparansi dan integritas, serta membuka ruang bagi kemitraan
-              yang sehat. Kami percaya bahwa keberhasilan distribusi energi
-              tidak hanya diukur dari berapa liter yang terkirim, tetapi juga
-              dari seberapa besar kontribusi yang tercipta bagi peningkatan
-              taraf hidup dan kesejahteraan masyarakat, bangsa, dan negara.
+              {translate(locale, "aspirationsSecondaryDescription")}
             </Text>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/tentang-kami/harapan-cita-cita"
                 className={buttonVariants()}
               >
-                Baca Harapan Kami
+                {translate(locale, "aspirationsAction")}
                 <ArrowRight data-icon="inline-end" />
               </Link>
               <Link
                 href="/tentang-kami/profil-perusahaan"
                 className={buttonVariants({ variant: "outline" })}
               >
-                Profil Perusahaan
+                {translate(locale, "companyProfileAction")}
               </Link>
             </div>
           </div>
@@ -84,16 +81,16 @@ export default function Page() {
       {/* SECTION 02: Tentang Kami */}
       <FeatureImageSection
         id="tentang-kami"
-        eyebrow="Mengenal Petro Anigos"
-        title="Tentang Kami"
-        description="PT. Anigos Jaya Perkasa melalui brand Petro Anigos hadir sebagai distributor Bahan Bakar Industri yang mengutamakan kualitas, profesionalisme, dan keandalan untuk mendukung kebutuhan industri di Indonesia."
+        eyebrow={translate(locale, "aboutEyebrow")}
+        title={translate(locale, "aboutTitle")}
+        description={translate(locale, "aboutDescription")}
         image="/images/page-hero/tentang-kami.webp"
         primaryAction={{
-          label: "Selengkapnya",
+          label: translate(locale, "aboutAction"),
           href: "/tentang-kami/profil-perusahaan",
         }}
         secondaryAction={{
-          label: "Struktur Organisasi",
+          label: translate(locale, "organizationAction"),
           href: "/tentang-kami/struktur-perusahaan",
         }}
       />
@@ -106,28 +103,25 @@ export default function Page() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-2 lg:gap-20">
             <div>
-              <Badge variant="secondary">Pencapaian Perusahaan</Badge>
+              <Badge variant="secondary">
+                {translate(locale, "achievementsBadge")}
+              </Badge>
               <Heading level={3} variant="card" className="mt-5 max-w-md">
-                Fondasi yang tumbuh bersama kebutuhan energi Indonesia.
+                {translate(locale, "achievementsCardTitle")}
               </Heading>
               <Heading level={2} className="mt-4 max-w-xl">
-                Berpengalaman, menjangkau lebih luas, dan siap melayani.
+                {translate(locale, "achievementsTitle")}
               </Heading>
             </div>
             <div className="flex flex-col items-start lg:items-end lg:text-right">
               <Text variant="lead" className="max-w-2xl">
-                Sejak berdiri pada 18 Juli 2019, PT. Anigos Jaya Perkasa terus
-                membangun fondasi distribusi Bahan Bakar Industri yang
-                profesional dan terpercaya. Perjalanan ini tercermin dari
-                jaringan operasional yang menjangkau berbagai wilayah serta
-                pilihan kapasitas armada yang disiapkan untuk mendukung
-                kebutuhan konsumen dari berbagai skala.
+                {translate(locale, "achievementsDescription")}
               </Text>
               <Link
                 href="/keberlanjutan/pencapaian-perusahaan"
                 className={buttonVariants({ className: "mt-8" })}
               >
-                Lihat Selengkapnya
+                {translate(locale, "learnMoreAction")}
                 <ArrowRight data-icon="inline-end" />
               </Link>
             </div>
@@ -138,36 +132,37 @@ export default function Page() {
           <div className="grid gap-8 md:grid-cols-3">
             <div className="text-left md:text-right">
               <p className="text-sm font-semibold text-muted-foreground">
-                Berdiri sejak
+                {translate(locale, "establishedSince")}
               </p>
-              <p className="mt-3 text-5xl font-semibold tracking-tight">2019</p>
+              <p className="mt-3 text-5xl font-semibold tracking-tight">
+                <CountUp value={2019} />
+              </p>
               <Text variant="small" className="mt-3 md:ml-auto md:max-w-xs">
-                Tahun berdirinya PT. Anigos Jaya Perkasa berdasarkan akta
-                pendirian perusahaan.
+                {translate(locale, "establishedDescription")}
               </Text>
             </div>
             <div className="text-left md:text-right">
               <p className="text-sm font-semibold text-muted-foreground">
-                Jaringan cabang
+                {translate(locale, "branchNetwork")}
               </p>
               <p className="mt-3 text-5xl font-semibold tracking-tight">
-                5 <span className="text-3xl">titik</span>
+                <CountUp value={5} />{" "}
+                <span className="text-3xl">{translate(locale, "point")}</span>
               </p>
               <Text variant="small" className="mt-3 md:ml-auto md:max-w-xs">
-                Titik cabang yang tercantum dalam company profile di Sumatera,
-                Kalimantan, dan Sulawesi.
+                {translate(locale, "branchDescription")}
               </Text>
             </div>
             <div className="text-left md:text-right">
               <p className="text-sm font-semibold text-muted-foreground">
-                Variasi kapasitas armada
+                {translate(locale, "fleetCapacity")}
               </p>
               <p className="mt-3 text-5xl font-semibold tracking-tight">
-                6 <span className="text-3xl">pilihan</span>
+                <CountUp value={6} />{" "}
+                <span className="text-3xl">{translate(locale, "choice")}</span>
               </p>
               <Text variant="small" className="mt-3 md:ml-auto md:max-w-xs">
-                Kapasitas tangki mulai dari 5.000 L hingga 30.000 L untuk
-                mendukung kebutuhan distribusi.
+                {translate(locale, "fleetDescription")}
               </Text>
             </div>
           </div>

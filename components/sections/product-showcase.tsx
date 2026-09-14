@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -27,47 +28,73 @@ import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "cn"
 import { DistributionLinePattern } from "@/components/patterns/distribution-line-pattern"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 const products = [
   {
     id: "b40-biosolar",
     name: "B40 Biosolar",
-    category: "Produk unggulan",
-    description:
-      "Bahan bakar hasil pencampuran 40% Biodiesel dan 60% bahan bakar minyak jenis solar, mengikuti program mandatori pemerintah.",
+    category: "productFeaturedCategory",
+    description: "productFeaturedDescription",
     visualLabel: "40 + 60",
-    visualDescription: "Komposisi B40",
+    visualDescription: "productComposition",
     icon: Droplets,
     features: [
-      { label: "Biodiesel", value: "40%" },
-      { label: "Solar", value: "60%" },
-      { label: "Standar mutu", value: "Ditjen Migas RI" },
-      { label: "Program", value: "Mandatori pemerintah" },
+      { label: "productBiodiesel", value: "40%", valueKey: undefined },
+      { label: "productDiesel", value: "60%", valueKey: undefined },
+      {
+        label: "productQualityStandard",
+        value: "Ditjen Migas RI",
+        valueKey: undefined,
+      },
+      {
+        label: "productGovernmentProgram",
+        value: "",
+        valueKey: "productGovernmentMandate",
+      },
     ],
   },
   {
     id: "solar-hsd",
     name: "Solar / HSD Industri",
-    category: "BBM industri",
-    description:
-      "Bahan Bakar Minyak jenis solar atau HSD untuk mendukung kebutuhan konsumen dari skala kecil hingga layanan berskala besar dan nasional.",
+    category: "productIndustrialCategory",
+    description: "productIndustrialDescription",
     visualLabel: "HSD",
-    visualDescription: "Energi untuk kebutuhan industri",
+    visualDescription: "productEnergyForIndustry",
     icon: Fuel,
     features: [
-      { label: "Jenis produk", value: "BBM industri" },
-      { label: "Standar mutu", value: "Ditjen Migas RI" },
-      { label: "Skala layanan", value: "Kecil hingga nasional" },
-      { label: "Distribusi", value: "Darat dan laut" },
+      {
+        label: "productType",
+        value: "",
+        valueKey: "productIndustrialCategory",
+      },
+      {
+        label: "productQualityStandard",
+        value: "Ditjen Migas RI",
+        valueKey: undefined,
+      },
+      {
+        label: "productServiceScale",
+        value: "",
+        valueKey: "productSmallToNational",
+      },
+      {
+        label: "productDistribution",
+        value: "",
+        valueKey: "productLandAndSea",
+      },
     ],
   },
 ] as const
 
 export function ProductShowcase() {
+  const { locale } = useLocale()
   const [api, setApi] = React.useState<CarouselApi>()
   const [activeIndex, setActiveIndex] = React.useState(0)
   const activeProduct = products[activeIndex]
   const ActiveIcon = activeProduct.icon
+  const prefersReducedMotion = useReducedMotion()
 
   React.useEffect(() => {
     if (!api) return
@@ -95,7 +122,7 @@ export function ProductShowcase() {
           <Carousel
             setApi={setApi}
             opts={{ loop: true }}
-            aria-label="Produk Petro Anigos"
+            aria-label={translate(locale, "productsSectionLabel")}
           >
             <CarouselContent>
               {products.map((product, index) => {
@@ -114,7 +141,7 @@ export function ProductShowcase() {
                             variant="outline"
                             className="border-background/30 text-background"
                           >
-                            {product.category}
+                            {translate(locale, product.category)}
                           </Badge>
                           <ProductIcon className="size-7 text-background/70" />
                         </div>
@@ -123,7 +150,7 @@ export function ProductShowcase() {
                             {product.visualLabel}
                           </p>
                           <p className="mt-3 max-w-44 text-sm leading-5 text-background/65">
-                            {product.visualDescription}
+                            {translate(locale, product.visualDescription)}
                           </p>
                         </div>
                         <div className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-background/55 uppercase">
@@ -159,15 +186,32 @@ export function ProductShowcase() {
                 <Progress
                   value={((activeIndex + 1) / products.length) * 100}
                   className="w-20"
-                  aria-label="Posisi produk"
+                  aria-label={translate(locale, "productPosition")}
                 />
               </div>
             </div>
           </Carousel>
         </ScrollFloat>
 
-        <Reveal delay={0.08}>
-          <Badge variant="secondary">Produk Petro Anigos</Badge>
+        <div>
+          <Reveal kind="eyebrow" delay={0.08}>
+            <Badge variant="secondary">
+              {translate(locale, "productsSectionLabel")}
+            </Badge>
+          </Reveal>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeProduct.id}
+              initial={
+                prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 14 }
+              }
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
+              transition={{
+                duration: prefersReducedMotion ? 0.2 : 0.45,
+                ease: "easeOut",
+              }}
+            >
           <div className="mt-5 flex items-start gap-4">
             <div className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-muted">
               <ActiveIcon className="size-5" />
@@ -175,7 +219,7 @@ export function ProductShowcase() {
             <div>
               <Heading level={2}>{activeProduct.name}</Heading>
               <Text variant="lead" className="mt-5 max-w-2xl">
-                {activeProduct.description}
+                {translate(locale, activeProduct.description)}
               </Text>
             </div>
           </div>
@@ -186,10 +230,12 @@ export function ProductShowcase() {
             {activeProduct.features.map((feature) => (
               <div key={feature.label} className="min-w-0">
                 <p className="text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-                  {feature.label}
+                  {translate(locale, feature.label)}
                 </p>
                 <p className="mt-2 text-lg font-medium tracking-tight">
-                  {feature.value}
+                  {feature.valueKey
+                    ? translate(locale, feature.valueKey)
+                    : feature.value}
                 </p>
               </div>
             ))}
@@ -206,24 +252,25 @@ export function ProductShowcase() {
               )}
             </div>
             <p className="max-w-xl leading-6">
-              Didukung kapabilitas distribusi Petro Anigos untuk kebutuhan
-              konsumen dengan pilihan layanan darat dan antarwilayah.
+              {translate(locale, "productSupport")}
             </p>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/produk/kenali-produk" className={buttonVariants()}>
-              Kenali Produk
+              {translate(locale, "productsOverview")}
               <ArrowRight data-icon="inline-end" />
             </Link>
             <Link
               href="/produk/penawaran"
               className={cn(buttonVariants({ variant: "outline" }))}
             >
-              Ajukan Penawaran
+              {translate(locale, "footerOffer")}
             </Link>
           </div>
-        </Reveal>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   )

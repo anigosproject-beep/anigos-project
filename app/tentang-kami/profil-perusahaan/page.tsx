@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import {
   ArrowRight,
@@ -15,30 +17,32 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
+import { useLocale } from "@/components/locale-provider"
+import { translate, type TranslationKey } from "@/lib/i18n"
 
-const principles = [
+const principles: Array<{
+  title: TranslationKey
+  description: TranslationKey
+  icon: typeof Target
+}> = [
   {
-    title: "Sasaran",
-    description:
-      "Dikenal sebagai perusahaan dagang dengan kemampuan teknis terbaik, saling menghormati, dan berkomitmen penuh terhadap kepuasan konsumen.",
+    title: "principleGoalTitle",
+    description: "principleGoalDescription",
     icon: Target,
   },
   {
-    title: "Etika",
-    description:
-      "Menempatkan kepatuhan pada etika dan tanggung jawab sebagai dasar dalam setiap pekerjaan yang dilakukan.",
+    title: "principleEthicsTitle",
+    description: "principleEthicsDescription",
     icon: Handshake,
   },
   {
-    title: "Objektif",
-    description:
-      "Mengutamakan ketepatan waktu dan keamanan, dengan komitmen terhadap operasional yang bebas dari kecelakaan kerja.",
+    title: "principleObjectiveTitle",
+    description: "principleObjectiveDescription",
     icon: ShieldCheck,
   },
   {
-    title: "Nilai",
-    description:
-      "Menjalankan usaha dengan transparansi, integritas, keandalan, dan profesionalisme untuk menangani produk serta layanan berkualitas tinggi.",
+    title: "principleValueTitle",
+    description: "principleValueDescription",
     icon: CircleCheck,
   },
 ] as const
@@ -51,46 +55,45 @@ const legalHighlights = [
 ] as const
 
 export default function ProfilPerusahaanPage() {
+  const { locale } = useLocale()
+
   return (
     <main>
       <PageHero
-        eyebrow="Tentang Kami"
-        title="Profil Perusahaan"
-        description="Mengenal PT. Anigos Jaya Perkasa dan Petro Anigos sebagai distributor Bahan Bakar Industri untuk kebutuhan konsumen di Indonesia."
+        eyebrow={translate(locale, "aboutSectionLabel")}
+        title={translate(locale, "profilePageTitle")}
+        description={translate(locale, "profilePageDescription")}
         image="/images/page-hero/tentang-kami.webp"
-        breadcrumbs={[{ label: "Tentang Kami", href: "/tentang-kami/profil-perusahaan" }]}
+        breadcrumbs={[
+          {
+            label: translate(locale, "aboutSectionLabel"),
+            href: "/tentang-kami/profil-perusahaan",
+          },
+        ]}
       />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-8">
           <SectionHeading
-            eyebrow="Tentang Kami"
-            title="Membangun layanan distribusi energi dengan fondasi yang terpercaya."
-            description="Petro Anigos adalah brand PT. Anigos Jaya Perkasa, perusahaan yang bergerak sebagai distributor Bahan Bakar Industri."
+            eyebrow={translate(locale, "aboutSectionLabel")}
+            title={translate(locale, "profileIntroTitle")}
+            description={translate(locale, "profileIntroDescription")}
           />
           <div className="space-y-6">
             <Text variant="lead">
-              PT. Anigos Jaya Perkasa telah berpengalaman dalam menyediakan
-              Bahan Bakar Industri untuk kebutuhan di wilayah Indonesia,
-              khususnya Pulau Jawa, Sumatera, dan Kalimantan.
+              {translate(locale, "profileExperience")}
             </Text>
             <Text variant="body-muted">
-              Perusahaan berdiri pada 18 Juli 2019 berdasarkan Akta Pendirian
-              Nomor 11 oleh Notaris Andi Ismawati Achmad, S.H. Perusahaan juga
-              telah memperoleh pengesahan melalui Keputusan Menteri Hukum dan
-              Hak Asasi Manusia Republik Indonesia Nomor
-              AHU-0035830.Ah.01.01 Tahun 2019.
+              {translate(locale, "profileLegalHistory")}
             </Text>
             <Text variant="body-muted">
-              Dalam menjalankan kegiatan usahanya, perusahaan memegang merek
-              dagang Petro Anigos dan menyediakan BBM dengan mutu serta
-              spesifikasi yang mengacu pada Ditjen Migas RI.
+              {translate(locale, "profileProductStandard")}
             </Text>
             <Link
               href="/tentang-kami/legalitas"
               className={buttonVariants({ variant: "outline", className: "mt-2" })}
             >
-              Lihat detail legalitas
+              {translate(locale, "profileLegalDetailAction")}
               <ArrowRight data-icon="inline-end" />
             </Link>
           </div>
@@ -99,9 +102,9 @@ export default function ProfilPerusahaanPage() {
 
       <FeatureImageSection
         id="sejarah-perusahaan"
-        eyebrow="Perjalanan Perusahaan"
-        title="Berawal dari fondasi yang terpercaya, tumbuh untuk melayani lebih luas."
-        description="PT. Anigos Jaya Perkasa berdiri pada 18 Juli 2019 berdasarkan Akta Pendirian Nomor 11. Sejak itu, perusahaan mengembangkan layanan distribusi Bahan Bakar Industri dengan dasar legalitas yang jelas, dukungan jaringan operasional, armada berbagai kapasitas, dan kemitraan transportir untuk mendukung kebutuhan konsumen di berbagai wilayah Indonesia."
+        eyebrow={translate(locale, "companyJourneyEyebrow")}
+        title={translate(locale, "companyJourneyTitle")}
+        description={translate(locale, "companyJourneyDescription")}
         image="/images/page-hero/tentang-kami.webp"
         imagePosition="center"
       />
@@ -110,8 +113,8 @@ export default function ProfilPerusahaanPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-start lg:gap-20">
             <SectionHeading
-              eyebrow="Tujuan Perusahaan"
-              title="Menjadi penyedia distribusi BBM yang profesional dan dapat diandalkan."
+              eyebrow={translate(locale, "companyPurposeEyebrow")}
+              title={translate(locale, "companyPurposeTitle")}
             />
             <div className="relative overflow-hidden rounded-4xl bg-foreground p-8 text-background sm:p-12">
               <DistributionLinePattern className="text-background opacity-[0.2] [mask-image:linear-gradient(135deg,black_0%,black_46%,transparent_88%)]" />
@@ -122,11 +125,10 @@ export default function ProfilPerusahaanPage() {
               <div className="relative z-10">
                 <Eye className="size-8 text-background/70" />
                 <blockquote className="mt-8 text-2xl leading-relaxed font-medium tracking-tight sm:text-3xl">
-                  “Kami berusaha menyediakan layanan dengan kualitas dan
-                  kuantitas yang disesuaikan untuk memenuhi kebutuhan konsumen.”
+                  “{translate(locale, "companyPurposeQuote")}”
                 </blockquote>
                 <p className="mt-8 text-sm text-background/60">
-                  Melayani kebutuhan berskala besar hingga berskala nasional.
+                  {translate(locale, "companyPurposeCaption")}
                 </p>
               </div>
             </div>
@@ -137,9 +139,9 @@ export default function ProfilPerusahaanPage() {
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Prinsip Kami"
-            title="Nilai yang menjadi cara kami bekerja."
-            description="Empat prinsip ini dirangkum dari sasaran, etika, objektif, dan nilai perusahaan dalam company profile."
+            eyebrow={translate(locale, "principlesEyebrow")}
+            title={translate(locale, "principlesTitle")}
+            description={translate(locale, "principlesDescription")}
           />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {principles.map((principle) => {
@@ -151,11 +153,13 @@ export default function ProfilPerusahaanPage() {
                     <div className="flex size-11 items-center justify-center rounded-2xl bg-muted">
                       <Icon className="size-5" />
                     </div>
-                    <CardTitle className="mt-4">{principle.title}</CardTitle>
+                    <CardTitle className="mt-4">
+                      {translate(locale, principle.title)}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm leading-6 text-muted-foreground">
-                      {principle.description}
+                      {translate(locale, principle.description)}
                     </p>
                   </CardContent>
                 </Card>
@@ -176,17 +180,15 @@ export default function ProfilPerusahaanPage() {
             <div className="relative z-10">
               <CardHeader>
                 <Badge variant="outline" className="border-background/30 text-background">
-                  Visi
+                  {translate(locale, "visionLabel")}
                 </Badge>
                 <CardTitle className="mt-5 text-3xl leading-tight">
-                  Menjadi Perusahaan Nasional yang terpercaya.
+                  {translate(locale, "visionTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="leading-7 text-background/70">
-                  Menjadi perusahaan nasional yang terpercaya dalam penyediaan
-                  berbagai layanan dengan orientasi dan efisiensi kerja yang
-                  mengedepankan kecepatan kerja dan profesionalisme.
+                  {translate(locale, "visionDescription")}
                 </p>
               </CardContent>
             </div>
@@ -199,17 +201,16 @@ export default function ProfilPerusahaanPage() {
             />
             <div className="relative z-10">
               <CardHeader>
-                <Badge variant="secondary">Misi</Badge>
+                <Badge variant="secondary">
+                  {translate(locale, "missionLabel")}
+                </Badge>
                 <CardTitle className="mt-5 text-3xl leading-tight">
-                  Tumbuh secara profesional, terbuka, dan berkesinambungan.
+                  {translate(locale, "missionTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="leading-7 text-muted-foreground">
-                  Mengembangkan diri dalam tatanan yang beretika dan terbuka,
-                  mengacu pada inovasi berkesinambungan, menjaga hubungan dengan
-                  rekan usaha serta konsumen, dan menjadi mitra Pemerintah
-                  Republik Indonesia dalam menciptakan iklim bisnis yang sehat.
+                  {translate(locale, "missionDescription")}
                 </p>
               </CardContent>
             </div>
@@ -221,16 +222,16 @@ export default function ProfilPerusahaanPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
-              <Eyebrow>Legalitas Sekilas</Eyebrow>
+              <Eyebrow>{translate(locale, "legalSnapshotEyebrow")}</Eyebrow>
               <Heading level={2} className="mt-3">
-                Beroperasi dengan dasar hukum yang jelas.
+                {translate(locale, "legalSnapshotTitle")}
               </Heading>
             </div>
             <Link
               href="/tentang-kami/legalitas"
               className="inline-flex items-center gap-2 text-sm font-medium underline-offset-4 hover:underline"
             >
-              Lihat semua legalitas
+              {translate(locale, "viewAllLegality")}
               <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -250,10 +251,10 @@ export default function ProfilPerusahaanPage() {
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <Badge variant="outline" className="border-background/30 text-background">
-              Langkah berikutnya
+              {translate(locale, "nextStepLabel")}
             </Badge>
             <Heading level={2} className="mt-5">
-              Kenali produk dan cara kami mendukung kebutuhan distribusi Anda.
+              {translate(locale, "nextStepTitle")}
             </Heading>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -261,14 +262,14 @@ export default function ProfilPerusahaanPage() {
               href="/produk/kenali-produk"
               className={buttonVariants({ className: "bg-background text-foreground hover:bg-background/90" })}
             >
-              Kenali Produk
+              {translate(locale, "productsOverview")}
               <ArrowRight data-icon="inline-end" />
             </Link>
             <Link
               href="/tentang-kami/legalitas"
               className={buttonVariants({ variant: "outline", className: "border-background/30 text-background hover:bg-background/10 hover:text-background" })}
             >
-              Lihat Legalitas
+              {translate(locale, "viewLegality")}
             </Link>
           </div>
         </div>

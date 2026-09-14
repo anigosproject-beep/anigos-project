@@ -44,9 +44,9 @@ export function PageHero({
         className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-foreground/80 to-transparent"
       />
 
-      <Reveal className="mx-auto w-full max-w-7xl px-4 pb-12 pt-36 sm:px-6 sm:pb-16 sm:pt-40 lg:px-8 lg:pb-20 lg:pt-44">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-12 pt-36 sm:px-6 sm:pb-16 sm:pt-40 lg:px-8 lg:pb-20 lg:pt-44">
         {breadcrumbs.length > 0 ? (
-          <Reveal className="mb-8" delay={0.05}>
+          <Reveal kind="body" className="mb-8" delay={0.05}>
             <Breadcrumb>
             <BreadcrumbList className="text-background/65">
               <BreadcrumbItem>
@@ -79,21 +79,21 @@ export function PageHero({
         ) : null}
 
         {eyebrow ? (
-          <Reveal delay={0.1}>
+          <Reveal kind="eyebrow" delay={0.1}>
             <Eyebrow className="text-background/70">{eyebrow}</Eyebrow>
           </Reveal>
         ) : null}
-        <Reveal delay={0.16}>
+        <Reveal kind="heading" delay={0.16}>
           <Heading level={1} variant="page" className="mt-3 max-w-3xl sm:mt-4">
             {title}
           </Heading>
         </Reveal>
-        <Reveal delay={0.24}>
+        <Reveal kind="body" delay={0.24}>
           <Text variant="lead" className="mt-4 max-w-2xl text-background/75 sm:mt-5">
             {description}
           </Text>
         </Reveal>
-      </Reveal>
+      </div>
     </section>
   )
 }

@@ -35,15 +35,15 @@ function SectionHeading({
       )}
     >
       {eyebrow ? (
-        <Reveal delay={0}>
+        <Reveal kind="eyebrow" delay={0}>
           <Eyebrow>{eyebrow}</Eyebrow>
         </Reveal>
       ) : null}
-      <Reveal delay={0.06}>
+      <Reveal kind="heading" delay={0.06}>
         <Heading level={level}>{title}</Heading>
       </Reveal>
       {description ? (
-        <Reveal delay={0.12}>
+        <Reveal kind="body" delay={0.12}>
           <Text variant="lead">{description}</Text>
         </Reveal>
       ) : null}

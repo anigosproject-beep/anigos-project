@@ -30,44 +30,42 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { buttonVariants } from "@/components/ui/button"
+import { useLocale } from "@/components/locale-provider"
+import { translate, type TranslationKey } from "@/lib/i18n"
 
 const purchaseSteps = [
   {
     number: "01",
-    title: "Sampaikan kebutuhan",
-    description:
-      "Informasikan jenis produk, estimasi volume, lokasi, jadwal, dan kebutuhan moda transportasi.",
+    title: "submitNeeds",
+    description: "submitNeedsDescription",
     icon: ClipboardCheck,
   },
   {
     number: "02",
-    title: "Verifikasi kebutuhan",
-    description:
-      "Tim Petro Anigos meninjau ketersediaan produk, volume, wilayah, armada, dan jadwal distribusi.",
+    title: "verifyNeeds",
+    description: "verifyNeedsDescription",
     icon: FileText,
   },
   {
     number: "03",
-    title: "Penawaran dan persetujuan",
-    description:
-      "Penawaran disusun berdasarkan kebutuhan pelanggan untuk dibahas dan disepakati bersama.",
+    title: "offerApproval",
+    description: "offerApprovalDescription",
     icon: Check,
   },
   {
     number: "04",
-    title: "Pengiriman dan penyelesaian",
-    description:
-      "Produk disiapkan, armada ditentukan, lalu pengiriman dan dokumen transaksi diselesaikan sesuai kesepakatan.",
+    title: "deliverySettlement",
+    description: "deliverySettlementDescription",
     icon: Truck,
   },
 ] as const
 
-const productSpecs = [
-  ["Produk", "Solar/HSD dan B40 Biosolar"],
-  ["Komposisi B40", "40% Biodiesel + 60% Solar/HSD"],
-  ["Standar mutu", "Mengacu pada spesifikasi Ditjen Migas RI"],
-  ["Merek", "Petro Anigos"],
-  ["Skala kebutuhan", "Kecil, menengah, besar, hingga nasional"],
+const productSpecs: [TranslationKey, string][] = [
+  ["productType", "Solar/HSD dan B40 Biosolar"],
+  ["b40Composition", "40% Biodiesel + 60% Solar/HSD"],
+  ["productQualityStandard", "Mengacu pada spesifikasi Ditjen Migas RI"],
+  ["trademark", "Petro Anigos"],
+  ["productServiceScale", "Kecil, menengah, besar, hingga nasional"],
 ] as const
 
 const b40ChartData = [
@@ -82,24 +80,25 @@ const b40ChartConfig = {
 } satisfies ChartConfig
 
 export default function KenaliProdukPage() {
+  const { locale } = useLocale()
   const [activeComponent, setActiveComponent] = useState("Biodiesel")
 
   return (
     <main>
       <PageHero
-        eyebrow="Produk"
-        title="Bahan Bakar Industri untuk kebutuhan operasional Anda."
-        description="Petro Anigos menyediakan Solar/HSD dan B40 Biosolar dengan mutu serta spesifikasi yang mengacu pada standar Direktorat Jenderal Minyak dan Gas Bumi Republik Indonesia."
+        eyebrow={translate(locale, "productPageEyebrow")}
+        title={translate(locale, "productPageTitle")}
+        description={translate(locale, "productPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
-        breadcrumbs={[{ label: "Produk", href: "/produk/kenali-produk" }]}
+        breadcrumbs={[{ label: translate(locale, "products"), href: "/produk/kenali-produk" }]}
       />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Kenali Produk"
-            title="Dua pilihan BBM untuk kebutuhan distribusi dan industri."
-            description="Produk Petro Anigos disiapkan untuk mendukung kebutuhan konsumen dengan pendekatan yang mengutamakan mutu, ketepatan, keselamatan, dan keandalan layanan."
+            eyebrow={translate(locale, "productOverviewEyebrow")}
+            title={translate(locale, "productOverviewTitle")}
+            description={translate(locale, "productOverviewDescription")}
           />
           <div className="mt-12 grid gap-5 lg:grid-cols-2">
             <Card className="h-full">
@@ -110,12 +109,11 @@ export default function KenaliProdukPage() {
                 <Badge variant="secondary" className="mt-5 w-fit">
                   Solar / HSD
                 </Badge>
-                <CardTitle className="text-2xl">Bahan Bakar Minyak</CardTitle>
+                <CardTitle className="text-2xl">                {translate(locale, "fuelProductTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Text variant="body-muted">
-                  Produk bahan bakar minyak jenis solar yang dipasarkan dengan
-                  mutu dan spesifikasi sesuai acuan Ditjen Migas RI.
+                  {translate(locale, "fuelProductDescription")}
                 </Text>
               </CardContent>
             </Card>
@@ -128,13 +126,12 @@ export default function KenaliProdukPage() {
                   B40 Biosolar
                 </Badge>
                 <CardTitle className="text-2xl text-background">
-                  Campuran biodiesel dan solar
+                  {translate(locale, "biodieselBlendTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Text variant="body-muted" className="text-background/70">
-                  Produk yang mengikuti program pemerintah dengan komposisi 40%
-                  Biodiesel dan 60% bahan bakar minyak jenis solar.
+                  {translate(locale, "biodieselBlendDescription")}
                 </Text>
               </CardContent>
             </Card>
@@ -147,10 +144,10 @@ export default function KenaliProdukPage() {
           <Card>
             <CardHeader>
               <Badge variant="secondary" className="w-fit">
-                Komposisi B40
+                {translate(locale, "b40Composition")}
               </Badge>
               <CardTitle className="mt-4 text-2xl">
-                Campuran yang membentuk B40 Biosolar
+                {translate(locale, "b40CompositionTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -222,33 +219,30 @@ export default function KenaliProdukPage() {
           </Card>
           <div>
             <SectionHeading
-              eyebrow="Memahami Produk"
-              title="B40 Biosolar mengikuti program mandatori pemerintah."
-              description="B40 Biosolar merupakan produk BBM dengan campuran 40% Biodiesel dan 60% bahan bakar minyak jenis solar."
+              eyebrow={translate(locale, "productUnderstandingEyebrow")}
+              title={translate(locale, "b40ProgramTitle")}
+              description={translate(locale, "b40ProgramDescription")}
             />
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-border p-5">
                 <p className="text-3xl font-semibold text-primary">40%</p>
                 <p className="mt-2 font-medium">Biodiesel</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Bagian biodiesel dalam komposisi B40.
+                  {translate(locale, "biodieselShare")}
                 </p>
               </div>
               <div className="rounded-2xl border border-border p-5">
                 <p className="text-3xl font-semibold text-primary">60%</p>
                 <p className="mt-2 font-medium">Solar/HSD</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Bagian bahan bakar minyak jenis solar.
+                  {translate(locale, "dieselShare")}
                 </p>
               </div>
             </div>
             <Text variant="body-muted" className="mt-6 flex items-start gap-2">
               <CircleAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
               <span>
-              Mutu dan spesifikasi produk mengacu pada standar Direktorat
-              Jenderal Minyak dan Gas Bumi Republik Indonesia. Chart ini hanya
-              menjelaskan komposisi produk, bukan klaim performa atau
-              penghematan.
+              {translate(locale, "compositionNote")}
               </span>
             </Text>
           </div>
@@ -268,23 +262,23 @@ export default function KenaliProdukPage() {
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 rounded-[2rem] border border-border/70 bg-background/35 p-6 shadow-sm backdrop-blur-md lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:p-10">
             <SectionHeading
-              eyebrow="Spesifikasi Ringkas"
-              title="Informasi utama sebelum menentukan kebutuhan."
-              description="Ringkasan ini membantu calon pelanggan memahami produk yang tersedia sebelum mengajukan kebutuhan distribusi."
+              eyebrow={translate(locale, "briefSpecsEyebrow")}
+              title={translate(locale, "briefSpecsTitle")}
+              description={translate(locale, "briefSpecsDescription")}
             />
             <Card className="bg-background/80 shadow-lg backdrop-blur-md">
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Informasi</TableHead>
-                      <TableHead>Keterangan</TableHead>
+                      <TableHead>{translate(locale, "information")}</TableHead>
+                      <TableHead>{translate(locale, "details")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {productSpecs.map(([label, value]) => (
                       <TableRow key={label}>
-                        <TableCell className="font-medium">{label}</TableCell>
+                        <TableCell className="font-medium">{translate(locale, label)}</TableCell>
                         <TableCell className="text-muted-foreground">{value}</TableCell>
                       </TableRow>
                     ))}
@@ -299,9 +293,9 @@ export default function KenaliProdukPage() {
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Skema Pembelian"
-            title="Proses transaksi yang dimulai dari kebutuhan Anda."
-            description="Alur berikut adalah gambaran awal proses pembelian. Detail harga, minimum order, pembayaran, dan ketentuan komersial dibahas sesuai kebutuhan serta persetujuan bersama."
+            eyebrow={translate(locale, "purchaseSchemeEyebrow")}
+            title={translate(locale, "purchaseSchemeTitle")}
+            description={translate(locale, "purchaseSchemeDescription")}
           />
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {purchaseSteps.map((step) => {
@@ -316,10 +310,14 @@ export default function KenaliProdukPage() {
                       </span>
                       <Icon className="size-5 text-muted-foreground" />
                     </div>
-                    <CardTitle className="mt-5 text-lg">{step.title}</CardTitle>
+                    <CardTitle className="mt-5 text-lg">
+                      {translate(locale, step.title)}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Text variant="small">{step.description}</Text>
+                    <Text variant="small">
+                      {translate(locale, step.description)}
+                    </Text>
                   </CardContent>
                 </Card>
               )
@@ -331,9 +329,9 @@ export default function KenaliProdukPage() {
       <section className="border-b border-border bg-muted/40 py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Skema Transportasi"
-            title="Pilih pendekatan distribusi sesuai wilayah dan kebutuhan."
-            description="Moda transportasi dibahas saat verifikasi kebutuhan agar produk, volume, lokasi, dan jadwal dapat diselaraskan."
+            eyebrow={translate(locale, "transportSchemeEyebrow")}
+            title={translate(locale, "transportSchemeTitle")}
+            description={translate(locale, "transportSchemeDescription")}
           />
           <Tabs defaultValue="darat" className="mt-12">
             <TabsList className="grid w-full min-w-0 grid-cols-3">
@@ -341,38 +339,36 @@ export default function KenaliProdukPage() {
                 value="darat"
                 className="w-full"
               >
-                Darat
+                {translate(locale, "land")}
               </TabsTrigger>
               <TabsTrigger
                 value="laut"
                 className="w-full"
               >
-                Laut
+                {translate(locale, "sea")}
               </TabsTrigger>
               <TabsTrigger
                 value="mitra"
                 className="w-full"
               >
-                Mitra Transportir
+                {translate(locale, "transportPartnerTab")}
               </TabsTrigger>
             </TabsList>
             <TabsContent value="darat" className="mt-8">
               <Card className="overflow-hidden p-0 lg:grid lg:grid-cols-[3fr_7fr]">
                 <div className="relative min-h-52 bg-muted lg:h-full">
-                  <Image src="/images/partnership/partnership-transportation.svg" alt="Ilustrasi transportasi darat" fill className="object-cover" />
+                  <Image src="/images/partnership/partnership-transportation.svg" alt={translate(locale, "landTransportIllustration")} fill className="object-cover" />
                 </div>
                 <div className="flex flex-col justify-center p-6 lg:p-8">
                   <CardHeader className="px-0">
-                    <CardTitle>Armada tangki darat</CardTitle>
+                    <CardTitle>{translate(locale, "landFleetTitle")}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-0">
                     <Text variant="body-muted">
-                      Armada tersedia dalam variasi kapasitas 5.000 L, 8.000 L,
-                      10.000 L, 16.000 L, 24.000 L, dan 30.000 L untuk mendukung
-                      kebutuhan distribusi dari skala kecil hingga industri besar.
+                      {translate(locale, "landFleetDescription")}
                     </Text>
                     <Link href="/produk/armada#armada-darat" className={buttonVariants({ className: "mt-6" })}>
-                      Lihat armada
+                      {translate(locale, "viewFleet")}
                       <ArrowRight data-icon="inline-end" />
                     </Link>
                   </CardContent>
@@ -382,21 +378,18 @@ export default function KenaliProdukPage() {
             <TabsContent value="laut" className="mt-8">
               <Card className="overflow-hidden p-0 lg:grid lg:grid-cols-[3fr_7fr]">
                 <div className="relative min-h-52 bg-muted lg:h-full">
-                  <Image src="/images/partnership/partnership-distribution.svg" alt="Ilustrasi transportasi laut" fill className="object-cover" />
+                  <Image src="/images/partnership/partnership-distribution.svg" alt={translate(locale, "seaTransportIllustration")} fill className="object-cover" />
                 </div>
                 <div className="flex flex-col justify-center p-6 lg:p-8">
                   <CardHeader className="px-0">
-                    <CardTitle>Transportasi laut</CardTitle>
+                    <CardTitle>{translate(locale, "seaTransportCardTitle")}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-0">
                     <Text variant="body-muted">
-                      Sarana transportasi laut digunakan untuk mendukung
-                      pengangkutan BBM antarwilayah atau antarpulau. Referensi
-                      menyebut kapal Batam Marine I sebagai salah satu
-                      dokumentasi pendukung.
+                      {translate(locale, "seaTransportCardDescription")}
                     </Text>
                     <Link href="/produk/armada#armada-laut" className={buttonVariants({ className: "mt-6" })}>
-                      Lihat armada
+                      {translate(locale, "viewFleet")}
                       <ArrowRight data-icon="inline-end" />
                     </Link>
                   </CardContent>
@@ -406,25 +399,23 @@ export default function KenaliProdukPage() {
             <TabsContent value="mitra" className="mt-8">
               <Card className="overflow-hidden p-0 lg:grid lg:grid-cols-[3fr_7fr]">
                 <div className="relative min-h-52 bg-muted lg:h-full">
-                  <Image src="/images/partnership/partnership-business.svg" alt="Ilustrasi mitra transportir" fill className="object-cover" />
+                  <Image src="/images/partnership/partnership-business.svg" alt={translate(locale, "partnerTransportIllustration")} fill className="object-cover" />
                 </div>
                 <div className="flex flex-col justify-center p-6 lg:p-8">
                   <CardHeader className="px-0">
-                    <CardTitle>Mitra transportir resmi</CardTitle>
+                    <CardTitle>{translate(locale, "officialPartnerTitle")}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-0">
                     <Text variant="body-muted">
-                      Distribusi didukung PT Masinton Nusa Perkasa sebagai mitra
-                      transportir resmi dengan izin usaha pengangkutan Minyak dan
-                      Gas Bumi.
+                      {translate(locale, "officialPartnerDescription")}
                     </Text>
                     <div className="mt-6 flex flex-wrap gap-3">
                       <Link href="/produk/armada#armada-mitra" className={buttonVariants()}>
-                        Lihat armada
+                        {translate(locale, "viewFleet")}
                         <ArrowRight data-icon="inline-end" />
                       </Link>
                       <Link href="/tentang-kami/kemitraan" className={buttonVariants({ variant: "outline" })}>
-                        Lihat detail kemitraan
+                        {translate(locale, "viewPartnershipDetails")}
                       </Link>
                     </div>
                   </CardContent>
@@ -439,37 +430,35 @@ export default function KenaliProdukPage() {
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20 lg:px-8">
           <div>
             <SectionHeading
-              eyebrow="Penyesuaian Pengiriman"
-              title="Sampaikan detail kebutuhan distribusi Anda."
-              description="Setiap kebutuhan dapat dibahas berdasarkan jenis produk, volume, lokasi, jadwal, dan moda transportasi yang diperlukan."
+              eyebrow={translate(locale, "deliveryAdjustmentEyebrow")}
+              title={translate(locale, "deliveryAdjustmentTitle")}
+              description={translate(locale, "deliveryAdjustmentDescription")}
             />
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {["Lokasi pengiriman", "Volume per pengiriman", "Frekuensi pengiriman", "Jadwal penerimaan"].map((item) => (
+              {(["deliveryLocation", "volumePerDelivery", "deliveryFrequency", "receivingSchedule"] as const).map((item) => (
                 <div key={item} className="flex items-center gap-3 rounded-xl border border-border p-4">
                   <Check className="size-4 text-primary" />
-                  <span className="text-sm font-medium">{item}</span>
+                  <span className="text-sm font-medium">{translate(locale, item)}</span>
                 </div>
               ))}
             </div>
           </div>
           <Card className="h-fit">
             <CardHeader>
-              <CardTitle>Hal yang dibahas saat penawaran</CardTitle>
+              <CardTitle>{translate(locale, "offerDiscussionTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Accordion>
                 <AccordionItem value="commercial">
-                  <AccordionTrigger>Ketentuan komersial</AccordionTrigger>
+                  <AccordionTrigger>{translate(locale, "commercialTerms")}</AccordionTrigger>
                   <AccordionContent>
-                    Harga, minimum order, metode pembayaran, dan syarat transaksi
-                    dibahas berdasarkan kebutuhan serta persetujuan kedua pihak.
+                    {translate(locale, "commercialTermsDescription")}
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="delivery">
-                  <AccordionTrigger>Detail distribusi</AccordionTrigger>
+                  <AccordionTrigger>{translate(locale, "distributionDetails")}</AccordionTrigger>
                   <AccordionContent>
-                    Wilayah, jadwal, volume, dan moda pengiriman diselaraskan
-                    sebelum penawaran disepakati.
+                    {translate(locale, "distributionDetailsDescription")}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -482,14 +471,13 @@ export default function KenaliProdukPage() {
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <Badge variant="outline" className="border-background/30 text-background">
-              Siap berdiskusi
+              {translate(locale, "productReadyToDiscuss")}
             </Badge>
             <Heading level={2} className="mt-5">
-              Sampaikan kebutuhan BBM industri Anda kepada Petro Anigos.
+              {translate(locale, "productCtaTitle")}
             </Heading>
             <Text variant="lead" className="mt-5 text-background/70">
-              Tim kami siap membahas produk, volume, lokasi, dan skema distribusi
-              yang sesuai.
+              {translate(locale, "productCtaDescription")}
             </Text>
           </div>
           <Link
@@ -498,7 +486,7 @@ export default function KenaliProdukPage() {
               className: "bg-background text-foreground hover:bg-background/90",
             })}
           >
-            Ajukan Penawaran
+            {translate(locale, "requestOffer")}
             <ArrowRight data-icon="inline-end" />
           </Link>
         </div>

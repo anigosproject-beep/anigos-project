@@ -1,0 +1,230 @@
+export type MediaRole =
+  | "hero"
+  | "pageHero"
+  | "sectionBackground"
+  | "card"
+  | "article"
+  | "partnership"
+  | "team"
+  | "pattern"
+  | "brand"
+
+export type MediaCatalogItem = {
+  key: string
+  label: string
+  role: MediaRole
+  publicPath?: string
+  recommendedPath: string
+  routePaths: string[]
+  description: string
+  technicalNotes: string
+}
+
+export const mediaCatalog: MediaCatalogItem[] = [
+  {
+    key: "home-hero-01",
+    label: "Homepage hero 01",
+    role: "hero",
+    publicPath: "/images/hero/home-01.webp",
+    recommendedPath: "media/home/hero/home-01",
+    routePaths: ["/"],
+    description: "Hero slide pembuka dengan subjek utama di sisi kanan agar area teks kiri tetap terbaca.",
+    technicalNotes: "WebP/AVIF, minimal 1920x1080, full-bleed 16:9 atau lebih lebar.",
+  },
+  {
+    key: "home-hero-02",
+    label: "Homepage hero 02",
+    role: "hero",
+    publicPath: "/images/hero/home-02.webp",
+    recommendedPath: "media/home/hero/home-02",
+    routePaths: ["/"],
+    description: "Hero slide untuk pesan produk berkualitas.",
+    technicalNotes: "WebP/AVIF, minimal 1920x1080, sisakan ruang negatif di kiri.",
+  },
+  {
+    key: "home-hero-03",
+    label: "Homepage hero 03",
+    role: "hero",
+    publicPath: "/images/hero/home-03.webp",
+    recommendedPath: "media/home/hero/home-03",
+    routePaths: ["/"],
+    description: "Hero slide yang memvisualisasikan armada dan distribusi tepat waktu.",
+    technicalNotes: "WebP/AVIF, minimal 1920x1080, subjek utama tidak menutup teks.",
+  },
+  {
+    key: "home-hero-04",
+    label: "Homepage hero 04",
+    role: "hero",
+    publicPath: "/images/hero/home-04.webp",
+    recommendedPath: "media/home/hero/home-04",
+    routePaths: ["/"],
+    description: "Hero slide untuk pesan kemitraan energi berkelanjutan.",
+    technicalNotes: "WebP/AVIF, minimal 1920x1080, kontras cukup untuk overlay gelap.",
+  },
+  {
+    key: "page-hero-tentang-kami",
+    label: "Page hero Tentang Kami fallback",
+    role: "pageHero",
+    publicPath: "/images/page-hero/tentang-kami.webp",
+    recommendedPath: "media/page-hero/tentang-kami",
+    routePaths: ["/tentang-kami/*", "/artikel/*", "/produk/*", "/jangkauan", "/kebijakan-data", "/ketentuan-cookies"],
+    description: "Fallback page hero yang saat ini dipakai banyak halaman internal.",
+    technicalNotes: "WebP/AVIF, minimal 1920x720, sisakan ruang untuk breadcrumb dan teks putih.",
+  },
+  {
+    key: "page-hero-produk",
+    label: "Page hero Produk",
+    role: "pageHero",
+    recommendedPath: "media/page-hero/produk",
+    routePaths: ["/produk/*"],
+    description: "Hero khusus seluruh halaman produk setelah asset final tersedia.",
+    technicalNotes: "WebP/AVIF, minimal 1920x720, rasio landscape lebar.",
+  },
+  {
+    key: "page-hero-jangkauan",
+    label: "Page hero Jangkauan",
+    role: "pageHero",
+    recommendedPath: "media/page-hero/jangkauan",
+    routePaths: ["/jangkauan"],
+    description: "Hero yang menampilkan konteks jangkauan layanan dan distribusi antardaerah.",
+    technicalNotes: "WebP/AVIF, minimal 1920x720, hindari detail penting di area overlay.",
+  },
+  {
+    key: "page-hero-artikel",
+    label: "Page hero Artikel",
+    role: "pageHero",
+    recommendedPath: "media/page-hero/artikel",
+    routePaths: ["/artikel/*"],
+    description: "Hero editorial untuk newsroom dan publikasi.",
+    technicalNotes: "WebP/AVIF, minimal 1920x720, aman untuk overlay teks.",
+  },
+  {
+    key: "page-hero-keberlanjutan",
+    label: "Page hero Keberlanjutan",
+    role: "pageHero",
+    recommendedPath: "media/page-hero/keberlanjutan",
+    routePaths: ["/keberlanjutan/*"],
+    description: "Hero yang merepresentasikan energi, keselamatan, dan tata kelola berkelanjutan.",
+    technicalNotes: "WebP/AVIF, minimal 1920x720, tone visual konsisten dengan brand.",
+  },
+  {
+    key: "article-operation",
+    label: "Article card Operasional",
+    role: "article",
+    publicPath: "/images/articles/article-operation.svg",
+    recommendedPath: "media/cards/articles/article-operation",
+    routePaths: ["/artikel", "/artikel/anigos-news", "/artikel/[slug]"],
+    description: "Ilustrasi fallback artikel tentang distribusi dan operasional.",
+    technicalNotes: "SVG saat ini; gunakan rasio card 4:3 atau 16:10 untuk foto pengganti.",
+  },
+  {
+    key: "article-b40",
+    label: "Article card B40",
+    role: "article",
+    publicPath: "/images/articles/article-b40.svg",
+    recommendedPath: "media/cards/articles/article-b40",
+    routePaths: ["/artikel", "/artikel/anigos-news", "/artikel/[slug]"],
+    description: "Ilustrasi artikel produk B40 Biosolar.",
+    technicalNotes: "SVG saat ini; pertahankan area aman untuk crop card.",
+  },
+  {
+    key: "partnership-transportation",
+    label: "Partnership Transportasi",
+    role: "partnership",
+    publicPath: "/images/partnership/partnership-transportation.svg",
+    recommendedPath: "media/cards/partnership/transportation",
+    routePaths: ["/", "/produk/kenali-produk", "/produk/armada", "/tentang-kami/kemitraan"],
+    description: "Visual armada dan transportasi darat/laut untuk card kemitraan.",
+    technicalNotes: "SVG mock saat ini; foto final direkomendasikan rasio portrait 5:6.",
+  },
+  {
+    key: "partnership-distribution",
+    label: "Partnership Distribusi",
+    role: "partnership",
+    publicPath: "/images/partnership/partnership-distribution.svg",
+    recommendedPath: "media/cards/partnership/distribution",
+    routePaths: ["/", "/produk/armada"],
+    description: "Visual distribusi antarwilayah.",
+    technicalNotes: "SVG mock saat ini; foto final direkomendasikan rasio portrait 5:6.",
+  },
+  {
+    key: "partnership-business",
+    label: "Partnership Bisnis",
+    role: "partnership",
+    publicPath: "/images/partnership/partnership-business.svg",
+    recommendedPath: "media/cards/partnership/business",
+    routePaths: ["/", "/artikel/[slug]", "/produk/armada"],
+    description: "Visual kemitraan bisnis dan koordinasi profesional.",
+    technicalNotes: "SVG mock saat ini; foto final direkomendasikan rasio portrait 5:6.",
+  },
+  {
+    key: "resources-energy",
+    label: "Resource Energi",
+    role: "card",
+    publicPath: "/images/resources/resource-energy.svg",
+    recommendedPath: "media/cards/resources/energy",
+    routePaths: ["/"],
+    description: "Ilustrasi card resource energi.",
+    technicalNotes: "SVG; area visual aman untuk crop card responsif.",
+  },
+  {
+    key: "resources-safety",
+    label: "Resource Keselamatan",
+    role: "card",
+    publicPath: "/images/resources/resource-safety.svg",
+    recommendedPath: "media/cards/resources/safety",
+    routePaths: ["/"],
+    description: "Ilustrasi card resource keselamatan operasional.",
+    technicalNotes: "SVG; area visual aman untuk crop card responsif.",
+  },
+  {
+    key: "resources-publication",
+    label: "Resource Publikasi",
+    role: "card",
+    publicPath: "/images/resources/resource-publication.svg",
+    recommendedPath: "media/cards/resources/publication",
+    routePaths: ["/"],
+    description: "Ilustrasi card resource publikasi dan informasi.",
+    technicalNotes: "SVG; area visual aman untuk crop card responsif.",
+  },
+  {
+    key: "home-section-01-pattern",
+    label: "Homepage section pattern",
+    role: "pattern",
+    publicPath: "/images/patterns/home-section-01/home-section-01-pattern.svg",
+    recommendedPath: "media/patterns/home/home-section-01",
+    routePaths: ["/", "/tentang-kami/harapan-cita-cita"],
+    description: "Pattern dekoratif untuk section utama dan card visi/misi.",
+    technicalNotes: "SVG transparan; gunakan opacity rendah dan mask gradient.",
+  },
+  {
+    key: "team-portrait-placeholder",
+    label: "Team portrait placeholder",
+    role: "team",
+    publicPath: "/images/team/portrait-placeholder.svg",
+    recommendedPath: "media/team/portrait-placeholder",
+    routePaths: ["/tentang-kami/struktur-perusahaan"],
+    description: "Placeholder foto struktur perusahaan sebelum portrait final tersedia.",
+    technicalNotes: "Ganti per anggota dengan crop portrait konsisten.",
+  },
+  {
+    key: "brand-logo",
+    label: "Logo Petro Anigos",
+    role: "brand",
+    publicPath: "/logo/petro anigos.svg",
+    recommendedPath: "media/brand/logo",
+    routePaths: ["global header", "global footer"],
+    description: "Logo utama untuk background terang.",
+    technicalNotes: "SVG; jangan di-crop atau diubah proporsinya.",
+  },
+  {
+    key: "brand-logo-white",
+    label: "Logo Petro Anigos white",
+    role: "brand",
+    publicPath: "/logo/petro anigos white.svg",
+    recommendedPath: "media/brand/logo-white",
+    routePaths: ["global header", "global footer"],
+    description: "Logo putih untuk hero dan background gelap.",
+    technicalNotes: "SVG; pertahankan clear space brand.",
+  },
+]

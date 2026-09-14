@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -15,24 +17,27 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
+import { useLocale } from "@/components/locale-provider"
+import { translate, type TranslationKey } from "@/lib/i18n"
 
-const partnershipPrinciples = [
+const partnershipPrinciples: Array<{
+  title: TranslationKey
+  description: TranslationKey
+  icon: typeof Truck
+}> = [
   {
-    title: "Distribusi yang terhubung",
-    description:
-      "Kemitraan transportasi mendukung kelancaran pendistribusian BBM ke berbagai wilayah operasional.",
+    title: "principleConnectedTitle",
+    description: "principleConnectedDescription",
     icon: Truck,
   },
   {
-    title: "Kepatuhan yang terjaga",
-    description:
-      "Setiap kerja sama diarahkan untuk berjalan dengan dasar izin dan tanggung jawab yang jelas.",
+    title: "principleComplianceTitle",
+    description: "principleComplianceDescription",
     icon: ShieldCheck,
   },
   {
-    title: "Hubungan jangka panjang",
-    description:
-      "Kami menjaga hubungan baik dengan rekan usaha, konsumen, dan mitra Pemerintah Republik Indonesia.",
+    title: "principleLongTermTitle",
+    description: "principleLongTermDescription",
     icon: Handshake,
   },
 ] as const
@@ -47,23 +52,25 @@ const transportLicense = [
 ] as const
 
 export default function KemitraanPage() {
+  const { locale } = useLocale()
+
   return (
     <main>
       <PageHero
-        eyebrow="Tentang Kami"
-        title="Kemitraan"
-        description="Membangun kerja sama yang bertanggung jawab untuk mendukung distribusi Bahan Bakar Industri ke berbagai wilayah Indonesia."
+        eyebrow={translate(locale, "aboutSectionLabel")}
+        title={translate(locale, "partnershipPageTitle")}
+        description={translate(locale, "partnershipPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
-        breadcrumbs={[{ label: "Tentang Kami", href: "/tentang-kami/profil-perusahaan" }]}
+        breadcrumbs={[{ label: translate(locale, "aboutSectionLabel"), href: "/tentang-kami/profil-perusahaan" }]}
       />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-8">
           <div className="space-y-8">
             <SectionHeading
-              eyebrow="Mitra Transportir Resmi"
-              title="Jaringan distribusi yang didukung mitra berizin."
-              description="Untuk mendukung kelancaran pendistribusian ke seluruh pelosok Indonesia, PT. Anigos Jaya Perkasa menjalin kerja sama dengan PT Masinton Nusa Perkasa sebagai mitra transportir resmi."
+              eyebrow={translate(locale, "officialTransportPartnerEyebrow")}
+              title={translate(locale, "officialTransportPartnerTitle")}
+              description={translate(locale, "officialTransportPartnerDescription")}
             />
             <div className="max-w-sm rounded-2xl border border-border bg-muted/30 p-3">
               <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border bg-background">
@@ -75,11 +82,10 @@ export default function KemitraanPage() {
               </div>
               <div className="px-1 pb-1 pt-4">
                 <p className="text-sm font-medium">
-                  Dokumen kemitraan transportir
+                  {translate(locale, "transportDocumentTitle")}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  Company profile file 8, halaman internal 07 “Transportir”,
-                  memuat sertifikat izin usaha dan dokumentasi armada mitra.
+                  {translate(locale, "transportDocumentDescription")}
                 </p>
                 <a
                   href="/documents/company-profile-kemitraan-transportir.pdf"
@@ -89,7 +95,7 @@ export default function KemitraanPage() {
                     className: "mt-4 w-full",
                   })}
                 >
-                  Unduh dokumen
+                  {translate(locale, "downloadDocument")}
                   <Download data-icon="inline-end" />
                 </a>
               </div>
@@ -107,9 +113,7 @@ export default function KemitraanPage() {
               />
               </div>
               <Text variant="body-muted" className="px-6 pb-6">
-                Kemitraan ini mendukung kebutuhan pengangkutan Bahan Bakar
-                Minyak dengan memperhatikan legalitas, koordinasi operasional,
-                dan ketepatan layanan.
+                {translate(locale, "transportPartnershipDescription")}
               </Text>
             </CardContent>
           </Card>
@@ -119,9 +123,9 @@ export default function KemitraanPage() {
       <section className="border-b border-border bg-muted/40 py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Detail Kemitraan"
-            title="Informasi izin transportir yang tersedia."
-            description="Ringkasan berikut disusun dari sertifikat izin usaha yang tercantum dalam company profile."
+            eyebrow={translate(locale, "partnershipDetailEyebrow")}
+            title={translate(locale, "partnershipDetailTitle")}
+            description={translate(locale, "partnershipDetailDescription")}
           />
           <Card className="mt-12 overflow-hidden">
             <CardHeader className="border-b border-border bg-background">
@@ -129,7 +133,7 @@ export default function KemitraanPage() {
                 PT Masinton Nusa Perkasa
               </Badge>
               <CardTitle className="mt-4 text-2xl">
-                Sertifikat izin usaha pengangkutan
+                {translate(locale, "transportLicenseTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-px bg-border p-0 md:grid-cols-2">
@@ -148,16 +152,14 @@ export default function KemitraanPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <CircleAlert className="size-4 text-muted-foreground" />
-                Catatan verifikasi
+                {translate(locale, "verificationNoteTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <Text variant="body-muted" className="flex items-start gap-2">
                 <CircleAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                 <span>
-                Alamat lengkap dan beberapa detail badan usaha mitra belum
-                terbaca jelas pada scan dokumen sumber. Informasi tersebut perlu
-                diverifikasi sebelum dipublikasikan sebagai data final.
+                {translate(locale, "verificationNote")}
                 </span>
               </Text>
             </CardContent>
@@ -168,9 +170,9 @@ export default function KemitraanPage() {
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Cara Kami Bermitra"
-            title="Kerja sama yang dibangun dari kejelasan dan kepercayaan."
-            description="Kami membuka ruang kolaborasi dengan perusahaan atau instansi yang ingin menjajaki peluang kerja sama distribusi maupun transportasi Bahan Bakar Minyak."
+            eyebrow={translate(locale, "howWePartnerEyebrow")}
+            title={translate(locale, "howWePartnerTitle")}
+            description={translate(locale, "howWePartnerDescription")}
           />
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {partnershipPrinciples.map((principle) => {
@@ -182,11 +184,13 @@ export default function KemitraanPage() {
                     <div className="flex size-11 items-center justify-center rounded-2xl bg-muted">
                       <Icon className="size-5" />
                     </div>
-                    <CardTitle className="mt-4">{principle.title}</CardTitle>
+                    <CardTitle className="mt-4">
+                      {translate(locale, principle.title)}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm leading-6 text-muted-foreground">
-                      {principle.description}
+                      {translate(locale, principle.description)}
                     </p>
                   </CardContent>
                 </Card>
@@ -200,14 +204,13 @@ export default function KemitraanPage() {
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <Badge variant="outline" className="border-background/30 text-background">
-              Terbuka untuk kolaborasi
+              {translate(locale, "collaborationOpenLabel")}
             </Badge>
             <Heading level={2} className="mt-5">
-              Mari bangun kemitraan yang mendukung distribusi energi secara bertanggung jawab.
+              {translate(locale, "collaborationTitle")}
             </Heading>
             <p className="mt-5 leading-7 text-background/70">
-              Hubungi tim Petro Anigos untuk mendiskusikan kebutuhan distribusi,
-              transportasi, atau peluang kerja sama lainnya.
+              {translate(locale, "collaborationDescription")}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -217,7 +220,7 @@ export default function KemitraanPage() {
                 className: "bg-background text-foreground hover:bg-background/90",
               })}
             >
-              Hubungi Kami
+              {translate(locale, "contactUsAction")}
               <ArrowRight data-icon="inline-end" />
             </Link>
             <Link
@@ -228,7 +231,7 @@ export default function KemitraanPage() {
                   "border-background/30 text-background hover:bg-background/10 hover:text-background",
               })}
             >
-              Lihat Legalitas
+              {translate(locale, "viewLegality")}
             </Link>
           </div>
         </div>

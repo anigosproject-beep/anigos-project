@@ -4,6 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@media (prefers-reduced-motion: reduce) {
+  [data-scroll-float] {
+    transform: none !important;
+  }
+}
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
@@ -128,6 +134,19 @@
         transition-property: color, background-color, border-color, box-shadow, opacity, transform;
         transition-duration: 180ms;
         transition-timing-function: ease-out;
+      }
+
+      [class~="group/button"]:has([data-icon="inline-end"]) svg,
+      [class~="group/button"]:has([data-icon="inline-start"]) svg {
+        transition: transform 180ms ease-out;
+      }
+
+      [class~="group/button"]:has([data-icon="inline-end"]):is(:hover, :focus-visible) svg {
+        translate: 0.15rem 0;
+      }
+
+      [class~="group/button"]:has([data-icon="inline-start"]):is(:hover, :focus-visible) svg {
+        translate: -0.15rem 0;
       }
     }
   body {

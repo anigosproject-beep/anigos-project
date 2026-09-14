@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowRight, CircleAlert, Download, Eye, FileCheck2, FileText } from "lucide-react"
 
@@ -23,39 +25,45 @@ import {
 } from "@/components/ui/attachment"
 import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
+import { useLocale } from "@/components/locale-provider"
+import { translate, type TranslationKey } from "@/lib/i18n"
 
 const legalHighlights = [
   {
-    title: "Akta Pendirian",
+    title: "incorporationDeed",
     value: "Nomor 11 · 18 Juli 2019",
-    description: "Notaris Andi Ismawati Achmad, S.H.",
+    description: "notary",
   },
   {
-    title: "Pengesahan Kemenkumham",
+    title: "ministryApproval",
     value: "AHU-0035830.Ah.01.01",
-    description: "Tahun 2019",
+    description: "year2019",
   },
   {
-    title: "Izin Niaga Umum",
+    title: "generalTradingLicense",
     value: "05.Nw.03.25.00.153",
-    description: "Direktorat Jenderal Minyak dan Gas Bumi",
+    description: "directorateOilGas",
   },
   {
-    title: "Registrasi BPH Migas",
+    title: "bphMigasRegistration",
     value: "03/NRU/KABPH MIGAS/2020",
-    description: "Nomor Registrasi Usaha Niaga Minyak dan Gas Bumi",
+    description: "bphMigasBusinessRegistration",
   },
   {
-    title: "Merek Dagang",
+    title: "trademark",
     value: "Petro Anigos",
-    description: "Dalam sumber juga disebut sebagai Anigos Petro",
+    description: "alsoKnownAsAnigosPetro",
   },
   {
-    title: "Izin Mitra Transportir",
+    title: "transportPartnerLicense",
     value: "PT Masinton Nusa Perkasa",
-    description: "Pengangkutan Bahan Bakar Minyak",
+    description: "fuelTransportation",
   },
-] as const
+] satisfies Array<{
+  title: TranslationKey
+  value: string
+  description: TranslationKey
+}>
 
 const documents: Array<{
   title: string
@@ -64,22 +72,24 @@ const documents: Array<{
 }> = []
 
 export default function LegalitasPage() {
+  const { locale } = useLocale()
+
   return (
     <main>
       <PageHero
-        eyebrow="Tentang Kami"
-        title="Legalitas"
-        description="Informasi legal dan perizinan yang menjadi dasar operasional PT. Anigos Jaya Perkasa sebagai distributor Bahan Bakar Industri."
+        eyebrow={translate(locale, "aboutSectionLabel")}
+        title={translate(locale, "legalityPageTitle")}
+        description={translate(locale, "legalityPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
-        breadcrumbs={[{ label: "Tentang Kami", href: "/tentang-kami/profil-perusahaan" }]}
+        breadcrumbs={[{ label: translate(locale, "aboutSectionLabel"), href: "/tentang-kami/profil-perusahaan" }]}
       />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-8">
           <SectionHeading
-            eyebrow="Dasar Hukum Perusahaan"
-            title="Beroperasi dengan fondasi legal yang jelas."
-            description="Ringkasan berikut disusun dari informasi legalitas yang tercantum dalam company profile PT. Anigos Jaya Perkasa."
+            eyebrow={translate(locale, "legalBasisEyebrow")}
+            title={translate(locale, "legalBasisTitle")}
+            description={translate(locale, "legalBasisDescription")}
           />
           <div className="grid gap-4 sm:grid-cols-2">
             {legalHighlights.map((item) => (
@@ -88,12 +98,14 @@ export default function LegalitasPage() {
                   <div className="flex size-10 items-center justify-center rounded-xl bg-muted">
                     <FileCheck2 className="size-5" />
                   </div>
-                  <CardTitle className="mt-4 text-base">{item.title}</CardTitle>
+                  <CardTitle className="mt-4 text-base">
+                    {translate(locale, item.title)}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="font-medium">{item.value}</p>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {item.description}
+                    {translate(locale, item.description)}
                   </p>
                 </CardContent>
               </Card>
@@ -105,9 +117,9 @@ export default function LegalitasPage() {
       <section className="border-b border-border bg-muted/40 py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Dokumen Legal"
-            title="Pusat dokumen yang dapat diunduh."
-            description="Area ini disiapkan untuk menyimpan scan akta, izin usaha, sertifikat, dan dokumen legal lain yang telah disetujui untuk dipublikasikan."
+            eyebrow={translate(locale, "legalDocumentsEyebrow")}
+            title={translate(locale, "legalDocumentsTitle")}
+            description={translate(locale, "legalDocumentsDescription")}
           />
           {documents.length > 0 ? (
             <AttachmentGroup className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -127,8 +139,8 @@ export default function LegalitasPage() {
                       href={document.href}
                       target="_blank"
                       rel="noreferrer"
-                      aria-label={`Lihat ${document.title}`}
-                      title="Lihat dokumen"
+                      aria-label={`${translate(locale, "documentView")} ${document.title}`}
+                      title={translate(locale, "documentView")}
                       className={buttonVariants({
                         variant: "ghost",
                         size: "icon-xs",
@@ -139,8 +151,8 @@ export default function LegalitasPage() {
                     <a
                       href={document.href}
                       download
-                      aria-label={`Unduh ${document.title}`}
-                      title="Unduh dokumen"
+                      aria-label={`${translate(locale, "documentDownload")} ${document.title}`}
+                      title={translate(locale, "documentDownload")}
                       className={buttonVariants({
                         variant: "ghost",
                         size: "icon-xs",
@@ -158,10 +170,11 @@ export default function LegalitasPage() {
                 <EmptyMedia variant="icon">
                   <CircleAlert />
                 </EmptyMedia>
-                <EmptyTitle>Dokumen belum tersedia</EmptyTitle>
+                <EmptyTitle>
+                  {translate(locale, "documentsUnavailableTitle")}
+                </EmptyTitle>
                 <EmptyDescription>
-                  File PDF legal akan muncul di area ini setelah dokumen resmi
-                  siap dan disetujui untuk dipublikasikan.
+                  {translate(locale, "documentsUnavailableDescription")}
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
@@ -173,15 +186,13 @@ export default function LegalitasPage() {
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <Badge variant="outline" className="border-background/30 text-background">
-              Transparansi informasi
+              {translate(locale, "informationTransparency")}
             </Badge>
             <Heading level={2} className="mt-5">
-              Dokumen publik akan ditambahkan secara bertahap.
+              {translate(locale, "publicDocumentsTitle")}
             </Heading>
             <Text variant="lead" className="mt-5 text-background/70">
-              Informasi nomor legal dapat menjadi rujukan awal. Dokumen
-              pendukung akan ditampilkan setelah proses verifikasi dan
-              persetujuan publikasi selesai.
+              {translate(locale, "publicDocumentsDescription")}
             </Text>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -191,7 +202,7 @@ export default function LegalitasPage() {
                 className: "bg-background text-foreground hover:bg-background/90",
               })}
             >
-              Lihat Kemitraan
+              {translate(locale, "viewPartnership")}
               <ArrowRight data-icon="inline-end" />
             </Link>
             <Link
@@ -202,7 +213,7 @@ export default function LegalitasPage() {
                   "border-background/30 text-background hover:bg-background/10 hover:text-background",
               })}
             >
-              Hubungi Kami
+              {translate(locale, "contactUsAction")}
             </Link>
           </div>
         </div>

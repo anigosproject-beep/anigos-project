@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, CircleAlert } from "lucide-react"
@@ -11,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { getSanityTeam, type TeamCategory, type TeamMember } from "@/lib/sanity-team"
 
 type MockPerson = {
   initials: string
@@ -77,8 +76,10 @@ const mockPeople = {
 
 function PersonCards({
   people,
+  isFallback,
 }: {
   people: readonly MockPerson[]
+  isFallback: boolean
 }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -109,7 +110,7 @@ function PersonCards({
           <Badge variant="outline" className="mt-4">
             <span className="inline-flex items-center gap-1.5">
               <CircleAlert className="size-3" />
-              Data mock
+              {isFallback ? "Data fallback" : "Data CMS"}
             </span>
           </Badge>
         </div>
@@ -118,7 +119,28 @@ function PersonCards({
   )
 }
 
-export default function StrukturPerusahaanPage() {
+const teamCategories: TeamCategory[] = [
+  "komisaris",
+  "direksi",
+  "operasional",
+  "armada",
+  "kemitraan",
+]
+
+export const revalidate = 60
+
+const toMockPerson = (person: TeamMember): MockPerson => person
+
+export default async function StrukturPerusahaanPage() {
+  const sanityPeople = await getSanityTeam()
+  const hasSanityPeople = teamCategories.some((category) => sanityPeople[category].length > 0)
+  const people = hasSanityPeople
+    ? sanityPeople
+    : Object.fromEntries(
+        teamCategories.map((category) => [category, mockPeople[category]]),
+      ) as typeof mockPeople
+  const isFallback = !hasSanityPeople
+
   return (
     <main>
       <PageHero
@@ -183,7 +205,7 @@ export default function StrukturPerusahaanPage() {
                       disetujui untuk dipublikasikan.
                     </p>
                   </div>
-                  <PersonCards people={mockPeople.komisaris} />
+                  <PersonCards people={people.komisaris.map(toMockPerson)} isFallback={isFallback} />
                 </CardContent>
               </Card>
 
@@ -213,7 +235,7 @@ export default function StrukturPerusahaanPage() {
                       biografi jika memang akan ditampilkan.
                     </p>
                   </div>
-                  <PersonCards people={mockPeople.direksi} />
+                  <PersonCards people={people.direksi.map(toMockPerson)} isFallback={isFallback} />
                 </CardContent>
               </Card>
 
@@ -266,7 +288,7 @@ export default function StrukturPerusahaanPage() {
                           Kantor pusat di Bekasi dan titik jaringan di Palembang,
                           Medan, Kalimantan, serta Sulawesi.
                         </p>
-                        <PersonCards people={mockPeople.operasional} />
+                        <PersonCards people={people.operasional.map(toMockPerson)} isFallback={isFallback} />
                       </div>
                     </TabsContent>
                     <TabsContent value="armada" className="mt-6">
@@ -276,7 +298,7 @@ export default function StrukturPerusahaanPage() {
                           Fungsi armada dan logistik mendukung distribusi produk
                           energi ke berbagai wilayah operasional.
                         </p>
-                        <PersonCards people={mockPeople.armada} />
+                        <PersonCards people={people.armada.map(toMockPerson)} isFallback={isFallback} />
                       </div>
                     </TabsContent>
                     <TabsContent value="kemitraan" className="mt-6">
@@ -286,7 +308,7 @@ export default function StrukturPerusahaanPage() {
                           Kemitraan dan layanan menjadi bagian dari pengelolaan
                           hubungan dengan pelanggan serta mitra operasional.
                         </p>
-                        <PersonCards people={mockPeople.kemitraan} />
+                        <PersonCards people={people.kemitraan.map(toMockPerson)} isFallback={isFallback} />
                       </div>
                     </TabsContent>
                   </Tabs>

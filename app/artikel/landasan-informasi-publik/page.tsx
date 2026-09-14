@@ -1,3 +1,5 @@
+"use client"
+
 import { BookOpenCheck, FileCheck2, Info, ShieldCheck } from "lucide-react"
 
 import { CorporateTopicPage } from "@/components/sections/corporate-topic-page"

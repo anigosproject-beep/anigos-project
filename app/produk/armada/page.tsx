@@ -11,18 +11,21 @@ import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 const fleetCapacities = [
-  { id: "armada-5000", value: "5.000", label: "Liter", note: "Kebutuhan ringan", image: "/images/partnership/partnership-transportation.svg" },
-  { id: "armada-8000", value: "8.000", label: "Liter", note: "Distribusi fleksibel", image: "/images/partnership/partnership-distribution.svg" },
-  { id: "armada-10000", value: "10.000", label: "Liter", note: "Operasional reguler", image: "/images/partnership/partnership-business.svg" },
-  { id: "armada-16000", value: "16.000", label: "Liter", note: "Kebutuhan menengah", image: "/images/articles/article-operation.svg" },
-  { id: "armada-24000", value: "24.000", label: "Liter", note: "Skala industri", image: "/images/resources/resource-energy.svg" },
-  { id: "armada-30000", value: "30.000", label: "Liter", note: "Muatan besar", image: "/images/articles/article-b40.svg" },
+  { id: "armada-5000", value: "5.000", note: "lightNeed", image: "/images/partnership/partnership-transportation.svg" },
+  { id: "armada-8000", value: "8.000", note: "flexibleDistribution", image: "/images/partnership/partnership-distribution.svg" },
+  { id: "armada-10000", value: "10.000", note: "regularOperations", image: "/images/partnership/partnership-business.svg" },
+  { id: "armada-16000", value: "16.000", note: "mediumNeed", image: "/images/articles/article-operation.svg" },
+  { id: "armada-24000", value: "24.000", note: "industrialScale", image: "/images/resources/resource-energy.svg" },
+  { id: "armada-30000", value: "30.000", note: "largeLoad", image: "/images/articles/article-b40.svg" },
 ] as const
 type FleetId = (typeof fleetCapacities)[number]["id"]
 
 export default function ArmadaPage() {
+  const { locale } = useLocale()
   const [selectedFleetId, setSelectedFleetId] = useState<FleetId>(fleetCapacities[0].id)
   const selectedFleet =
     fleetCapacities.find((fleet) => fleet.id === selectedFleetId) ?? fleetCapacities[0]
@@ -30,13 +33,13 @@ export default function ArmadaPage() {
   return (
     <main>
       <PageHero
-        eyebrow="Produk / Armada"
-        title="Kapasitas armada yang mengikuti skala kebutuhan."
-        description="Armada tangki BBM Petro Anigos tersedia dalam beberapa variasi kapasitas untuk mendukung kebutuhan distribusi mulai dari skala kecil hingga industri besar."
+        eyebrow={translate(locale, "fleetPageEyebrow")}
+        title={translate(locale, "fleetPageTitle")}
+        description={translate(locale, "fleetPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
         breadcrumbs={[
-          { label: "Produk", href: "/produk/kenali-produk" },
-          { label: "Armada", href: "/produk/armada" },
+          { label: translate(locale, "products"), href: "/produk/kenali-produk" },
+          { label: translate(locale, "fleet"), href: "/produk/armada" },
         ]}
       />
 
@@ -48,9 +51,9 @@ export default function ArmadaPage() {
         />
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Armada Darat / Trucking"
-            title="Satu jaringan, enam pilihan kapasitas."
-            description="Pilih kapasitas untuk melihat visual armada dan ringkasan penggunaannya. Variasi ini membantu proses verifikasi kebutuhan dilakukan secara lebih tepat."
+            eyebrow={translate(locale, "fleetLandEyebrow")}
+            title={translate(locale, "fleetLandTitle")}
+            description={translate(locale, "fleetLandDescription")}
           />
 
           <div className="mt-12 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16">
@@ -58,7 +61,7 @@ export default function ArmadaPage() {
               <Image
                 key={selectedFleet.image}
                 src={selectedFleet.image}
-                alt={`Ilustrasi armada trucking kapasitas ${selectedFleet.value} liter`}
+                alt={`${translate(locale, "truckingFleet")} ${selectedFleet.value} ${translate(locale, "liter")}`}
                 fill
                 className="object-cover opacity-90 transition-opacity duration-300"
               />
@@ -66,9 +69,14 @@ export default function ArmadaPage() {
               <div className="absolute inset-x-6 bottom-6 text-background lg:inset-x-8 lg:bottom-8">
                 <div className="mt-3 flex items-end justify-between gap-5">
                   <div>
-                    <p className="text-sm font-medium text-background/75">Armada trucking</p>
+                    <p className="text-sm font-medium text-background/75">
+                      {translate(locale, "truckingFleet")}
+                    </p>
                     <p className="mt-1 text-4xl font-semibold tracking-tight">
-                      {selectedFleet.value} <span className="text-lg font-normal">liter</span>
+                      {selectedFleet.value}{" "}
+                      <span className="text-lg font-normal">
+                        {translate(locale, "liter")}
+                      </span>
                     </p>
                   </div>
                   <Truck className="hidden size-10 shrink-0 text-background/80 sm:block" />
@@ -77,23 +85,30 @@ export default function ArmadaPage() {
             </div>
 
             <div>
-              <Badge variant="secondary">Kapasitas armada</Badge>
+              <Badge variant="secondary">
+                {translate(locale, "fleetCapacity")}
+              </Badge>
               <Heading level={2} className="mt-5">
-                Pilih volume sesuai kebutuhan distribusi.
+                {translate(locale, "fleetCapacityTitle")}
               </Heading>
               <Text variant="lead" className="mt-5">
-                Armada tangki HSD tersedia dalam beberapa kapasitas untuk
-                mendukung kebutuhan ringan, reguler, hingga skala industri.
+                {translate(locale, "fleetCapacityDescription")}
               </Text>
               <div className="mt-6 flex items-start gap-2 text-sm text-muted-foreground">
                 <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                <span>{selectedFleet.note} dengan kapasitas {selectedFleet.value} liter.</span>
+                <span>
+                  {translate(locale, selectedFleet.note)}{" "}
+                  {locale === "id" ? "dengan kapasitas" : "with a capacity of"}{" "}
+                  {selectedFleet.value} {translate(locale, "liter")}.
+                </span>
               </div>
             </div>
           </div>
 
           <div className="mt-8 border-t border-border/70 pt-6">
-            <p className="text-sm font-medium">Volume yang tersedia</p>
+            <p className="text-sm font-medium">
+              {translate(locale, "availableVolume")}
+            </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {fleetCapacities.map((fleet) => (
                 <button
@@ -108,7 +123,7 @@ export default function ArmadaPage() {
                       : "border-border bg-background/70 text-muted-foreground hover:border-primary/50 hover:text-foreground"
                   }`}
                 >
-                  {fleet.value} {fleet.label}
+                  {fleet.value} {translate(locale, "liter")}
                 </button>
               ))}
             </div>
@@ -121,32 +136,31 @@ export default function ArmadaPage() {
           <div className="relative min-h-80 overflow-hidden rounded-4xl bg-foreground">
             <Image
               src="/images/partnership/partnership-distribution.svg"
-              alt="Ilustrasi distribusi antarwilayah"
+              alt={translate(locale, "distributionIllustration")}
               fill
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-foreground/60" />
             <div className="absolute bottom-6 left-6 flex items-center gap-3 text-background lg:bottom-8 lg:left-8">
               <Ship className="size-7" />
-              <span className="text-sm font-medium">Distribusi antarwilayah</span>
+              <span className="text-sm font-medium">
+                {translate(locale, "interregionalDistribution")}
+              </span>
             </div>
           </div>
           <div>
-            <Badge variant="secondary">Transportasi laut</Badge>
+            <Badge variant="secondary">
+              {translate(locale, "seaTransport")}
+            </Badge>
             <Heading level={2} className="mt-5">
-              Dukungan logistik untuk kebutuhan antarpulau.
+              {translate(locale, "seaTransportTitle")}
             </Heading>
             <Text variant="lead" className="mt-5">
-              Selain armada darat, referensi perusahaan menyebut sarana transportasi
-              laut seperti kapal Batam Marine I untuk mendukung pengangkutan BBM
-              antarwilayah atau antarpulau.
+              {translate(locale, "seaTransportDescription")}
             </Text>
             <Text variant="body-muted" className="mt-5 flex items-start gap-2">
               <CircleAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-              <span>
-              Detail jumlah kapal, jadwal, kapasitas, dan ketersediaan perlu
-              dikonfirmasi berdasarkan kebutuhan pengiriman.
-              </span>
+              <span>{translate(locale, "fleetAvailabilityNote")}</span>
             </Text>
           </div>
         </div>
@@ -155,16 +169,17 @@ export default function ArmadaPage() {
       <section id="armada-mitra" className="border-b border-border bg-muted/40 py-24 lg:py-32">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-20 lg:px-8">
           <div>
-            <Badge variant="secondary">Mitra transportir</Badge>
+            <Badge variant="secondary">
+              {translate(locale, "transportPartner")}
+            </Badge>
             <Heading level={2} className="mt-5">
-              Distribusi diperkuat mitra resmi.
+              {translate(locale, "transportPartnerTitle")}
             </Heading>
             <Text variant="lead" className="mt-5">
-              PT Masinton Nusa Perkasa mendukung distribusi sebagai mitra
-              transportir resmi dengan izin usaha pengangkutan Minyak dan Gas Bumi.
+              {translate(locale, "transportPartnerDescription")}
             </Text>
             <Link href="/tentang-kami/kemitraan" className={buttonVariants({ className: "mt-8" })}>
-              Lihat detail kemitraan
+              {translate(locale, "partnershipDetailsAction")}
               <ArrowRight data-icon="inline-end" />
             </Link>
           </div>
@@ -172,27 +187,29 @@ export default function ArmadaPage() {
             <div className="relative min-h-56 bg-foreground lg:min-h-full">
               <Image
                 src="/images/partnership/partnership-business.svg"
-                alt="Ilustrasi kemitraan distribusi Petro Anigos"
+                alt={translate(locale, "partnershipIllustration")}
                 fill
                 className="object-cover"
               />
             </div>
             <CardContent className="p-6 lg:p-8">
               <CardHeader className="px-0">
-                <CardTitle>Skema distribusi yang dapat dibahas</CardTitle>
+                <CardTitle>
+                  {translate(locale, "distributionSchemeTitle")}
+                </CardTitle>
               </CardHeader>
               <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
                 <li className="flex gap-3">
                   <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                  Penyesuaian wilayah dan titik bongkar
+                  {translate(locale, "unloadingPoint")}
                 </li>
                 <li className="flex gap-3">
                   <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                  Penentuan volume dan jadwal distribusi
+                  {translate(locale, "volumeSchedule")}
                 </li>
                 <li className="flex gap-3">
                   <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                  Verifikasi armada sesuai kebutuhan
+                  {translate(locale, "fleetVerification")}
                 </li>
               </ul>
             </CardContent>
@@ -204,14 +221,13 @@ export default function ArmadaPage() {
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <Badge variant="outline" className="border-background/30 text-background">
-              Siap berdiskusi
+              {translate(locale, "readyToDiscuss")}
             </Badge>
             <Heading level={2} className="mt-5 text-background">
-              Temukan kapasitas yang sesuai untuk kebutuhan Anda.
+              {translate(locale, "fleetCtaTitle")}
             </Heading>
             <Text variant="lead" className="mt-5 text-background/70">
-              Sampaikan volume, lokasi, jadwal, dan moda distribusi untuk dibahas
-              bersama tim Petro Anigos.
+              {translate(locale, "fleetCtaDescription")}
             </Text>
           </div>
           <Link
@@ -220,7 +236,7 @@ export default function ArmadaPage() {
               className: "bg-background text-foreground hover:bg-background/90",
             })}
           >
-            Ajukan kebutuhan
+            {translate(locale, "submitRequirement")}
             <ArrowRight data-icon="inline-end" />
           </Link>
         </div>

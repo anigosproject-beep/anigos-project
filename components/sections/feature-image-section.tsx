@@ -65,47 +65,49 @@ function FeatureImageSection({
       />
 
       <div className="mx-auto flex min-h-[inherit] max-w-7xl items-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <Reveal className="max-w-2xl" delay={0.08}>
-          {eyebrow ? (
-            <Eyebrow className="text-background/70">{eyebrow}</Eyebrow>
-          ) : null}
-          <Heading level={2} className="mt-4 text-background">
-            {title}
-          </Heading>
-          <Text variant="lead" className="mt-5 text-background/80">
-            {description}
-          </Text>
-          {primaryAction || secondaryAction ? (
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              {primaryAction ? (
-                <Link
-                  href={primaryAction.href}
-                  className={buttonVariants({
-                    variant: primaryAction.variant ?? "default",
-                    className:
-                      "w-full bg-background text-foreground hover:bg-background/90 sm:w-auto",
-                  })}
-                >
-                  {primaryAction.label}
-                  <ArrowRight data-icon="inline-end" />
-                </Link>
-              ) : null}
-              {secondaryAction ? (
-                <Link
-                  href={secondaryAction.href}
-                  className={buttonVariants({
-                    variant: secondaryAction.variant ?? "outline",
-                    className:
-                      "w-full border-background/35 bg-transparent text-background hover:bg-background/10 hover:text-background sm:w-auto",
-                  })}
-                >
-                  {secondaryAction.label}
-                  <ArrowRight data-icon="inline-end" />
-                </Link>
-              ) : null}
-            </div>
-          ) : null}
-        </Reveal>
+        <div className="max-w-2xl">
+          <Reveal delay={0.08}>
+            {eyebrow ? (
+              <Eyebrow className="text-background/70">{eyebrow}</Eyebrow>
+            ) : null}
+            <Heading level={2} className="mt-4 text-background">
+              {title}
+            </Heading>
+            <Text variant="lead" className="mt-5 text-background/80">
+              {description}
+            </Text>
+            {primaryAction || secondaryAction ? (
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                {primaryAction ? (
+                  <Link
+                    href={primaryAction.href}
+                    className={buttonVariants({
+                      variant: primaryAction.variant ?? "default",
+                      className:
+                        "w-full bg-background text-foreground hover:bg-background/90 sm:w-auto",
+                    })}
+                  >
+                    {primaryAction.label}
+                    <ArrowRight data-icon="inline-end" />
+                  </Link>
+                ) : null}
+                {secondaryAction ? (
+                  <Link
+                    href={secondaryAction.href}
+                    className={buttonVariants({
+                      variant: secondaryAction.variant ?? "outline",
+                      className:
+                        "w-full border-background/35 bg-transparent text-background hover:bg-background/10 hover:text-background sm:w-auto",
+                    })}
+                  >
+                    {secondaryAction.label}
+                    <ArrowRight data-icon="inline-end" />
+                  </Link>
+                ) : null}
+              </div>
+            ) : null}
+          </Reveal>
+        </div>
       </div>
     </section>
   )

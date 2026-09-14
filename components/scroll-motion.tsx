@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
 
 type ScrollFloatProps = {
@@ -16,7 +16,6 @@ export function ScrollFloat({
   distance = 10,
 }: ScrollFloatProps) {
   const targetRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start end", "end start"],
@@ -27,7 +26,8 @@ export function ScrollFloat({
     <motion.div
       ref={targetRef}
       className={className}
-      style={prefersReducedMotion ? undefined : { y }}
+      data-scroll-float
+      style={{ y }}
     >
       {children}
     </motion.div>

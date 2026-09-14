@@ -4,6 +4,8 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 const consentCookie = "petro_anigos_cookie_consent"
 const consentMaxAge = 60 * 60 * 24 * 180
@@ -16,6 +18,7 @@ function readConsent() {
 }
 
 export function CookieConsent() {
+  const { locale } = useLocale()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -36,28 +39,26 @@ export function CookieConsent() {
   return (
     <aside
       role="dialog"
-      aria-label="Persetujuan cookies"
+      aria-label={translate(locale, "cookieConsentLabel")}
       className="fixed inset-x-3 bottom-3 z-[60] rounded-3xl border border-border bg-background p-5 shadow-2xl sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-lg sm:p-6"
     >
-      <p className="text-sm font-semibold">Kami menggunakan cookies</p>
+      <p className="text-sm font-semibold">{translate(locale, "cookieTitle")}</p>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        Cookies esensial membantu website bekerja dengan baik dan menyimpan
-        pilihanmu. Saat ini kami tidak mengaktifkan cookie iklan atau analitik
-        pihak ketiga.
+        {translate(locale, "cookieDescription")}
       </p>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
-        Baca{" "}
+        {translate(locale, "cookieDetailsPrefix")}{" "}
         <Link href="/ketentuan-cookies" className="font-medium text-primary hover:underline">
-          ketentuan cookies
+          {locale === "id" ? "ketentuan cookies" : "cookie terms"}
         </Link>{" "}
-        untuk detail penggunaan dan pengaturan.
+        {translate(locale, "cookieDetailsSuffix")}
       </p>
       <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" onClick={() => saveConsent("necessary")}>
-          Hanya yang diperlukan
+          {translate(locale, "cookieNecessary")}
         </Button>
         <Button type="button" onClick={() => saveConsent("all")}>
-          Terima semua
+          {translate(locale, "cookieAcceptAll")}
         </Button>
       </div>
     </aside>

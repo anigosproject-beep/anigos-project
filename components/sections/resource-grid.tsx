@@ -7,28 +7,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "cn"
 import { Reveal } from "@/components/motion"
 import { ScrollFloat } from "@/components/scroll-motion"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 const resources = [
   {
-    title: "Energi Berkelanjutan",
-    description:
-      "Mengenal peran B40 Biosolar dan dukungan Petro Anigos terhadap energi berbasis nabati.",
+    title: "resourceEnergyTitle",
+    description: "resourceEnergyDescription",
     href: "/keberlanjutan/energi-berkelanjutan",
     image: "/images/resources/resource-energy.svg",
     alt: "Visual energi berkelanjutan",
   },
   {
-    title: "Keselamatan Operasional",
-    description:
-      "Menempatkan keamanan, ketepatan waktu, dan tanggung jawab sebagai bagian dari layanan distribusi.",
+    title: "resourceSafetyTitle",
+    description: "resourceSafetyDescription",
     href: "/keberlanjutan/keselamatan-operasional",
     image: "/images/resources/resource-safety.svg",
     alt: "Visual keselamatan operasional",
   },
   {
-    title: "Publikasi",
-    description:
-      "Ruang untuk menyampaikan informasi, gagasan, dan materi publikasi Petro Anigos.",
+    title: "resourcePublicationTitle",
+    description: "resourcePublicationDescription",
     href: "/artikel/publikasi",
     image: "/images/resources/resource-publication.svg",
     alt: "Visual publikasi Petro Anigos",
@@ -36,6 +35,8 @@ const resources = [
 ] as const
 
 export function ResourceGrid() {
+  const { locale } = useLocale()
+
   return (
     <section className="border-b border-border bg-background py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -62,7 +63,7 @@ export function ResourceGrid() {
                   <Card className="h-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
                     <CardHeader className="gap-3">
                       <CardTitle className="flex items-center justify-between gap-4 text-xl">
-                        {resource.title}
+                        {translate(locale, resource.title)}
                         <ArrowUpRight
                           className={cn(
                             "size-5 shrink-0 text-muted-foreground transition-transform",
@@ -73,7 +74,7 @@ export function ResourceGrid() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm leading-6 text-muted-foreground">
-                        {resource.description}
+                        {translate(locale, resource.description)}
                       </p>
                     </CardContent>
                   </Card>

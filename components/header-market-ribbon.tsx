@@ -10,8 +10,10 @@ import {
   TrendingUp,
 } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { useEffect, useState } from "react"
+import { useLocale } from "@/components/locale-provider"
+import { translate, translateWeatherCondition } from "@/lib/i18n"
 
 type HeaderMarketRibbonProps = {
   isScrolled: boolean
@@ -33,7 +35,9 @@ const marketSnapshots = [
 ]
 
 export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
+  const { locale } = useLocale()
   const [weatherIndex, setWeatherIndex] = useState(0)
+  const prefersReducedMotion = useReducedMotion()
   const weather = weatherCities[weatherIndex]
   const WeatherIcon = weather.icon
   const ribbonLabelClass = isScrolled
@@ -44,12 +48,14 @@ export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
     : "text-background/95 group-hover:text-background"
 
   useEffect(() => {
+    if (prefersReducedMotion) return
+
     const interval = window.setInterval(() => {
       setWeatherIndex((index) => (index + 1) % weatherCities.length)
     }, 4500)
 
     return () => window.clearInterval(interval)
-  }, [])
+  }, [prefersReducedMotion])
 
   return (
     <div
@@ -76,27 +82,31 @@ export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
                 rel="noreferrer"
                 className="hidden lg:inline hover:underline"
               >
-                Cuaca BMKG
+                {translate(locale, "weatherBmkg")}
               </Link>
-              <span className="sm:hidden">Cuaca</span>
+              <span className="sm:hidden">{translate(locale, "weather")}</span>
             </div>
             <div className="relative min-w-0 flex-1 overflow-hidden">
-              <motion.div
-                key={weather.city}
-                className={`flex items-center gap-2 whitespace-nowrap ${ribbonValueClass} transition-colors`}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -14 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <WeatherIcon className={`size-3.5 ${weather.tone}`} />
-                <span className="flex min-w-0 items-center gap-1 font-semibold">
-                  <MapPin className="size-3 opacity-60" />
-                  <span className="whitespace-nowrap">{weather.city}</span>
-                </span>
-                <span className="shrink-0 font-semibold">{weather.temperature}</span>
-                <span className="hidden opacity-65 sm:inline">{weather.condition}</span>
-              </motion.div>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={weather.city}
+                  className={`flex items-center gap-2 whitespace-nowrap ${ribbonValueClass} transition-colors`}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: -14 }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <WeatherIcon className={`size-3.5 ${weather.tone}`} />
+                  <span className="flex min-w-0 items-center gap-1 font-semibold">
+                    <MapPin className="size-3 opacity-60" />
+                    <span className="whitespace-nowrap">{weather.city}</span>
+                  </span>
+                  <span className="shrink-0 font-semibold">{weather.temperature}</span>
+                  <span className="hidden opacity-65 sm:inline">
+                    {translateWeatherCondition(locale, weather.condition)}
+                  </span>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -113,7 +123,7 @@ export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
                 rel="noreferrer"
                 className="hidden sm:inline hover:underline"
               >
-                IDX / Migas · demo
+                {translate(locale, "marketDemo")}
               </Link>
               <span className="sm:hidden">IDX</span>
             </div>
@@ -126,8 +136,12 @@ export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
             >
               <motion.div
                 className="flex w-max items-center gap-8"
-                animate={{ x: ["-50%", "0%"] }}
-                transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+                animate={prefersReducedMotion ? undefined : { x: ["-50%", "0%"] }}
+                transition={
+                  prefersReducedMotion
+                    ? undefined
+                    : { duration: 22, repeat: Infinity, ease: "linear" }
+                }
               >
                 {[...marketSnapshots, ...marketSnapshots].map((market, index) => (
                   <div

@@ -35,23 +35,25 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 const volumePresets = [5000, 8000, 10000, 16000, 24000, 30000]
 const scheduleOptions = [
   {
     value: "Terjadwal",
-    label: "Terjadwal",
-    description: "Memiliki target tanggal penerimaan.",
+    label: "scheduled",
+    description: "scheduledDescription",
   },
   {
     value: "Berkala",
-    label: "Berkala",
-    description: "Kebutuhan berulang yang perlu dibahas.",
+    label: "recurring",
+    description: "recurringDescription",
   },
   {
     value: "Sesuai kebutuhan",
-    label: "Sesuai kebutuhan",
-    description: "Waktu pengiriman dibahas kemudian.",
+    label: "asNeeded",
+    description: "asNeededDescription",
   },
 ] as const
 
@@ -96,6 +98,7 @@ const initialForm = {
 }
 
 export default function AjukanPenawaranPage() {
+  const { locale } = useLocale()
   const [step, setStep] = useState(1)
   const [form, setForm] = useState(initialForm)
   const [pbbkbRate, setPbbkbRate] = useState("")
@@ -148,13 +151,13 @@ export default function AjukanPenawaranPage() {
   return (
     <main>
       <PageHero
-        eyebrow="Produk / Penawaran"
-        title="Ajukan kebutuhan BBM industri Anda."
-        description="Lengkapi informasi awal agar tim Petro Anigos dapat memahami kebutuhan produk, volume, lokasi, dan moda distribusi yang diperlukan."
+        eyebrow={translate(locale, "offerFormEyebrow")}
+        title={translate(locale, "offerFormTitle")}
+        description={translate(locale, "offerFormDescription")}
         image="/images/page-hero/tentang-kami.webp"
         breadcrumbs={[
-          { label: "Produk", href: "/produk/kenali-produk" },
-          { label: "Penawaran", href: "/produk/penawaran" },
+          { label: translate(locale, "products"), href: "/produk/kenali-produk" },
+          { label: translate(locale, "offer"), href: "/produk/penawaran" },
         ]}
       />
 
@@ -164,19 +167,17 @@ export default function AjukanPenawaranPage() {
             <SectionHeading
               level={3}
               className="gap-2"
-              eyebrow={`Langkah ${step} dari 2`}
+              eyebrow={`${translate(locale, "stepLabel")} ${step} ${translate(locale, "ofLabel")} 2`}
               title={
                 <span className="text-2xl leading-tight sm:text-3xl">
                   {step === 1
-                    ? "Konfigurasi kebutuhan Anda."
-                    : "Lengkapi detail pemohon."}
+                    ? translate(locale, "configureNeeds")
+                    : translate(locale, "applicantDetails")}
                 </span>
               }
               description={
                 <span className="text-base leading-6 sm:text-lg">
-                  Form ini hanya menyiapkan informasi awal. Harga, minimum
-                  order, pembayaran, dan ketentuan komersial akan dikonfirmasi
-                  melalui proses penawaran.
+                  {translate(locale, "offerFormNotice")}
                 </span>
               }
             />
@@ -186,7 +187,7 @@ export default function AjukanPenawaranPage() {
                 <FieldSet>
                   <FieldGroup>
                     <Field>
-                      <FieldLabel>Jenis bahan bakar</FieldLabel>
+                      <FieldLabel>{translate(locale, "fuelType")}</FieldLabel>
                       <FieldContent>
                         <RadioGroup
                           value={form.product}
@@ -199,7 +200,12 @@ export default function AjukanPenawaranPage() {
                               <span>
                                 <span className="block text-sm font-medium">{product}</span>
                                 <span className="mt-1 block text-xs leading-5 text-muted-foreground">
-                                  {product === "B40 Biosolar" ? "40% Biodiesel + 60% Solar/HSD" : "Bahan bakar minyak jenis solar"}
+                                  {translate(
+                                    locale,
+                                    product === "B40 Biosolar"
+                                      ? "b40FuelDescription"
+                                      : "dieselFuelDescription"
+                                  )}
                                 </span>
                               </span>
                             </label>
@@ -208,18 +214,18 @@ export default function AjukanPenawaranPage() {
                       </FieldContent>
                     </Field>
                     <Field>
-                      <FieldLabel>Volume kebutuhan (liter)</FieldLabel>
+                      <FieldLabel>{translate(locale, "requiredVolume")}</FieldLabel>
                       <FieldContent>
                         <div className="flex items-center justify-between gap-4">
                           <span className="text-2xl font-semibold">
                             {Number(form.volume || 0).toLocaleString("id-ID")} L
                           </span>
                           <span className="text-sm text-muted-foreground">
-                            1.000–30.000 L
+                            {translate(locale, "volumeRange")}
                           </span>
                         </div>
                         <Slider
-                          aria-label="Volume kebutuhan dalam liter"
+                          aria-label={translate(locale, "volumeSliderLabel")}
                           min={1000}
                           max={30000}
                           step={1000}
@@ -233,8 +239,7 @@ export default function AjukanPenawaranPage() {
                           className="mt-4"
                         />
                         <FieldDescription>
-                          Geser untuk memilih estimasi volume. Preset di bawah
-                          mengikuti variasi kapasitas armada yang tersedia.
+                          {translate(locale, "volumeSelectionDescription")}
                         </FieldDescription>
                         <div className="flex flex-wrap gap-2 pt-2">
                           {volumePresets.map((volume) => (
@@ -255,7 +260,7 @@ export default function AjukanPenawaranPage() {
                     </Field>
                     <div className="grid gap-6 sm:grid-cols-2">
                       <Field>
-                        <FieldLabel htmlFor="region">Wilayah pengiriman</FieldLabel>
+                        <FieldLabel htmlFor="region">{translate(locale, "deliveryRegion")}</FieldLabel>
                         <FieldContent>
                           <Select
                             value={form.region}
@@ -279,7 +284,7 @@ export default function AjukanPenawaranPage() {
                         </FieldContent>
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="schedule">Jadwal pengiriman</FieldLabel>
+                        <FieldLabel htmlFor="schedule">{translate(locale, "deliverySchedule")}</FieldLabel>
                         <FieldContent>
                           <Select
                             value={form.schedule}
@@ -296,9 +301,9 @@ export default function AjukanPenawaranPage() {
                                   className="rounded-xl px-3 py-2 leading-5"
                                 >
                                   <span className="flex min-w-0 flex-col items-start gap-0.5">
-                                    <span>{option.label}</span>
+                                    <span>{translate(locale, option.label)}</span>
                                     <span className="text-[11px] font-normal leading-4 text-muted-foreground">
-                                      {option.description}
+                                      {translate(locale, option.description)}
                                     </span>
                                   </span>
                                 </SelectItem>
@@ -315,11 +320,11 @@ export default function AjukanPenawaranPage() {
                   <FieldGroup>
                     <div className="grid gap-6 sm:grid-cols-2">
                       <Field>
-                        <FieldLabel htmlFor="company">Nama perusahaan</FieldLabel>
+                        <FieldLabel htmlFor="company">{translate(locale, "companyName")}</FieldLabel>
                         <FieldContent><Input id="company" value={form.company} onChange={(event) => update("company", event.target.value)} required /></FieldContent>
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="contact">Nama narahubung</FieldLabel>
+                        <FieldLabel htmlFor="contact">{translate(locale, "contactName")}</FieldLabel>
                         <FieldContent><Input id="contact" value={form.contact} onChange={(event) => update("contact", event.target.value)} required /></FieldContent>
                       </Field>
                     </div>
@@ -329,17 +334,17 @@ export default function AjukanPenawaranPage() {
                         <FieldContent><Input id="email" type="email" value={form.email} onChange={(event) => update("email", event.target.value)} required /></FieldContent>
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="phone">Nomor telepon</FieldLabel>
+                        <FieldLabel htmlFor="phone">{translate(locale, "phoneNumber")}</FieldLabel>
                         <FieldContent><Input id="phone" type="tel" value={form.phone} onChange={(event) => update("phone", event.target.value)} required /></FieldContent>
                       </Field>
                     </div>
                     <Field>
-                      <FieldLabel htmlFor="address">Alamat titik bongkar</FieldLabel>
+                      <FieldLabel htmlFor="address">{translate(locale, "unloadingAddress")}</FieldLabel>
                       <FieldContent><Input id="address" value={form.address} onChange={(event) => update("address", event.target.value)} required /></FieldContent>
                     </Field>
                     {form.schedule === "Terjadwal" ? (
                       <Field>
-                        <FieldLabel>Tanggal penerimaan yang diharapkan</FieldLabel>
+                        <FieldLabel>{translate(locale, "expectedReceivingDate")}</FieldLabel>
                         <FieldContent>
                           <Popover>
                             <PopoverTrigger
@@ -355,7 +360,7 @@ export default function AjukanPenawaranPage() {
                             >
                               {deliveryDate
                                 ? format(deliveryDate, "dd MMMM yyyy")
-                                : "Pilih tanggal penerimaan"}
+                                : translate(locale, "chooseReceivingDate")}
                               <CalendarDays className="size-4 text-muted-foreground" />
                             </PopoverTrigger>
                             <PopoverContent align="start" className="w-auto p-0">
@@ -371,8 +376,7 @@ export default function AjukanPenawaranPage() {
                             <span className="flex items-start gap-2">
                               <CircleAlert className="mt-0.5 size-3.5 shrink-0" />
                               <span>
-                                Tanggal ini menjadi acuan awal dan tetap dikonfirmasi
-                                bersama tim Petro Anigos.
+                                {translate(locale, "dateConfirmationNote")}
                               </span>
                             </span>
                           </FieldDescription>
@@ -380,10 +384,10 @@ export default function AjukanPenawaranPage() {
                       </Field>
                     ) : null}
                     <Field>
-                      <FieldLabel htmlFor="notes">Catatan kebutuhan</FieldLabel>
+                      <FieldLabel htmlFor="notes">{translate(locale, "requirementNotes")}</FieldLabel>
                       <FieldContent>
                         <Textarea id="notes" rows={5} value={form.notes} onChange={(event) => update("notes", event.target.value)} />
-                        <FieldDescription>Sertakan frekuensi, kebutuhan khusus, atau informasi distribusi lainnya.</FieldDescription>
+                        <FieldDescription>{translate(locale, "requirementNotesDescription")}</FieldDescription>
                       </FieldContent>
                     </Field>
                   </FieldGroup>
@@ -392,16 +396,16 @@ export default function AjukanPenawaranPage() {
               <div className="mt-8 flex flex-wrap justify-between gap-3 border-t border-border pt-6">
                 {step === 2 ? (
                   <button type="button" onClick={() => setStep(1)} className={buttonVariants({ variant: "outline" })}>
-                    <ArrowLeft data-icon="inline-start" /> Kembali
+                    <ArrowLeft data-icon="inline-start" /> {translate(locale, "back")}
                   </button>
                 ) : <span />}
                 {step === 1 ? (
                   <button type="button" onClick={() => setStep(2)} className={buttonVariants()}>
-                    Lanjut ke detail pemohon <ArrowRight data-icon="inline-end" />
+                    {translate(locale, "continueApplicantDetails")} <ArrowRight data-icon="inline-end" />
                   </button>
                 ) : (
                   <button type="submit" className={buttonVariants()}>
-                    Siapkan email penawaran
+                    {translate(locale, "prepareOfferEmail")}
                   </button>
                 )}
               </div>
@@ -415,45 +419,45 @@ export default function AjukanPenawaranPage() {
                   <ReceiptText className="size-4" />
                 </div>
                 <div className="min-w-0">
-                  <CardTitle className="truncate text-sm">Estimasi kebutuhan</CardTitle>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">Ringkasan sementara</p>
+                  <CardTitle className="truncate text-sm">{translate(locale, "requirementEstimate")}</CardTitle>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">{translate(locale, "temporarySummary")}</p>
                 </div>
               </div>
               <span className="shrink-0 rounded-full border border-border bg-background/70 px-2 py-1 text-[10px] font-medium text-muted-foreground">
-                Draft
+                {translate(locale, "draft")}
               </span>
             </CardHeader>
             <CardContent className="space-y-4 p-5 text-xs">
               <div className="space-y-2.5">
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Produk</span>
+                  <span className="text-muted-foreground">{translate(locale, "products")}</span>
                   <span className="text-right font-medium">{form.product}</span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Volume</span>
+                  <span className="text-muted-foreground">{translate(locale, "requiredVolume")}</span>
                   <span className="font-medium">{volume.toLocaleString("id-ID")} L</span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Wilayah</span>
-                  <span className="text-right font-medium">{form.region || "Belum diisi"}</span>
+                  <span className="text-muted-foreground">{translate(locale, "region")}</span>
+                  <span className="text-right font-medium">{form.region || translate(locale, "notFilled")}</span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Jadwal</span>
-                  <span className="text-right font-medium">{form.schedule || "Belum diisi"}</span>
+                  <span className="text-muted-foreground">{translate(locale, "schedule")}</span>
+                  <span className="text-right font-medium">{form.schedule || translate(locale, "notFilled")}</span>
                 </div>
               </div>
               <Separator />
               <div className="space-y-4">
                 <div>
-                  <p className="font-medium">Estimasi pajak BBM</p>
+                  <p className="font-medium">{translate(locale, "fuelTaxEstimate")}</p>
                   <Text variant="small" className="mt-1 text-xs">
-                    Pilih area layanan dan tarif PBBKB untuk simulasi sementara.
+                    {translate(locale, "fuelTaxDescription")}
                   </Text>
                 </div>
                 <div className="space-y-3">
                   <div className="space-y-1.5">
                     <label htmlFor="coverage-area" className="text-[11px] font-medium">
-                      Area layanan
+                      {translate(locale, "serviceArea")}
                     </label>
                     <Select
                       value={form.region}
@@ -479,16 +483,16 @@ export default function AjukanPenawaranPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-2.5">
                     <div>
-                      <p className="text-[11px] font-medium">Harga dasar / liter</p>
+                      <p className="text-[11px] font-medium">{translate(locale, "basePricePerLiter")}</p>
                       <p className="text-[10px] text-muted-foreground">
-                        {form.product} · sementara
+                        {form.product} · {translate(locale, "temporary")}
                       </p>
                     </div>
                     <span className="font-medium">{formatCurrency(basePrice)}</span>
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="pbbkb-rate" className="text-[11px] font-medium">
-                      Tarif PBBKB {selectedCoverage ? `(${selectedCoverage.province})` : ""}
+                      {translate(locale, "pbbkbRate")} {selectedCoverage ? `(${selectedCoverage.province})` : ""}
                     </label>
                     <Input
                       id="pbbkb-rate"
@@ -496,7 +500,7 @@ export default function AjukanPenawaranPage() {
                       min="0"
                       max="100"
                       step="0.1"
-                      placeholder="Sesuai provinsi"
+                      placeholder={translate(locale, "accordingToProvince")}
                       value={pbbkbRate}
                       onChange={(event) => setPbbkbRate(event.target.value)}
                     />
@@ -504,31 +508,30 @@ export default function AjukanPenawaranPage() {
                 </div>
                 <div className="rounded-xl bg-muted/60 p-3 text-xs">
                   <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">Dasar harga</span>
+                    <span className="text-muted-foreground">{translate(locale, "priceBasis")}</span>
                     <span>{formatCurrency(subtotal)}</span>
                   </div>
                   <div className="mt-2 flex justify-between gap-4">
-                    <span className="text-muted-foreground">Estimasi PBBKB</span>
+                    <span className="text-muted-foreground">{translate(locale, "estimatedPbbkb")}</span>
                     <span>{formatCurrency(estimatedPbbkb)}</span>
                   </div>
                   <Separator className="my-3" />
                   <div className="flex justify-between gap-4 font-semibold">
-                    <span>Estimasi total</span>
+                    <span>{translate(locale, "estimatedTotal")}</span>
                     <span>{formatCurrency(estimatedTotal)}</span>
                   </div>
                 </div>
                 <Text variant="small" className="flex items-start gap-2 text-[11px] leading-4">
                   <CircleAlert className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
                   <span>
-                  PBBKB mengikuti ketentuan provinsi terpilih dan perlu
-                  dikonfirmasi sesuai penggunaan BBM. Simulasi ini bukan tagihan resmi.
+                  {translate(locale, "taxSimulationNote")}
                   </span>
                 </Text>
               </div>
               <Separator />
-              <Text variant="body-muted">Setelah tombol dikirim, aplikasi email akan dibuka dengan ringkasan kebutuhan yang sudah disiapkan.</Text>
+              <Text variant="body-muted">{translate(locale, "emailOpeningNote")}</Text>
               <Link href="/produk/kenali-produk" className={buttonVariants({ variant: "outline", className: "w-full" })}>
-                Kembali ke Kenali Produk
+                {translate(locale, "backToProducts")}
               </Link>
             </CardContent>
           </Card>
@@ -537,9 +540,9 @@ export default function AjukanPenawaranPage() {
 
       <section className="bg-foreground px-6 py-20 text-background lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <Heading level={2} className="text-background">Butuh membahas kebutuhan secara langsung?</Heading>
+          <Heading level={2} className="text-background">{translate(locale, "directDiscussionTitle")}</Heading>
           <a href="mailto:anigospetro@gmail.com" className={buttonVariants({ variant: "outline", className: "mt-6 border-background/30 text-background hover:bg-background/10 hover:text-background" })}>
-            Email Petro Anigos <ArrowRight data-icon="inline-end" />
+            {translate(locale, "emailPetroAnigos")} <ArrowRight data-icon="inline-end" />
           </a>
         </div>
       </section>
