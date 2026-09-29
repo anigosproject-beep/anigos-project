@@ -1,15 +1,24 @@
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, CircleAlert } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
-import { PageHero } from "@/components/sections"
+import { TranslatedPageHero } from "@/components/sections/translated-page-hero"
 import { Heading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getSanityTeam, type TeamCategory, type TeamMember } from "@/lib/sanity-team"
+import { TabsContent as StructureTabsContent } from "@/components/structure-sidebar"
+import { StructureSidebar } from "@/components/structure-sidebar"
+import { TeamDivisionSelector } from "@/components/team-division-selector"
+import { LeadershipGallery } from "@/components/commissioner-gallery"
+import {
+  getSanityTeam,
+  getSanityTeamDivisions,
+  type TeamCategory,
+  type TeamMember,
+} from "@/lib/sanity-team"
 
 type MockPerson = {
   initials: string
@@ -17,6 +26,11 @@ type MockPerson = {
   name: string
   role: string
   description: string
+  gallery?: Array<{
+    src: string
+    alt: string
+    caption: string
+  }>
 }
 
 const mockPeople = {
@@ -74,48 +88,101 @@ const mockPeople = {
   ],
 } satisfies Record<string, readonly MockPerson[]>
 
-function PersonCards({
-  people,
+function LeadershipProfile({
+  person,
   isFallback,
+  kind,
 }: {
-  people: readonly MockPerson[]
+  person: MockPerson
   isFallback: boolean
+  kind: "commissioner" | "director"
 }) {
+  const isCommissioner = kind === "commissioner"
+  const biography = isCommissioner
+    ? [
+        `Dalam perannya sebagai Komisaris, ${person.name} memberikan pengawasan terhadap arah strategis dan tata kelola perusahaan. Pengalaman dan pandangannya membantu perusahaan menjaga keseimbangan antara kebutuhan operasional sehari-hari dan tujuan pertumbuhan jangka panjang.`,
+        "Peran tersebut mencakup perhatian terhadap kualitas pengambilan keputusan, penerapan prinsip kehati-hatian, serta kepatuhan terhadap kebijakan dan ketentuan yang berlaku. Setiap masukan diberikan untuk membantu perusahaan melihat tantangan dari berbagai sudut pandang dan menentukan prioritas secara lebih terukur.",
+        `${person.name} mendorong komunikasi yang terbuka antara unsur pimpinan dan tim operasional. Pendekatan ini mendukung budaya kerja yang saling menghargai, disiplin dalam menjalankan tanggung jawab, dan konsisten dalam memberikan layanan kepada pelanggan serta mitra usaha.`,
+        "Perhatian terhadap keberlanjutan usaha juga menjadi bagian penting dari tanggung jawab tersebut. Perusahaan diarahkan untuk terus memperkuat keandalan layanan, meningkatkan efisiensi, dan membangun hubungan jangka panjang dengan para pemangku kepentingan secara transparan dan profesional.",
+        "Dengan prinsip kerja yang berorientasi pada integritas, akuntabilitas, dan perbaikan berkelanjutan, peran Komisaris menjadi bagian penting dalam menjaga agar setiap langkah perusahaan memiliki dasar yang kuat dan memberikan nilai bagi perkembangan PT. Anigos Jaya Perkasa.",
+      ]
+    : [
+        `Dalam perannya sebagai ${person.role}, ${person.name} memimpin pelaksanaan strategi dan pengelolaan perusahaan sesuai bidang tanggung jawabnya.`,
+        `${person.name} mengoordinasikan prioritas kerja, sumber daya, dan kolaborasi antarbagian untuk mendukung kegiatan perusahaan yang efektif serta layanan yang andal.`,
+        "Pengambilan keputusan dilakukan dengan memperhatikan tata kelola, kepatuhan terhadap ketentuan yang berlaku, dan kebutuhan pelanggan serta mitra usaha.",
+        "Direksi juga mendorong evaluasi kinerja dan perbaikan berkelanjutan agar perusahaan dapat menjaga kualitas operasional sekaligus mengembangkan usaha secara bertanggung jawab.",
+        "Melalui kepemimpinan yang profesional dan akuntabel, Direksi berperan memastikan arah perusahaan terlaksana dengan konsisten untuk mendukung perkembangan PT. Anigos Jaya Perkasa.",
+      ]
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {people.map((person) => (
-        <div
-          key={person.name}
-          className="rounded-2xl border border-border bg-background p-5"
-        >
-          <div className="flex gap-4">
+    <article className="max-w-5xl">
+      <header className="max-w-3xl border-b border-border pb-8">
+        <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">
+          Profil Biografi
+        </p>
+      </header>
+
+      <div className="mt-10 grid gap-x-10 gap-y-12 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-x-14 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-x-16">
+        <figure>
+          <div className="aspect-[4/3] overflow-hidden bg-muted">
             <Image
               src={person.image}
-              alt={`Foto placeholder ${person.name}`}
-              width={96}
-              height={120}
-              className="h-24 w-20 shrink-0 rounded-xl object-cover"
+              alt={`Foto ${person.name}`}
+              width={576}
+              height={768}
+              className="size-full object-cover object-center"
             />
-            <div>
-              <p className="font-medium">{person.name}</p>
-              <p className="mt-1 text-sm text-primary">{person.role}</p>
-              <p className="mt-3 text-xs text-muted-foreground">
-                Profil ilustrasi
-              </p>
-            </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">
-            {person.description}
+          <figcaption className="mt-3 text-xs leading-5 text-muted-foreground">
+            {isFallback
+              ? "Foto profil akan diperbarui setelah data resmi tersedia."
+              : isCommissioner
+                ? "Profil resmi Dewan Komisaris PT. Anigos Jaya Perkasa."
+                : "Profil resmi Direksi PT. Anigos Jaya Perkasa."}
+          </figcaption>
+        </figure>
+
+        <div className="flex max-w-2xl flex-col justify-start">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">
+            {person.name}
+          </h2>
+          <p className="mt-3 text-base text-primary">{person.role}</p>
+          <blockquote className="mt-10 border-l-2 border-primary/40 pl-5 text-xl leading-9 font-medium tracking-tight text-foreground sm:text-2xl sm:leading-10">
+            “{person.description}”
+          </blockquote>
+          <p className="mt-3 pl-5 text-xs text-muted-foreground">
+            Kutipan profil
           </p>
-          <Badge variant="outline" className="mt-4">
-            <span className="inline-flex items-center gap-1.5">
-              <CircleAlert className="size-3" />
-              {isFallback ? "Data fallback" : "Data CMS"}
-            </span>
-          </Badge>
         </div>
-      ))}
-    </div>
+
+        <div className="max-w-none md:col-span-2">
+          <div className="space-y-5 [text-align:justify] text-base leading-8 text-muted-foreground">
+            {biography.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+          <div className="mt-10 border-t border-border pt-5">
+            <p className="text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+              {isCommissioner ? "Mandat" : "Tanggung Jawab"}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-foreground">
+              {isCommissioner
+                ? "Tata kelola, pengawasan, dan akuntabilitas perusahaan"
+                : "Kepemimpinan, pengelolaan, dan pelaksanaan strategi perusahaan"}
+            </p>
+          </div>
+        </div>
+
+        <div className="md:col-span-2">
+          <LeadershipGallery
+            personName={person.name}
+            personRole={person.role}
+            profileImage={person.image}
+            gallery={person.gallery}
+          />
+        </div>
+      </div>
+    </article>
   )
 }
 
@@ -132,115 +199,113 @@ export const revalidate = 60
 const toMockPerson = (person: TeamMember): MockPerson => person
 
 export default async function StrukturPerusahaanPage() {
-  const sanityPeople = await getSanityTeam()
-  const hasSanityPeople = teamCategories.some((category) => sanityPeople[category].length > 0)
+  const [sanityPeople, sanityDivisions] = await Promise.all([
+    getSanityTeam(),
+    getSanityTeamDivisions(),
+  ])
+
+  const hasSanityPeople = teamCategories.some(
+    (category) => sanityPeople[category].length > 0
+  )
   const people = hasSanityPeople
     ? sanityPeople
-    : Object.fromEntries(
-        teamCategories.map((category) => [category, mockPeople[category]]),
-      ) as typeof mockPeople
+    : (Object.fromEntries(
+        teamCategories.map((category) => [category, mockPeople[category]])
+      ) as typeof mockPeople)
   const isFallback = !hasSanityPeople
+  const divisionOptions =
+    sanityDivisions.length > 0
+      ? sanityDivisions.map((group) => ({
+          ...group,
+          description:
+            "Daftar anggota dari divisi ini sesuai data yang dikelola di Sanity.",
+        }))
+      : [
+          {
+            name: "operasional",
+            description:
+              "Kantor pusat di Bekasi dan titik jaringan di Palembang, Medan, Kalimantan, serta Sulawesi.",
+            members: people.operasional,
+          },
+          {
+            name: "armada",
+            description:
+              "Fungsi armada dan logistik mendukung distribusi produk energi ke berbagai wilayah operasional.",
+            members: people.armada,
+          },
+          {
+            name: "kemitraan",
+            description:
+              "Kemitraan dan layanan menjadi bagian dari pengelolaan hubungan dengan pelanggan serta mitra operasional.",
+            members: people.kemitraan,
+          },
+        ]
 
   return (
     <main>
-      <PageHero
-        eyebrow="Tentang Kami"
-        title="Struktur Perusahaan"
-        description="Mengenal kerangka tata kelola, kepemimpinan, dan fungsi kerja yang mendukung operasional PT. Anigos Jaya Perkasa."
+      <TranslatedPageHero
+        eyebrowKey="companyStructureEyebrow"
+        titleKey="companyStructureTitle"
+        descriptionKey="companyStructureDescription"
         image="/images/page-hero/tentang-kami.webp"
-        breadcrumbs={[{ label: "Tentang Kami", href: "/tentang-kami/profil-perusahaan" }]}
+        pageKey="struktur-perusahaan"
+        breadcrumbKey="about"
+        breadcrumbHref="/tentang-kami/profil-perusahaan"
       />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Tabs
-            defaultValue="komisaris"
-            orientation="vertical"
-            className="grid gap-12 lg:grid-cols-[20%_minmax(0,1fr)] lg:gap-16"
-          >
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <p className="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                Struktur Organisasi
-              </p>
-              <TabsList className="mt-8 flex w-full flex-col items-stretch">
-                {[
-                  ["komisaris", "Komisaris"],
-                  ["direksi", "Direksi"],
-                  ["tim-divisi", "Tim dan Divisi"],
-                ].map(([value, label]) => (
-                  <TabsTrigger
-                    key={value}
-                    value={value}
-                    className="w-full justify-start text-left"
+          <StructureSidebar>
+            <StructureTabsContent value="komisaris">
+              <LeadershipProfile
+                person={toMockPerson(
+                  people.komisaris[0] ?? mockPeople.komisaris[0]
+                )}
+                isFallback={isFallback}
+                kind="commissioner"
+              />
+            </StructureTabsContent>
+            <StructureTabsContent value="direksi">
+              {people.direksi.length > 0 ? (
+                <Tabs
+                  defaultValue="director-0"
+                  orientation="horizontal"
+                  className="gap-8"
+                >
+                  <TabsList
+                    variant="line"
+                    className="w-full flex-row flex-nowrap justify-start overflow-x-auto rounded-none border-b border-border p-0"
                   >
-                    {label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-
-            <div>
-              <TabsContent value="komisaris">
-              <Card>
-                <CardHeader>
-                  <Badge variant="secondary" className="w-fit">
-                    Komisaris
-                  </Badge>
-                  <CardTitle className="mt-4 text-2xl">
-                    Pengawasan dan tata kelola perusahaan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-5">
-                  <Text variant="body-muted">
-                    Struktur nama dan jabatan Komisaris belum tercantum dalam
-                    company profile yang menjadi referensi website.
-                  </Text>
-                  <div className="rounded-2xl border border-dashed border-border bg-muted/40 p-5">
-                    <p className="flex items-center gap-2 text-sm font-medium">
-                      <CircleAlert className="size-4 text-muted-foreground" />
-                      Data perlu dilengkapi
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      Nama Komisaris, jabatan, dan informasi profil yang
-                      disetujui untuk dipublikasikan.
-                    </p>
-                  </div>
-                  <PersonCards people={people.komisaris.map(toMockPerson)} isFallback={isFallback} />
-                </CardContent>
-              </Card>
-
-              </TabsContent>
-              <TabsContent value="direksi">
-              <Card>
-                <CardHeader>
-                  <Badge variant="secondary" className="w-fit">
-                    Direksi
-                  </Badge>
-                  <CardTitle className="mt-4 text-2xl">
-                    Kepemimpinan dan pengelolaan usaha
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-5">
-                  <Text variant="body-muted">
-                    Company profile belum memuat nama Direksi, pembagian
-                    tanggung jawab, atau profil pimpinan perusahaan.
-                  </Text>
-                  <div className="rounded-2xl border border-dashed border-border bg-muted/40 p-5">
-                    <p className="flex items-center gap-2 text-sm font-medium">
-                      <CircleAlert className="size-4 text-muted-foreground" />
-                      Data perlu dilengkapi
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      Nama Direktur, jabatan, tanggung jawab, dan foto atau
-                      biografi jika memang akan ditampilkan.
-                    </p>
-                  </div>
-                  <PersonCards people={people.direksi.map(toMockPerson)} isFallback={isFallback} />
-                </CardContent>
-              </Card>
-
-              </TabsContent>
-              <TabsContent value="tim-divisi">
+                    {people.direksi.map((person, index) => (
+                      <TabsTrigger
+                        key={`${person.name}-${index}`}
+                        value={`director-${index}`}
+                        className="h-auto w-auto min-w-max flex-none shrink-0 rounded-none px-4 py-3 text-left"
+                      >
+                        {person.name}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {people.direksi.map((person, index) => (
+                    <TabsContent
+                      key={`${person.name}-${index}`}
+                      value={`director-${index}`}
+                    >
+                      <LeadershipProfile
+                        person={toMockPerson(person)}
+                        isFallback={isFallback}
+                        kind="director"
+                      />
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              ) : (
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Belum ada profil Direksi yang dipublikasikan.
+                </p>
+              )}
+            </StructureTabsContent>
+            <StructureTabsContent value="tim-divisi">
               <Card>
                 <CardHeader>
                   <Badge variant="secondary" className="w-fit">
@@ -256,80 +321,27 @@ export default async function StrukturPerusahaanPage() {
                     jumlah karyawan yang dapat digunakan sebagai struktur
                     publik.
                   </Text>
-                  <Tabs
-                    defaultValue="operasional"
-                    orientation="horizontal"
-                    className="gap-0"
-                  >
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger
-                        value="operasional"
-                        className="w-full text-center"
-                      >
-                        Operasional Distribusi
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="armada"
-                        className="w-full text-center"
-                      >
-                        Armada &amp; Logistik
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="kemitraan"
-                        className="w-full text-center"
-                      >
-                        Kemitraan &amp; Layanan
-                      </TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="operasional" className="mt-6">
-                      <div                       className="rounded-2xl border border-border p-5">
-                        <p className="mt-4 font-medium">Jaringan operasional</p>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                          Kantor pusat di Bekasi dan titik jaringan di Palembang,
-                          Medan, Kalimantan, serta Sulawesi.
-                        </p>
-                        <PersonCards people={people.operasional.map(toMockPerson)} isFallback={isFallback} />
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="armada" className="mt-6">
-                      <div                       className="rounded-2xl border border-border p-5">
-                        <p className="mt-4 font-medium">Armada dan logistik</p>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                          Fungsi armada dan logistik mendukung distribusi produk
-                          energi ke berbagai wilayah operasional.
-                        </p>
-                        <PersonCards people={people.armada.map(toMockPerson)} isFallback={isFallback} />
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="kemitraan" className="mt-6">
-                      <div                       className="rounded-2xl border border-border p-5">
-                        <p className="mt-4 font-medium">Kemitraan dan layanan</p>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                          Kemitraan dan layanan menjadi bagian dari pengelolaan
-                          hubungan dengan pelanggan serta mitra operasional.
-                        </p>
-                        <PersonCards people={people.kemitraan.map(toMockPerson)} isFallback={isFallback} />
-                      </div>
-                    </TabsContent>
-                  </Tabs>
+                  <TeamDivisionSelector
+                    divisions={divisionOptions}
+                    isFallback={isFallback}
+                  />
                 </CardContent>
               </Card>
-              </TabsContent>
-            </div>
-          </Tabs>
+            </StructureTabsContent>
+          </StructureSidebar>
         </div>
       </section>
 
-      <section className="bg-foreground px-6 py-24 text-background lg:px-8 lg:py-32">
+      <section className="bg-background px-6 py-24 text-foreground lg:px-8 lg:py-32">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <Badge variant="outline" className="border-background/30 text-background">
+            <Badge variant="outline" className="border-border text-foreground">
               Struktur dan legalitas
             </Badge>
             <Heading level={2} className="mt-5">
               Kenali dasar hukum dan jaringan operasional kami.
             </Heading>
-            <p className="mt-5 leading-7 text-background/70">
+            <p className="mt-5 leading-7 text-muted-foreground">
               Informasi legalitas dan jangkauan yang tersedia dapat menjadi
               referensi awal mengenai fondasi operasional perusahaan.
             </p>
@@ -338,7 +350,8 @@ export default async function StrukturPerusahaanPage() {
             <Link
               href="/tentang-kami/legalitas"
               className={buttonVariants({
-                className: "bg-background text-foreground hover:bg-background/90",
+                className:
+                  "bg-base-color text-base-color-foreground hover:bg-base-color/90",
               })}
             >
               Lihat Legalitas
@@ -349,14 +362,14 @@ export default async function StrukturPerusahaanPage() {
               className={buttonVariants({
                 variant: "outline",
                 className:
-                  "border-background/30 text-background hover:bg-background/10 hover:text-background",
+                  "border-border text-foreground hover:bg-base-color/10 hover:text-base-color",
               })}
             >
               Lihat Jangkauan
             </Link>
           </div>
         </div>
-        <Separator className="mx-auto mt-12 max-w-7xl bg-background/15" />
+        <Separator className="mx-auto mt-12 max-w-7xl bg-border" />
       </section>
     </main>
   )

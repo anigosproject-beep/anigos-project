@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-09-24T03:47:25.582Z",
+  "mode": "read-only",
+  "strict": false,
+  "changedFiles": [
+    ".env.example",
+    ".gitignore",
+    "README.md",
+    "app/api/career-applications/route.ts",
+    "app/artikel/[slug]/page.tsx",
+    "app/artikel/anigos-news/page.tsx",
+    "app/artikel/landasan-informasi-publik/page.tsx",
+    "app/artikel/page.tsx",
+    "app/artikel/publikasi/page.tsx",
+    "app/globals.css",
+    "app/jangkauan/page.tsx",
+    "app/keberlanjutan/energi-berkelanjutan/page.tsx",
+    "app/keberlanjutan/kemitraan-tata-kelola/page.tsx",
+    "app/keberlanjutan/keselamatan-operasional/page.tsx",
+    "app/keberlanjutan/page.tsx",
+    "app/kebijakan-data/page.tsx",
+    "app/ketentuan-cookies/layout.tsx",
+    "app/ketentuan-cookies/page.tsx",
+    "app/layout.tsx",
+    "app/page.tsx",
+    "app/produk/armada/page.tsx",
+    "app/produk/kenali-produk/page.tsx",
+    "app/produk/penawaran/ajukan/page.tsx",
+    "app/produk/penawaran/page.tsx",
+    "app/tentang-kami/harapan-cita-cita/page.tsx",
+    "app/tentang-kami/karir/lamar/page.tsx",
+    "app/tentang-kami/karir/page.tsx",
+    "app/tentang-kami/kemitraan/page.tsx",
+    "app/tentang-kami/legalitas/page.tsx",
+    "app/tentang-kami/profil-perusahaan/page.tsx",
+    "app/tentang-kami/struktur-perusahaan/page.tsx",
+    "components/career-application-form.tsx",
+    "components/footer.tsx",
+    "components/header-language-select.tsx",
+    "components/header-market-ribbon.tsx",
+    "components/header.tsx",
+    "components/motion.tsx",
+    "components/navigation-config.ts",
+    "components/sections/article-showcase.tsx",
+    "components/sections/corporate-topic-page.tsx",
+    "components/sections/feature-image-section.tsx",
+    "components/sections/home-hero.tsx",
+    "components/sections/index.ts",
+    "components/sections/page-hero.tsx",
+    "components/sections/partnership-showcase.tsx",
+    "components/sections/product-showcase.tsx",
+    "components/sections/resource-grid.tsx",
+    "components/theme-provider.tsx",
+    "components/ui/breadcrumb.tsx",
+    "components/ui/button.tsx",
+    "components/ui/navigation-menu.tsx",
+    "components/ui/progress.tsx",
+    "components/ui/select.tsx",
+    "components/ui/tabs.tsx",
+    "eslint.config.mjs",
+    "lib/i18n.ts",
+    "lib/newsroom-data.ts",
+    "lib/sanity-client.ts",
+    "lib/sanity-newsroom.ts",
+    "lib/sanity-team.ts",
+    "next.config.ts",
+    "package-lock.json",
+    "package.json",
+    "studio-anigos-project/package-lock.json",
+    "studio-anigos-project/package.json",
+    "studio-anigos-project/sanity.cli.ts",
+    "studio-anigos-project/sanity.config.ts",
+    "studio-anigos-project/schemaTypes/index.ts",
+    "studio-anigos-project/schemaTypes/mediaLibrary.ts",
+    "studio-anigos-project/schemaTypes/newsroomArticle.ts",
+    "studio-anigos-project/schemaTypes/teamMember.ts",
+    "tsconfig.json"
+  ],
+  "impactedSurfaces": [
+    {
+      "id": "sanity-domain-model",
+      "title": "Sanity domain schema",
+      "risk": "high",
+      "affectedFiles": [
+        "studio-anigos-project/schemaTypes/index.ts"
+      ],
+      "requiredChecks": [
+        "cd studio-anigos-project && npm run build"
+      ]
+    },
+    {
+      "id": "sanity-runtime-contract",
+      "title": "Sanity query and frontend response contract",
+      "risk": "high",
+      "affectedFiles": [
+        "lib/sanity-client.ts"
+      ],
+      "requiredChecks": [
+        "npm run typecheck",
+        "npm run lint",
+        "npm run check:content-contracts"
+      ]
+    },
+    {
+      "id": "partnership-runtime",
+      "title": "Kemitraan page and Draft Mode API",
+      "risk": "high",
+      "affectedFiles": [
+        "app/tentang-kami/kemitraan/page.tsx"
+      ],
+      "requiredChecks": [
+        "npm run typecheck",
+        "npm run lint"
+      ]
+    },
+    {
+      "id": "product-runtime",
+      "title": "Produk and Armada pages",
+      "risk": "high",
+      "affectedFiles": [
+        "app/produk/armada/page.tsx",
+        "app/produk/kenali-produk/page.tsx"
+      ],
+      "requiredChecks": [
+        "npm run typecheck",
+        "npm run lint"
+      ]
+    }
+  ],
+  "missingRequiredFiles": [],
+  "status": "review-required"
+}

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { useReducedMotion } from "framer-motion"
 
 type CountUpProps = {
   value: number
@@ -14,20 +13,24 @@ const numberFormatter = new Intl.NumberFormat("id-ID")
 function CountUp({ value, duration = 1200, className }: CountUpProps) {
   const targetRef = useRef<HTMLSpanElement>(null)
   const [currentValue, setCurrentValue] = useState(0)
-  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     const target = targetRef.current
     if (!target) return
 
-    if (prefersReducedMotion) return
-
     let frameId = 0
     let startTime: number | null = null
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)")
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return
+
+        if (motionPreference.matches) {
+          setCurrentValue(value)
+          observer.disconnect()
+          return
+        }
 
         const animateValue = (timestamp: number) => {
           startTime ??= timestamp
@@ -47,17 +50,29 @@ function CountUp({ value, duration = 1200, className }: CountUpProps) {
       { threshold: 0.35 }
     )
 
+    const handleMotionPreferenceChange = (event: MediaQueryListEvent) => {
+      if (!event.matches) return
+      setCurrentValue(value)
+      observer.disconnect()
+      cancelAnimationFrame(frameId)
+    }
+
+    motionPreference.addEventListener("change", handleMotionPreferenceChange)
     observer.observe(target)
 
     return () => {
       observer.disconnect()
       cancelAnimationFrame(frameId)
+      motionPreference.removeEventListener(
+        "change",
+        handleMotionPreferenceChange
+      )
     }
-  }, [duration, prefersReducedMotion, value])
+  }, [duration, value])
 
   return (
     <span ref={targetRef} className={className} aria-hidden="true">
-      {numberFormatter.format(prefersReducedMotion ? value : currentValue)}
+      {numberFormatter.format(currentValue)}
     </span>
   )
 }

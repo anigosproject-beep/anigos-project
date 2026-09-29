@@ -1,15 +1,18 @@
 import { defineConfig } from "sanity"
 import { structureTool } from "sanity/structure"
-import { visionTool } from "@sanity/vision"
+import { schemaTypes } from "./sanity/schemaTypes"
+import { structure } from "./structure"
 
-import { schemaTypes } from "./schemaTypes"
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID ?? "6zvti7ob"
+const dataset = process.env.SANITY_STUDIO_DATASET ?? "production"
 
 export default defineConfig({
-  name: "default",
-  title: "Anigos Project",
-  projectId: "wm8u3z2o",
-  dataset: "production",
-  plugins: [structureTool(), visionTool()],
+  name: "petro-anigos",
+  title: "Petro Anigos — Content Studio",
+  projectId,
+  dataset,
+  basePath: process.env.SANITY_STUDIO_BASE_PATH ?? "/",
+  plugins: [structureTool({ structure })],
   schema: {
     types: schemaTypes,
   },

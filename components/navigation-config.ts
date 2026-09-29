@@ -1,7 +1,9 @@
+import type {TranslationKey} from "@/lib/i18n"
+
 export type NavigationItem = {
   label: string
   href: string
-  description?: string
+  descriptionKey?: TranslationKey
   children?: NavigationItem[]
 }
 
@@ -10,59 +12,59 @@ export const navigationItems: NavigationItem[] = [
   {
     label: "Tentang Kami",
     href: "/tentang-kami/profil-perusahaan",
-    description: "Mengenal identitas dan cara kami bekerja.",
+    descriptionKey: "navAboutDescription",
     children: [
       {
         label: "Profil Perusahaan",
         href: "/tentang-kami/profil-perusahaan",
-        description: "Identitas, visi, misi, dan nilai perusahaan.",
+        descriptionKey: "navCompanyProfileDescription",
       },
       {
         label: "Harapan & Cita-Cita",
         href: "/tentang-kami/harapan-cita-cita",
-        description: "Arah kontribusi dan cita-cita perusahaan.",
+        descriptionKey: "navHopesDescription",
       },
       {
         label: "Struktur Perusahaan",
         href: "/tentang-kami/struktur-perusahaan",
-        description: "Struktur dan jaringan operasional perusahaan.",
+        descriptionKey: "navStructureDescription",
       },
       {
         label: "Kemitraan",
         href: "/tentang-kami/kemitraan",
-        description: "Mitra strategis yang mendukung layanan kami.",
+        descriptionKey: "navPartnershipDescription",
       },
       {
         label: "Legalitas",
         href: "/tentang-kami/legalitas",
-        description: "Informasi legalitas dan perizinan perusahaan.",
+        descriptionKey: "navLegalityDescription",
       },
       {
         label: "Karir",
         href: "/tentang-kami/karir",
-        description: "Bergabung dan berkembang bersama Petro Anigos.",
+        descriptionKey: "navCareerDescription",
       },
     ],
   },
   {
     label: "Produk",
     href: "/produk/kenali-produk",
-    description: "Solusi BBM untuk kebutuhan industri.",
+    descriptionKey: "navProductsDescription",
     children: [
       {
         label: "Kenali Produk",
         href: "/produk/kenali-produk",
-        description: "Mengenal produk dan spesifikasi BBM.",
+        descriptionKey: "navProductsOverviewDescription",
       },
       {
         label: "Penawaran",
         href: "/produk/penawaran",
-        description: "Ajukan kebutuhan dan dapatkan penawaran.",
+        descriptionKey: "navOfferDescription",
       },
       {
-        label: "Armada",
+        label: "Layanan",
         href: "/produk/armada",
-        description: "Kapabilitas armada dan distribusi kami.",
+        descriptionKey: "navServicesDescription",
       },
     ],
   },
@@ -70,22 +72,22 @@ export const navigationItems: NavigationItem[] = [
   {
     label: "Artikel",
     href: "/artikel/anigos-news",
-    description: "Berita, publikasi, dan landasan informasi Petro Anigos.",
+    descriptionKey: "navArticlesDescription",
     children: [
       {
         label: "Anigos News",
         href: "/artikel/anigos-news",
-        description: "Berita dan kabar terbaru dari Petro Anigos.",
+        descriptionKey: "navNewsDescription",
       },
       {
         label: "Publikasi",
         href: "/artikel/publikasi",
-        description: "Publikasi dan materi informasi perusahaan.",
+        descriptionKey: "navPublicationsDescription",
       },
       {
         label: "Landasan Informasi Publik",
         href: "/artikel/landasan-informasi-publik",
-        description: "Pedoman hukum untuk artikel dan publikasi.",
+        descriptionKey: "navPublicInformationDescription",
       },
     ],
   },
@@ -94,24 +96,24 @@ export const navigationItems: NavigationItem[] = [
     href: "/keberlanjutan",
     children: [
       {
-        label: "Energi Berkelanjutan",
+        label: "CSR",
         href: "/keberlanjutan/energi-berkelanjutan",
-        description: "Peran B40 Biosolar dalam mendukung energi berbasis nabati.",
+        descriptionKey: "navCsrDescription",
       },
       {
         label: "Keselamatan Operasional",
         href: "/keberlanjutan/keselamatan-operasional",
-        description: "Komitmen terhadap distribusi BBM yang aman dan profesional.",
+        descriptionKey: "navSafetyDescription",
       },
       {
         label: "Kemitraan & Tata Kelola",
         href: "/keberlanjutan/kemitraan-tata-kelola",
-        description: "Transparansi, integritas, dan kemitraan yang bertanggung jawab.",
+        descriptionKey: "navGovernanceDescription",
       },
       {
         label: "Pencapaian Perusahaan",
-        href: "/keberlanjutan/pencapaian-perusahaan",
-        description: "Milestone dan perkembangan operasional perusahaan.",
+        href: "/keberlanjutan",
+        descriptionKey: "navAchievementsDescription",
       },
     ],
   },

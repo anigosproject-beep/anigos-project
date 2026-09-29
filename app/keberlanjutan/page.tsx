@@ -7,6 +7,8 @@ import { CorporateTopicPage } from "@/components/sections/corporate-topic-page"
 export default function KeberlanjutanPage() {
   return (
     <CorporateTopicPage
+      pageKey="keberlanjutan"
+      heroAppearance="plain"
       eyebrow="sustainabilityPageEyebrow"
       title="sustainabilityPageTitle"
       description="sustainabilityPageDescription"

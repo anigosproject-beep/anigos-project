@@ -1,18 +1,119 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./typeset.css";
 
 @custom-variant dark (&:is(.dark *));
+
+@keyframes hero-progress-glow {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(-50%) scale(0.88);
+  }
+
+  @keyframes section-image-overlay-drift {
+    0%, 100% {
+      opacity: 0.82;
+      transform: translate3d(-1.5%, 0, 0) scale(1.02);
+    }
+    50% {
+      opacity: 1;
+      transform: translate3d(1.5%, 0, 0) scale(1.05);
+    }
+  }
+
+  .section-image-dynamic-overlay {
+    animation: section-image-overlay-drift 8s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .section-image-dynamic-overlay {
+      animation: none;
+    }
+  }
+
+  50% {
+    opacity: 0.62;
+    transform: translateY(-50%) scale(1.04);
+  }
+}
+
+.typeset-docs {
+  --typeset-font-body: var(--font-inter);
+  --typeset-font-heading: var(--font-inter);
+  --typeset-font-mono: var(--font-geist-mono);
+  --typeset-size: 15px;
+  --typeset-leading: 1.6;
+  --typeset-flow: 1.25em;
+}
+
+@media (max-height: 680px) {
+  .product-showcase-content {
+    gap: 0.5rem;
+    padding-top: var(--site-header-height, 9rem);
+    padding-bottom: 0.5rem;
+  }
+
+}
+
+@media (max-height: 680px) and (max-width: 767px) {
+  .product-showcase-heading > p {
+    -webkit-line-clamp: 1;
+  }
+
+  .product-showcase-content > div:last-child a {
+    height: 1.75rem;
+    font-size: 0.625rem;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   [data-scroll-float] {
     transform: none !important;
   }
+
+  [data-motion-reveal="true"] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  [data-motion-page-transition="true"] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  [data-slot="progress-indicator"] {
+    animation: none !important;
+  }
+
+  .button-overlay {
+    transition: color, background-color, border-color, box-shadow, opacity, transform !important;
+  }
+}
+
+@layer utilities {
+  .button-overlay {
+    flex: 0 0 auto;
+    padding-inline-end: 0.75rem;
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform, padding-inline-end;
+    transition-duration: 180ms;
+    transition-timing-function: ease-out;
+  }
+
+  .button-overlay:hover,
+  .button-overlay:focus-visible {
+    padding-inline-end: 1.25rem;
+  }
 }
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
+    --font-heading: var(--font-inter);
+    --font-sans: var(--font-inter);
+    --font-mono: var(--font-geist-mono);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -44,6 +145,8 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+    --color-base-color: var(--base-color);
+    --color-base-color-foreground: var(--base-color-foreground);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -54,6 +157,9 @@
 }
 
 :root {
+    color-scheme: light;
+    --base-color: #0f0f0f;
+    --base-color-foreground: #ffffff;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
@@ -88,7 +194,33 @@
     --sidebar-ring: oklch(0.708 0 0);
 }
 
+@media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --popover: oklch(0.205 0 0);
+        --popover-foreground: oklch(0.985 0 0);
+        --primary: oklch(0.922 0 0);
+        --primary-foreground: oklch(0.205 0 0);
+        --secondary: oklch(0.269 0 0);
+        --secondary-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --accent: oklch(0.269 0 0);
+        --accent-foreground: oklch(0.985 0 0);
+        --destructive: oklch(0.704 0.191 22.216);
+        --border: oklch(1 0 0 / 10%);
+        --input: oklch(1 0 0 / 15%);
+        --ring: oklch(0.556 0 0);
+        --chart-1: oklch(0.87 0 0);
+        --chart-2: oklch(0.556 0 0);
+    }
+}
+
 .dark {
+    color-scheme: dark;
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
@@ -155,4 +287,8 @@
   html {
     @apply font-sans;
     }
+}
+
+.dark .coverage-map-artwork {
+  filter: none;
 }

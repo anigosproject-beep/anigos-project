@@ -1,16 +1,41 @@
 "use client"
 
 import Image from "next/image"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 
 import { navigationItems } from "@/components/navigation-config"
-import { buttonVariants } from "@/components/ui/button"
+import { MotionButtonLink } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
+import type {SiteSettings} from "@/lib/sanity-site-settings"
+
+const fallbackSettings: SiteSettings = {
+  companyName: "PT. Anigos Jaya Perkasa",
+  address: "Komplek Ruko Saung Bambu B3, Bekasi Utara, Kota Bekasi 17122",
+  email: "anigospetro@gmail.com",
+  phone: "021-88383549",
+  whatsapp: "",
+}
 
 export function Footer() {
   const { locale } = useLocale()
+  const [settings, setSettings] = useState<SiteSettings>(fallbackSettings)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    void fetch("/api/site-settings", {signal: controller.signal, cache: "no-store"})
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Gagal memuat identitas perusahaan.")))
+      .then((value: SiteSettings | null) => {
+        if (value) setSettings({...fallbackSettings, ...value})
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error(error)
+      })
+    return () => controller.abort()
+  }, [])
   const companyLinks = navigationItems.find(
     (item) => item.label === "Tentang Kami"
   )
@@ -25,32 +50,29 @@ export function Footer() {
   ]
 
   return (
-    <footer id="kontak" className="bg-foreground text-background">
+    <footer id="kontak" className="bg-background text-foreground">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="inline-flex items-center gap-3">
               <Image
-                src="/logo/petro%20anigos%20white.svg"
-                alt="Petro Anigos"
+                src="/logo/petro%20anigos.svg"
+                alt="PT. Anigos Jaya Perkasa"
                 width={40}
                 height={40}
                 className="h-10 w-10 object-contain"
               />
-              <span className="font-semibold tracking-tight">Petro Anigos</span>
+              <span className="font-semibold tracking-tight">{settings.companyName}</span>
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-6 text-background/70">
+            <p className="mt-5 max-w-sm text-sm leading-6 text-muted-foreground">
               {translate(locale, "footerDescription")}
             </p>
-            <Link
+            <MotionButtonLink
               href="/produk/penawaran"
-              className={buttonVariants({
-                className:
-                  "mt-6 bg-background text-foreground hover:bg-background/90",
-              })}
+              className="mt-6 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {translate(locale, "footerOffer")}
-            </Link>
+            </MotionButtonLink>
           </div>
 
           <FooterLinkGroup title={translate(locale, "footerCompany")} items={companyLinks?.children} />
@@ -58,24 +80,24 @@ export function Footer() {
           <FooterLinkGroup title={translate(locale, "footerInformation")} items={informationLinks} />
         </div>
 
-        <Separator className="my-10 bg-background/15" />
+        <Separator className="my-10 bg-border" />
 
-        <div className="flex flex-col gap-4 text-sm text-background/70 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
           <address className="not-italic">
-            Komplek Ruko Saung Bambu B3, Bekasi Utara, Kota Bekasi 17122
+            {settings.address}
           </address>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <a href="mailto:anigospetro@gmail.com" className="hover:text-background">
-              anigospetro@gmail.com
+            <a href={`mailto:${settings.email}`} className="hover:text-foreground">
+          {settings.email}
             </a>
-            <a href="tel:+622188383549" className="hover:text-background">
-              021-88383549
+            <a href={`tel:${settings.phone.replace(/[^\d+]/g, "")}`} className="hover:text-foreground">
+          {settings.phone}
             </a>
           </div>
         </div>
 
-        <div className="mt-5 text-xs text-background/50">
-          © {new Date().getFullYear()} PT. Anigos Jaya Perkasa. All rights reserved.
+        <div className="mt-5 text-xs text-muted-foreground">
+          © {new Date().getFullYear()} PT. Anigos Jaya Perkasa. {translate(locale, "footerCopyright")}
         </div>
       </div>
     </footer>
@@ -92,9 +114,9 @@ function FooterLinkGroup({
   return (
     <div>
       <h2 className="text-sm font-semibold">{title}</h2>
-      <nav className="mt-4 flex flex-col gap-3 text-sm text-background/70">
+      <nav className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground">
         {items?.map((item) => (
-          <Link key={item.href} href={item.href} className="hover:text-background">
+          <Link key={item.href} href={item.href} className="hover:text-foreground">
             {item.label}
           </Link>
         ))}

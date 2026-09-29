@@ -6,37 +6,59 @@ import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react"
 import {
   formatArticleDate,
   getArticleBySlug,
-  newsroomArticles,
-  newsroomCategories,
 } from "@/lib/newsroom-data"
+import { getSanityNewsroom } from "@/lib/sanity-newsroom"
+import { SectionContainer } from "@/components/layout/section-shell"
 import { Heading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { ContentVideoPlayer } from "@/components/content-video-player"
+import { LocalizedText } from "@/components/localized-text"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
-export function generateStaticParams() {
-  return newsroomArticles.map((article) => ({ slug: article.slug }))
+export async function generateStaticParams() {
+  const { articles } = await getSanityNewsroom({useDraftMode: false})
+  return articles.map((article) => ({ slug: article.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const article = getArticleBySlug(slug)
+  const { articles } = await getSanityNewsroom()
+  const article = getArticleBySlug(slug, articles)
   return article
-    ? { title: `${article.title} | Petro Anigos`, description: article.excerpt }
-    : { title: "Artikel | Petro Anigos" }
+    ? { title: `${article.title} | PT. Anigos Jaya Perkasa`, description: article.excerpt }
+    : { title: "Artikel | PT. Anigos Jaya Perkasa" }
 }
+
+export const dynamic = "force-dynamic"
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const article = getArticleBySlug(slug)
+  const { articles, categories } = await getSanityNewsroom()
+  const article = getArticleBySlug(slug, articles)
   if (!article) notFound()
 
-  const category = newsroomCategories.find((item) => item.slug === article.category)
+  const category = categories.find((item) => item.slug === article.category)
   const subcategory = category?.subcategories.find(
     (item) => item.slug === article.subcategory
   )
-  const recommendations = newsroomArticles
+  const newsroomHref = "/artikel/anigos-news"
+  const categoryHref = category
+    ? `${newsroomHref}?category=${encodeURIComponent(category.slug)}`
+    : newsroomHref
+  const subcategoryHref =
+    category && subcategory
+      ? `${categoryHref}&subcategory=${encodeURIComponent(subcategory.slug)}`
+      : categoryHref
+  const recommendations = articles
     .filter((item) => item.slug !== article.slug)
     .sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category))
     .slice(0, 3)
@@ -44,20 +66,60 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   return (
     <main>
       <article className="border-b border-border bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-16">
-          <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-foreground">Beranda</Link>
-            <span className="mx-2">/</span>
-            <Link href="/artikel/anigos-news" className="hover:text-foreground">Artikel</Link>
-            <span className="mx-2">/</span>
-            <span className="text-foreground">{category?.name ?? "Berita"}</span>
-          </nav>
+        <SectionContainer className="pb-10 pt-28 sm:pt-32 lg:pb-16 lg:pt-36">
+          <Breadcrumb className="max-w-full overflow-hidden">
+            <BreadcrumbList className="flex-nowrap overflow-x-auto whitespace-nowrap pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">
+                  <LocalizedText translationKey="articleHome" />
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/artikel">
+                  <LocalizedText translationKey="articles" />
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={newsroomHref}>
+                  <LocalizedText translationKey="articleNewsroom" />
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {category ? (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href={categoryHref}>{category.name}</BreadcrumbLink>
+                  </BreadcrumbItem>
+                </>
+              ) : null}
+              {subcategory ? (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href={subcategoryHref}>
+                      {subcategory.name}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </>
+              ) : null}
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="max-w-[min(18rem,60vw)] truncate">
+                  {article.title}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
           <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(15rem,1fr)] lg:gap-16">
             <div className="min-w-0">
               <header className="max-w-4xl">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary">{category?.name ?? "Artikel"}</Badge>
+                  <Badge variant="secondary">
+                    {category?.name ?? <LocalizedText translationKey="articleOffice" />}
+                  </Badge>
                   {subcategory ? <Badge variant="outline">{subcategory.name}</Badge> : null}
                 </div>
                 <Heading level={1} className="mt-6 text-4xl leading-tight lg:text-6xl">
@@ -71,7 +133,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                   <span aria-hidden="true">·</span>
                   <span className="inline-flex items-center gap-1.5">
                     <Clock3 className="size-4" />
-                    {article.readTime} baca
+                    {article.readTime} <LocalizedText translationKey="articleReadMore" />
                   </span>
                 </div>
               </header>
@@ -87,11 +149,21 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 />
               </div>
 
-              <div className="mt-10 max-w-3xl space-y-6 lg:mt-14">
+              {article.video ? (
+                <div className="mt-8 max-w-3xl">
+                  <ContentVideoPlayer
+                    src={article.video}
+                    poster={article.videoPoster}
+                    title={`Video: ${article.title}`}
+                  />
+                </div>
+              ) : null}
+
+              <div className="typeset typeset-docs mt-10 max-w-3xl lg:mt-14">
                 {article.content.map((paragraph) => (
-                  <Text key={paragraph} variant="lead" className="leading-8">
+                  <p key={paragraph}>
                     {paragraph}
-                  </Text>
+                  </p>
                 ))}
               </div>
 
@@ -101,39 +173,44 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
               >
                 <ArrowLeft className="size-4" />
-                Kembali ke newsroom
+                <LocalizedText translationKey="articleBackToNewsroom" />
               </Link>
             </div>
 
             <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
               <div className="border-t-2 border-foreground pt-4">
-                <p className="text-sm font-semibold tracking-tight">Baca juga</p>
+                <p className="text-sm font-semibold tracking-tight">
+                  <LocalizedText translationKey="articleReadAlso" />
+                </p>
                 <div className="mt-5 space-y-5">
                   {recommendations.map((recommendation) => (
                     <Link
                       key={recommendation.slug}
                       href={`/artikel/${recommendation.slug}`}
-                      className="group block"
+                      className="group flex gap-3 rounded-2xl border border-border bg-background p-3 transition-colors hover:border-primary/50"
                     >
-                      <Card className="overflow-hidden transition-colors group-hover:border-primary/50">
-                        <div className="aspect-[16/9] overflow-hidden bg-muted">
-                          <Image
-                            src={recommendation.image}
-                            alt=""
-                            width={500}
-                            height={281}
-                            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        </div>
-                        <CardContent className="p-4">
-                          <p className="text-xs text-muted-foreground">
-                            {formatArticleDate(recommendation.date)}
-                          </p>
-                          <p className="mt-2 text-sm font-semibold leading-5 tracking-tight">
-                            {recommendation.title}
-                          </p>
-                        </CardContent>
-                      </Card>
+                      <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
+                        <Image
+                          src={recommendation.image}
+                          alt=""
+                          fill
+                          sizes="96px"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="min-w-0 py-0.5">
+                        <Badge variant="outline" className="max-w-full truncate text-[10px]">
+                          {                          categories.find(
+                            (item) => item.slug === recommendation.category,
+                          )?.name ?? "Artikel"}
+                        </Badge>
+                        <p className="mt-2 line-clamp-3 text-sm font-semibold leading-5 tracking-tight transition-colors group-hover:text-primary">
+                          {recommendation.title}
+                        </p>
+                        <p className="mt-2 line-clamp-1 text-xs text-muted-foreground">
+                          {formatArticleDate(recommendation.date)} · {recommendation.readTime}
+                        </p>
+                      </div>
                     </Link>
                   ))}
                 </div>
@@ -147,7 +224,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               </Link>
             </aside>
           </div>
-        </div>
+        </SectionContainer>
       </article>
     </main>
   )

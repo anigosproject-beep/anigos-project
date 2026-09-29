@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
+import { CAREER_APPLICATION_FIELDS } from "@/lib/form-contract"
 
 const maxFileSize = 5 * 1024 * 1024
 const acceptedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
@@ -30,6 +31,12 @@ export function CareerApplicationForm({
   const [error, setError] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [position, setPosition] = useState(selectedOpening ?? "")
+  const selectedPosition = openings.some((opening) => opening.slug === position)
+    ? position
+    : openings.some((opening) => opening.slug === selectedOpening)
+      ? selectedOpening ?? ""
+      : ""
 
   function selectFiles(nextFiles: FileList | null) {
     if (!nextFiles?.length) return
@@ -75,7 +82,7 @@ export function CareerApplicationForm({
     try {
       const formData = new FormData(event.currentTarget)
       formData.delete("cv")
-      files.forEach((file) => formData.append("files", file))
+      files.forEach((file) => formData.append(CAREER_APPLICATION_FIELDS.files, file))
 
       const response = await fetch("/api/career-applications", {
         method: "POST",
@@ -122,21 +129,21 @@ export function CareerApplicationForm({
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="full-name">{translate(locale, "fullName")}</Label>
-                <Input id="full-name" name="fullName" required placeholder={translate(locale, "fullNamePlaceholder")} />
+                <Input id="full-name" name={CAREER_APPLICATION_FIELDS.fullName} required placeholder={translate(locale, "fullNamePlaceholder")} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" required placeholder="nama@email.com" />
+                <Input id="email" name={CAREER_APPLICATION_FIELDS.email} type="email" required placeholder={translate(locale, "emailPlaceholder")} />
               </div>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="phone">{translate(locale, "phoneNumber")}</Label>
-                <Input id="phone" name="phone" required placeholder="08..." />
+                <Input id="phone" name={CAREER_APPLICATION_FIELDS.phone} required placeholder="08..." />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="position">{translate(locale, "positionInterested")}</Label>
-                <select id="position" name="position" required defaultValue={openings.some((opening) => opening.slug === selectedOpening) ? selectedOpening : ""} className="h-9 w-full rounded-3xl border border-transparent bg-input/50 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30">
+                <select id="position" name={CAREER_APPLICATION_FIELDS.position} required value={selectedPosition} onChange={(event) => setPosition(event.target.value)} className="h-9 w-full rounded-3xl border border-transparent bg-input/50 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30">
                   <option value="" disabled>{translate(locale, "choosePosition")}</option>
                   {openings.map((opening) => <option key={opening.slug} value={opening.slug}>{opening.title}</option>)}
                 </select>
@@ -144,7 +151,7 @@ export function CareerApplicationForm({
             </div>
             <div className="space-y-2">
               <Label htmlFor="message">{translate(locale, "shortMessage")}</Label>
-              <Textarea id="message" name="message" placeholder={translate(locale, "shortMessagePlaceholder")} />
+              <Textarea id="message" name={CAREER_APPLICATION_FIELDS.message} placeholder={translate(locale, "shortMessagePlaceholder")} />
             </div>
             <div className="space-y-3">
               <Label htmlFor="cv">{translate(locale, "cvSupportingDocument")}</Label>

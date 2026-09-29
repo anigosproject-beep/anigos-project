@@ -1,6 +1,9 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { Heading, Text } from "@/components/typography"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -8,11 +11,20 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "cn"
 import { Reveal } from "@/components/motion"
-import { ScrollFloat } from "@/components/scroll-motion"
+import { SectionContainer, SectionShell } from "@/components/layout/section-shell"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 
-const articles = [
+type ShowcaseArticle = {
+  category: string
+  title: string
+  description: string
+  href: string
+  image: string
+  alt: string
+}
+
+const fallbackArticles: ShowcaseArticle[] = [
   {
     category: "articleEnergyCategory",
     title: "articleEnergyTitle",
@@ -35,20 +47,64 @@ const articles = [
     description: "articleInsightsDescription",
     href: "/artikel/publikasi",
     image: "/images/resources/resource-publication.svg",
-    alt: "Visual publikasi Petro Anigos",
+    alt: "Visual publikasi PT. Anigos Jaya Perkasa",
   },
-] as const
+]
 
 export function ArticleShowcase() {
   const { locale } = useLocale()
+  const [articles, setArticles] = useState<ShowcaseArticle[]>(fallbackArticles)
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetch("/api/newsroom", { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Newsroom request failed: ${response.status}`)
+        return response.json() as Promise<{
+          articles?: Array<{
+            slug: string
+            title: string
+            excerpt: string
+            category: string
+            categoryName?: string
+            date: string
+            image: string
+          }>
+        }>
+      })
+      .then((data) => {
+        const latestArticles = (data.articles ?? [])
+          .filter((article) => article.slug && article.title && article.date)
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .slice(0, 3)
+          .map((article) => ({
+            category: article.categoryName ?? article.category,
+            title: article.title,
+            description: article.excerpt,
+            href: `/artikel/${article.slug}`,
+            image: article.image,
+            alt: article.title,
+          }))
+
+        if (latestArticles.length > 0) setArticles(latestArticles)
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error("Unable to load newsroom articles for homepage", error)
+      })
+
+    return () => controller.abort()
+  }, [])
+
   const [featured, ...secondary] = articles
 
   return (
-    <section
+    <SectionShell
       id="artikel"
-      className="border-b border-border bg-muted/40 py-24 lg:py-32"
+      className="bg-muted/40 py-24 lg:py-32"
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <SectionContainer>
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <Reveal className="max-w-2xl" delay={0.04}>
             <Badge variant="secondary">
@@ -74,7 +130,6 @@ export function ArticleShowcase() {
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
           <Reveal className="group" delay={0.3}>
-            <ScrollFloat>
             <AspectRatio
               ratio={1.45}
               className="overflow-hidden rounded-4xl bg-muted"
@@ -94,26 +149,24 @@ export function ArticleShowcase() {
               <Card className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
                 <CardHeader className="gap-3">
                   <Badge variant="outline" className="w-fit">
-                    {translate(locale, featured.category)}
+                    {featured.category}
                   </Badge>
                   <CardTitle className="text-2xl leading-tight">
-                    {translate(locale, featured.title)}
+                    {featured.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm leading-6 text-muted-foreground">
-                    {translate(locale, featured.description)}
+                    {featured.description}
                   </p>
                 </CardContent>
               </Card>
             </Link>
-            </ScrollFloat>
           </Reveal>
 
           <div className="grid gap-8">
             {secondary.map((article, index) => (
               <Reveal key={article.title} className="group" delay={0.36 + index * 0.06}>
-                <ScrollFloat distance={7}>
                 <div className="grid gap-4 sm:grid-cols-[8rem_1fr] sm:items-start">
                   <AspectRatio
                     ratio={1}
@@ -134,10 +187,10 @@ export function ArticleShowcase() {
                     <Card className="h-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
                       <CardHeader className="gap-2">
                         <Badge variant="outline" className="w-fit">
-                          {translate(locale, article.category)}
+                          {article.category}
                         </Badge>
                         <CardTitle className="flex items-start justify-between gap-3 text-lg leading-tight">
-                          {translate(locale, article.title)}
+                          {article.title}
                           <ArrowUpRight
                             className={cn(
                               "size-4 shrink-0 text-muted-foreground transition-transform",
@@ -148,18 +201,17 @@ export function ArticleShowcase() {
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm leading-6 text-muted-foreground">
-                          {translate(locale, article.description)}
+                          {article.description}
                         </p>
                       </CardContent>
                     </Card>
                   </Link>
                 </div>
-                </ScrollFloat>
               </Reveal>
             ))}
           </div>
         </div>
-      </div>
-    </section>
+      </SectionContainer>
+    </SectionShell>
   )
 }

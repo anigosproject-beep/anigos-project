@@ -1,0 +1,229 @@
+{
+  "generatedAt": "2026-09-21T03:41:38.615Z",
+  "projectId": "wm8u3z2o",
+  "dataset": "production",
+  "mode": "dry-run",
+  "expected": 35,
+  "create": 0,
+  "existing": 35,
+  "conflicts": 0,
+  "skipped": 0,
+  "mutations": 0,
+  "details": {
+    "create": [],
+    "existing": [
+      {
+        "id": "media-hero-jangkauan",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-artikel",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-anigos-news",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-publikasi",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-profil-perusahaan",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-harapan-cita-cita",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-kemitraan",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-legalitas",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-struktur-perusahaan",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-karir",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-keberlanjutan",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-energi-berkelanjutan",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-kemitraan-tata-kelola",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-keselamatan-operasional",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-produk",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-kenali-produk",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-armada",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-penawaran",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-kebijakan-data",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-hero-ketentuan-cookies",
+        "type": "pageHero",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-home-tentang-kami-background",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-home-pencapaian-background",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-home-produk-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-home-kemitraan-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-home-publikasi-thumbnail",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-artikel-artikel-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-anigos-news-artikel-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-publikasi-publikasi-thumbnail",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-profil-perusahaan-tentang-kami-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-harapan-cita-cita-tentang-kami-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-kemitraan-kemitraan-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-legalitas-legalitas-thumbnail",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-struktur-perusahaan-tim-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-produk-produk-artwork",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      },
+      {
+        "id": "media-slot-armada-produk-image",
+        "type": "mediaAsset",
+        "hasImage": false,
+        "isActive": true
+      }
+    ],
+    "conflicts": [],
+    "skipped": []
+  }
+}

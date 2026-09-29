@@ -49,7 +49,7 @@ export function CookieConsent() {
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
         {translate(locale, "cookieDetailsPrefix")}{" "}
         <Link href="/ketentuan-cookies" className="font-medium text-primary hover:underline">
-          {locale === "id" ? "ketentuan cookies" : "cookie terms"}
+          {translate(locale, "cookieTermsLink")}
         </Link>{" "}
         {translate(locale, "cookieDetailsSuffix")}
       </p>

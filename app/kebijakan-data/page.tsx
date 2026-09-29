@@ -4,6 +4,7 @@ import Link from "next/link"
 import { BarChart3, CloudSun, Clock3, ShieldCheck } from "lucide-react"
 
 import { PageHero } from "@/components/sections"
+import { SectionContainer, SectionShell } from "@/components/layout/section-shell"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -39,6 +40,7 @@ export default function KebijakanDataPage() {
   return (
     <main>
       <PageHero
+        pageKey="kebijakan-data"
         eyebrow={translate(locale, "dataPolicy")}
         title={translate(locale, "dataPolicyTitle")}
         description={translate(locale, "dataPolicyDescription")}
@@ -46,8 +48,8 @@ export default function KebijakanDataPage() {
         breadcrumbs={[{ label: translate(locale, "dataPolicy"), href: "/kebijakan-data" }]}
       />
 
-      <section className="border-b border-border bg-background py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <SectionShell className="bg-background py-20 lg:py-28">
+        <SectionContainer>
           <div className="max-w-3xl">
             <Badge variant="secondary">{translate(locale, "informationTransparency")}</Badge>
             <Heading level={2} className="mt-5">
@@ -78,11 +80,11 @@ export default function KebijakanDataPage() {
               )
             })}
           </div>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
 
-      <section className="border-b border-border bg-muted/40 py-20 lg:py-28">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-2 lg:gap-20 lg:px-8">
+      <SectionShell className="bg-muted/40 py-20 lg:py-28">
+        <SectionContainer className="grid gap-10 lg:grid-cols-2 lg:gap-20">
           <SectionHeading
             eyebrow={translate(locale, "referenceSources")}
             title={translate(locale, "attributionTitle")}
@@ -112,26 +114,26 @@ export default function KebijakanDataPage() {
               </p>
             </a>
           </div>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
 
-      <section className="bg-background py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="rounded-4xl bg-foreground p-8 text-background sm:p-12">
-            <p className="text-sm font-medium text-background/60">{translate(locale, "disclaimer")}</p>
+      <SectionShell className="border-b-0 bg-background py-16 lg:py-20">
+        <SectionContainer>
+          <div className="rounded-4xl bg-base-color p-8 text-base-color-foreground sm:p-12">
+            <p className="text-sm font-medium text-base-color-foreground/60">{translate(locale, "disclaimer")}</p>
             <blockquote className="mt-5 max-w-4xl text-xl leading-relaxed font-medium tracking-tight sm:text-2xl">
               {translate(locale, "dataDisclaimer")}
             </blockquote>
-            <div className="mt-8 flex flex-wrap gap-4 text-sm text-background/70">
+            <div className="mt-8 flex flex-wrap gap-4 text-sm text-base-color-foreground/70">
               <span>{translate(locale, "ribbonStatus")}</span>
               <span aria-hidden="true">·</span>
-              <Link href="/produk/penawaran" className="text-background hover:underline">
+              <Link href="/produk/penawaran" className="text-base-color-foreground hover:underline">
                 {translate(locale, "contactPetroAnigos")}
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
     </main>
   )
 }

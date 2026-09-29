@@ -1,13 +1,18 @@
+"use client"
+
 import * as React from "react"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { cn } from "cn"
 import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
+  const { locale } = useLocale()
   return (
     <nav
-      aria-label="breadcrumb"
+      aria-label={translate(locale, "breadcrumbLabel")}
       data-slot="breadcrumb"
       className={cn(className)}
       {...props}
@@ -21,6 +26,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
       data-slot="breadcrumb-list"
       className={cn(
         "flex flex-wrap items-center gap-1.5 text-sm wrap-break-word text-muted-foreground sm:gap-2.5",
+        "min-h-[1.75rem]",
         className
       )}
       {...props}
@@ -95,6 +101,7 @@ function BreadcrumbEllipsis({
   className,
   ...props
 }: React.ComponentProps<"span">) {
+  const { locale } = useLocale()
   return (
     <span
       data-slot="breadcrumb-ellipsis"
@@ -108,7 +115,7 @@ function BreadcrumbEllipsis({
     >
       <MoreHorizontalIcon
       />
-      <span className="sr-only">More</span>
+      <span className="sr-only">{translate(locale, "breadcrumbMore")}</span>
     </span>
   )
 }

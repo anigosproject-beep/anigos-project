@@ -46,7 +46,7 @@ export function HeaderLanguageSelect({
           aria-label={label}
           className={`h-9 rounded-2xl px-2.5 text-xs font-semibold shadow-none focus-visible:ring-2 ${
             isIdle
-              ? "border-background/20 bg-background/10 text-background hover:bg-background/15 focus-visible:border-background/40 focus-visible:ring-background/30 [&_svg]:text-background/70"
+              ? "border-white/20 bg-white/10 text-white hover:bg-white/15 focus-visible:border-white/40 focus-visible:ring-white/30 [&_svg]:text-white/70"
               : "border-border/70 bg-muted/50 text-foreground hover:bg-muted focus-visible:border-primary/40 focus-visible:ring-primary/20 [&_svg]:text-muted-foreground"
           }`}
         >
@@ -81,7 +81,8 @@ function LanguageOption({ locale }: { locale: Locale }) {
         alt=""
         width={20}
         height={15}
-        className="size-5 rounded-sm object-cover"
+        className="h-5 w-auto rounded-sm object-cover"
+        style={{width: "auto"}}
         aria-hidden="true"
       />
       <span>{localeLabels[locale]}</span>

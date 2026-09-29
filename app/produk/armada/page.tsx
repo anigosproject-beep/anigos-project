@@ -2,33 +2,102 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
-import { ArrowRight, Check, CircleAlert, Ship, Truck } from "lucide-react"
+import * as React from "react"
+import {ArrowRight, Images} from "lucide-react"
 
-import { DistributionLinePattern } from "@/components/patterns"
-import { PageHero } from "@/components/sections"
-import { Heading, SectionHeading, Text } from "@/components/typography"
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useLocale } from "@/components/locale-provider"
-import { translate } from "@/lib/i18n"
+import {PageHero, MarineFuelShowcase} from "@/components/sections"
+import {SectionContainer, SectionShell} from "@/components/layout/section-shell"
+import {Heading, Text} from "@/components/typography"
+import {Badge} from "@/components/ui/badge"
+import {buttonVariants} from "@/components/ui/button"
+import {Dialog, DialogContent, DialogDescription, DialogTitle} from "@/components/ui/dialog"
+import {useLocale} from "@/components/locale-provider"
+import {translate} from "@/lib/i18n"
+import type {SanityFleetOption} from "@/lib/sanity-content-types"
 
-const fleetCapacities = [
-  { id: "armada-5000", value: "5.000", note: "lightNeed", image: "/images/partnership/partnership-transportation.svg" },
-  { id: "armada-8000", value: "8.000", note: "flexibleDistribution", image: "/images/partnership/partnership-distribution.svg" },
-  { id: "armada-10000", value: "10.000", note: "regularOperations", image: "/images/partnership/partnership-business.svg" },
-  { id: "armada-16000", value: "16.000", note: "mediumNeed", image: "/images/articles/article-operation.svg" },
-  { id: "armada-24000", value: "24.000", note: "industrialScale", image: "/images/resources/resource-energy.svg" },
-  { id: "armada-30000", value: "30.000", note: "largeLoad", image: "/images/articles/article-b40.svg" },
-] as const
-type FleetId = (typeof fleetCapacities)[number]["id"]
+type GalleryImage = {url: string; alt: string; width?: number; height?: number}
+
+const fallbackGallery: GalleryImage[] = [
+  {
+    url: "/images/partnership/transport-carrier.png",
+    alt: "Armada tangki transportir dengan identitas Petro Anigos",
+    width: 1600,
+    height: 1067,
+  },
+  {
+    url: "/images/partnership/partnership-transportation.svg",
+    alt: "Ilustrasi layanan transportasi darat",
+    width: 1200,
+    height: 900,
+  },
+  {
+    url: "/images/distribution/distribution-map.png",
+    alt: "Ilustrasi jangkauan operasional distribusi",
+    width: 1600,
+    height: 900,
+  },
+]
+
+function getGalleryImages(options: SanityFleetOption[]): GalleryImage[] {
+  const images = options.flatMap((option) => {
+    const gallery = option.gallery?.flatMap((item) =>
+      item?.image?.url
+        ? [{
+            url: item.image.url,
+            alt: item.image.alt ?? option.label ?? "Foto armada darat Petro Anigos",
+            width: item.image.width,
+            height: item.image.height,
+          }]
+        : [],
+    ) ?? []
+
+    if (gallery.length) return gallery
+    return option.image?.url
+      ? [{
+          url: option.image.url,
+          alt: option.image.alt ?? option.label ?? "Foto armada darat Petro Anigos",
+          width: option.image.width,
+          height: option.image.height,
+        }]
+      : []
+  })
+
+  const uniqueImages = [...new Map(images.map((image) => [image.url, image])).values()]
+  return uniqueImages.length ? uniqueImages : fallbackGallery
+}
 
 export default function ArmadaPage() {
-  const { locale } = useLocale()
-  const [selectedFleetId, setSelectedFleetId] = useState<FleetId>(fleetCapacities[0].id)
-  const selectedFleet =
-    fleetCapacities.find((fleet) => fleet.id === selectedFleetId) ?? fleetCapacities[0]
+  const {locale} = useLocale()
+  const [fleet, setFleet] = React.useState<SanityFleetOption[]>([])
+  const [galleryOpen, setGalleryOpen] = React.useState(false)
+  const [galleryImageIndex, setGalleryImageIndex] = React.useState(0)
+
+  React.useEffect(() => {
+    const controller = new AbortController()
+    void fetch(`/api/fleet?lang=${locale}`, {
+      signal: controller.signal,
+      cache: "no-store",
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Fleet request failed: ${response.status}`)
+        return response.json() as Promise<{fleet?: SanityFleetOption[]}>
+      })
+      .then((data) => setFleet(data.fleet ?? []))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error("Failed to load Sanity fleet content", error)
+      })
+    return () => controller.abort()
+  }, [locale])
+
+  const galleryImages = getGalleryImages(fleet)
+  const selectedImage = galleryImages[galleryImageIndex] ?? galleryImages[0]
+  const capacities = [...new Set(fleet.map((option) => option.capacity).filter(
+    (capacity): capacity is number => typeof capacity === "number" && capacity > 0,
+  ))].sort((first, second) => first - second)
+  const fleetCapacities = capacities.length
+    ? capacities
+    : [5000, 8000, 10000, 16000, 24000, 30000]
 
   return (
     <main>
@@ -37,210 +106,129 @@ export default function ArmadaPage() {
         title={translate(locale, "fleetPageTitle")}
         description={translate(locale, "fleetPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
+        pageKey="armada"
         breadcrumbs={[
-          { label: translate(locale, "products"), href: "/produk/kenali-produk" },
-          { label: translate(locale, "fleet"), href: "/produk/armada" },
+          {label: translate(locale, "products"), href: "/produk/kenali-produk"},
+          {label: translate(locale, "fleet"), href: "/produk/armada"},
         ]}
       />
 
-      <section id="armada-darat" className="relative isolate overflow-hidden border-b border-border bg-muted/40 py-24 lg:py-32">
-        <DistributionLinePattern className="text-primary opacity-[0.1] blur-[2px]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-28 top-20 size-96 rounded-full bg-primary/10 blur-3xl"
-        />
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeading
-            eyebrow={translate(locale, "fleetLandEyebrow")}
-            title={translate(locale, "fleetLandTitle")}
-            description={translate(locale, "fleetLandDescription")}
-          />
-
-          <div className="mt-12 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-4xl bg-foreground shadow-xl lg:aspect-[16/9]">
-              <Image
-                key={selectedFleet.image}
-                src={selectedFleet.image}
-                alt={`${translate(locale, "truckingFleet")} ${selectedFleet.value} ${translate(locale, "liter")}`}
-                fill
-                className="object-cover opacity-90 transition-opacity duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/10 to-transparent" />
-              <div className="absolute inset-x-6 bottom-6 text-background lg:inset-x-8 lg:bottom-8">
-                <div className="mt-3 flex items-end justify-between gap-5">
-                  <div>
-                    <p className="text-sm font-medium text-background/75">
-                      {translate(locale, "truckingFleet")}
-                    </p>
-                    <p className="mt-1 text-4xl font-semibold tracking-tight">
-                      {selectedFleet.value}{" "}
-                      <span className="text-lg font-normal">
-                        {translate(locale, "liter")}
-                      </span>
-                    </p>
-                  </div>
-                  <Truck className="hidden size-10 shrink-0 text-background/80 sm:block" />
-                </div>
-              </div>
+      <SectionShell id="armada-darat" className="bg-muted/40 py-20 sm:py-24 lg:py-32">
+        <SectionContainer>
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
+            <div className="grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4">
+              {galleryImages.slice(0, 3).map((image, index) => (
+                <button
+                  key={image.url}
+                  type="button"
+                  className={`group relative overflow-hidden rounded-3xl bg-muted text-left ${
+                    index === 0
+                      ? "row-span-2 min-h-[22rem] sm:min-h-[30rem]"
+                      : "aspect-[4/3]"
+                  }`}
+                  onClick={() => {
+                    setGalleryImageIndex(index)
+                    setGalleryOpen(true)
+                  }}
+                  aria-label={`${translate(locale, "fleetOpenPhoto")} ${index + 1}`}
+                >
+                  <Image
+                    src={image.url}
+                    alt={image.alt}
+                    fill
+                    sizes={index === 0 ? "(min-width: 1024px) 38vw, 50vw" : "(min-width: 1024px) 19vw, 50vw"}
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                  {index === 0 ? (
+                    <span className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-full bg-background/90 px-3 py-2 text-xs font-medium text-foreground sm:right-4 sm:bottom-4">
+                      <Images className="size-4" />
+                      {translate(locale, "fleetGallery")}
+                    </span>
+                  ) : null}
+                </button>
+              ))}
             </div>
 
-            <div>
-              <Badge variant="secondary">
-                {translate(locale, "fleetCapacity")}
-              </Badge>
+            <div className="max-w-xl">
+              <Badge variant="secondary">{translate(locale, "landServiceEyebrow")}</Badge>
               <Heading level={2} className="mt-5">
-                {translate(locale, "fleetCapacityTitle")}
+                {translate(locale, "landServiceTitle")}
               </Heading>
               <Text variant="lead" className="mt-5">
-                {translate(locale, "fleetCapacityDescription")}
+                {translate(locale, "landServiceDescription")}
               </Text>
-              <div className="mt-6 flex items-start gap-2 text-sm text-muted-foreground">
-                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                <span>
-                  {translate(locale, selectedFleet.note)}{" "}
-                  {locale === "id" ? "dengan kapasitas" : "with a capacity of"}{" "}
-                  {selectedFleet.value} {translate(locale, "liter")}.
-                </span>
+
+              <div className="mt-8 rounded-2xl border border-border bg-background p-5 sm:p-6">
+                <p className="text-sm font-semibold">{translate(locale, "serviceFleetCapacity")}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {fleetCapacities.map((capacity) => (
+                    <span
+                      key={capacity}
+                      className="rounded-full border border-border bg-muted/50 px-3 py-1.5 text-sm font-medium"
+                    >
+                      {capacity.toLocaleString(locale === "id" ? "id-ID" : "en-US")} L
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground">
+                  {translate(locale, "serviceFleetCoverage")}
+                </p>
               </div>
+
+              <Link
+                href="/produk/penawaran/ajukan"
+                className={buttonVariants({className: "mt-7"})}
+              >
+                {translate(locale, "submitRequirement")}
+                <ArrowRight data-icon="inline-end" />
+              </Link>
             </div>
           </div>
+        </SectionContainer>
+      </SectionShell>
 
-          <div className="mt-8 border-t border-border/70 pt-6">
-            <p className="text-sm font-medium">
-              {translate(locale, "availableVolume")}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {fleetCapacities.map((fleet) => (
+      <MarineFuelShowcase />
+
+      <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
+        <DialogContent className="max-w-6xl gap-4 p-4 sm:p-6">
+          <DialogTitle>{translate(locale, "fleetGallery")}</DialogTitle>
+          <DialogDescription>
+            {galleryImages.length} {translate(locale, "fleetPhotoCount")}
+          </DialogDescription>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-foreground">
+              <Image
+                src={selectedImage.url}
+                alt={selectedImage.alt}
+                fill
+                className="object-contain"
+                sizes="(min-width: 1024px) 70vw, 100vw"
+              />
+            </div>
+            <div className="grid max-h-[60vh] grid-cols-3 gap-2 overflow-y-auto lg:grid-cols-2">
+              {galleryImages.map((image, index) => (
                 <button
-                  key={fleet.id}
-                  id={fleet.id}
+                  key={image.url}
                   type="button"
-                  onClick={() => setSelectedFleetId(fleet.id)}
-                  aria-pressed={selectedFleetId === fleet.id}
-                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                    selectedFleetId === fleet.id
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-background/70 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                  onClick={() => setGalleryImageIndex(index)}
+                  className={`relative aspect-[4/3] overflow-hidden rounded-lg border-2 ${
+                    galleryImageIndex === index ? "border-primary" : "border-transparent"
                   }`}
+                  aria-label={`${translate(locale, "fleetOpenPhoto")} ${index + 1}`}
                 >
-                  {fleet.value} {translate(locale, "liter")}
+                  <Image
+                    src={image.url}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="220px"
+                  />
                 </button>
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      <section id="armada-laut" className="border-b border-border bg-background py-24 lg:py-32">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-20 lg:px-8">
-          <div className="relative min-h-80 overflow-hidden rounded-4xl bg-foreground">
-            <Image
-              src="/images/partnership/partnership-distribution.svg"
-              alt={translate(locale, "distributionIllustration")}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-foreground/60" />
-            <div className="absolute bottom-6 left-6 flex items-center gap-3 text-background lg:bottom-8 lg:left-8">
-              <Ship className="size-7" />
-              <span className="text-sm font-medium">
-                {translate(locale, "interregionalDistribution")}
-              </span>
-            </div>
-          </div>
-          <div>
-            <Badge variant="secondary">
-              {translate(locale, "seaTransport")}
-            </Badge>
-            <Heading level={2} className="mt-5">
-              {translate(locale, "seaTransportTitle")}
-            </Heading>
-            <Text variant="lead" className="mt-5">
-              {translate(locale, "seaTransportDescription")}
-            </Text>
-            <Text variant="body-muted" className="mt-5 flex items-start gap-2">
-              <CircleAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-              <span>{translate(locale, "fleetAvailabilityNote")}</span>
-            </Text>
-          </div>
-        </div>
-      </section>
-
-      <section id="armada-mitra" className="border-b border-border bg-muted/40 py-24 lg:py-32">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-20 lg:px-8">
-          <div>
-            <Badge variant="secondary">
-              {translate(locale, "transportPartner")}
-            </Badge>
-            <Heading level={2} className="mt-5">
-              {translate(locale, "transportPartnerTitle")}
-            </Heading>
-            <Text variant="lead" className="mt-5">
-              {translate(locale, "transportPartnerDescription")}
-            </Text>
-            <Link href="/tentang-kami/kemitraan" className={buttonVariants({ className: "mt-8" })}>
-              {translate(locale, "partnershipDetailsAction")}
-              <ArrowRight data-icon="inline-end" />
-            </Link>
-          </div>
-          <Card className="overflow-hidden p-0 lg:grid lg:grid-cols-[2fr_3fr]">
-            <div className="relative min-h-56 bg-foreground lg:min-h-full">
-              <Image
-                src="/images/partnership/partnership-business.svg"
-                alt={translate(locale, "partnershipIllustration")}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <CardContent className="p-6 lg:p-8">
-              <CardHeader className="px-0">
-                <CardTitle>
-                  {translate(locale, "distributionSchemeTitle")}
-                </CardTitle>
-              </CardHeader>
-              <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
-                <li className="flex gap-3">
-                  <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                  {translate(locale, "unloadingPoint")}
-                </li>
-                <li className="flex gap-3">
-                  <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                  {translate(locale, "volumeSchedule")}
-                </li>
-                <li className="flex gap-3">
-                  <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                  {translate(locale, "fleetVerification")}
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <section className="bg-foreground px-6 py-24 text-background lg:px-8 lg:py-32">
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
-          <div className="max-w-2xl">
-            <Badge variant="outline" className="border-background/30 text-background">
-              {translate(locale, "readyToDiscuss")}
-            </Badge>
-            <Heading level={2} className="mt-5 text-background">
-              {translate(locale, "fleetCtaTitle")}
-            </Heading>
-            <Text variant="lead" className="mt-5 text-background/70">
-              {translate(locale, "fleetCtaDescription")}
-            </Text>
-          </div>
-          <Link
-            href="/produk/penawaran/ajukan"
-            className={buttonVariants({
-              className: "bg-background text-foreground hover:bg-background/90",
-            })}
-          >
-            {translate(locale, "submitRequirement")}
-            <ArrowRight data-icon="inline-end" />
-          </Link>
-        </div>
-      </section>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }

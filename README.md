@@ -1,6 +1,30 @@
-# Next.js template
+# Petro Anigos
 
-This is a Next.js template with shadcn/ui.
+Website corporate Petro Anigos dengan Next.js dan Sanity CMS.
+
+## Sanity CMS
+
+Clean Studio editorial berada di `studio-clean/` dan terhubung ke project
+`wm8u3z2o`, dataset `production`. Dataset tersebut masih berisi data mock, jadi
+gunakan clean Studio untuk memasukkan data real secara bertahap. Studio lama di
+`studio-anigos-project/` jangan dihapus sampai migrasi konten dan pengujian
+website selesai.
+
+```bash
+cd studio-clean
+npm install
+npm run dev
+```
+
+Build Studio sebelum deploy:
+
+```bash
+npm run build
+```
+
+Tambahkan origin localhost ke CORS Origins project Sanity jika Studio lokal
+menampilkan halaman koneksi project. Jangan menjalankan `npm run deploy` sebelum
+data mock dipetakan dan clean Studio disetujui untuk rollout.
 
 ## Adding components
 
@@ -37,8 +61,21 @@ npm run dev
 ```
 
 Untuk aplikasi Next.js, salin `.env.example` menjadi `.env.local` lalu isi
-`NEXT_PUBLIC_SITE_URL` dengan domain produksi. Project ID dan dataset Sanity
+`NEXT_PUBLIC_SITE_URL` dengan domain produksi. Isi `SANITY_PREVIEW_SECRET`
+dengan nilai acak panjang yang sama pada environment aplikasi Next.js dan
+environment Studio saat memakai tombol preview. Project ID dan dataset Sanity
 sudah memiliki fallback yang sesuai untuk development.
+
+Deploy Studio sebagai hosted Studio Sanity, bukan sebagai project Vercel kedua:
+
+```bash
+cd studio-anigos-project
+npm run deploy
+```
+
+Website Next.js tetap dideploy ke Vercel. Jika `SANITY_PREVIEW_SECRET` belum
+disetel di Studio, tombol preview tidak boleh dianggap sebagai preview draft;
+endpoint aplikasi akan menolak request tanpa secret.
 
 Studio mengelola schema `Newsroom Category` dan `Newsroom Article`. Client
 read-only aplikasi berada di `lib/sanity-client.ts`, sedangkan adapter data

@@ -1,19 +1,18 @@
 {
-  "name": "studio-anigos-project",
+  "name": "petro-anigos-studio",
   "private": true,
   "scripts": {
     "dev": "sanity dev",
     "build": "sanity build",
-    "deploy": "sanity deploy",
     "start": "sanity start"
   },
   "dependencies": {
+    "@sanity/client": "^8.6.1",
     "@sanity/vision": "^5.18.0",
     "sanity": "^5.18.0",
     "styled-components": "^6.1.19"
   },
   "devDependencies": {
-    "@sanity/types": "^5.18.0",
     "@types/react": "^19",
     "typescript": "^5"
   }

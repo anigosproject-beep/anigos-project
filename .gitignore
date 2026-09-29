@@ -3,6 +3,7 @@
 /studio-anigos-project/node_modules
 /studio-anigos-project/dist
 /studio-anigos-project/.sanity
+/studio-clean/
 /.pnp
 .pnp.*
 .yarn/*
@@ -20,6 +21,7 @@
 
 # production
 /build
+/sanity-backup/
 
 # misc
 .DS_Store
@@ -34,6 +36,10 @@ pnpm-debug.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+
+# local service-account credentials
+/docs/secret/*
+!/docs/secret/.gitkeep
 
 # typescript
 *.tsbuildinfo

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import { ArrowRight, CircleAlert, Download, Eye, FileCheck2, FileText } from "lucide-react"
 
 import { PageHero } from "@/components/sections"
@@ -27,6 +28,7 @@ import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
 import { useLocale } from "@/components/locale-provider"
 import { translate, type TranslationKey } from "@/lib/i18n"
+import type {CompanyDocument} from "@/lib/sanity-company-documents"
 
 const legalHighlights = [
   {
@@ -51,7 +53,7 @@ const legalHighlights = [
   },
   {
     title: "trademark",
-    value: "Petro Anigos",
+    value: "PT. Anigos Jaya Perkasa",
     description: "alsoKnownAsAnigosPetro",
   },
   {
@@ -65,14 +67,22 @@ const legalHighlights = [
   description: TranslationKey
 }>
 
-const documents: Array<{
-  title: string
-  description: string
-  href: string
-}> = []
-
 export default function LegalitasPage() {
   const { locale } = useLocale()
+  const [documents, setDocuments] = useState<CompanyDocument[]>([])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    void fetch("/api/company-documents?type=legalitas", {signal: controller.signal, cache: "no-store"})
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Gagal memuat dokumen legalitas.")))
+      .then((value: CompanyDocument[]) => setDocuments(value))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error(error)
+      })
+    return () => controller.abort()
+  }, [])
+  const availableDocuments = documents.filter((document) => document.href)
 
   return (
     <main>
@@ -81,6 +91,7 @@ export default function LegalitasPage() {
         title={translate(locale, "legalityPageTitle")}
         description={translate(locale, "legalityPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
+        pageKey="legalitas"
         breadcrumbs={[{ label: translate(locale, "aboutSectionLabel"), href: "/tentang-kami/profil-perusahaan" }]}
       />
 
@@ -121,9 +132,9 @@ export default function LegalitasPage() {
             title={translate(locale, "legalDocumentsTitle")}
             description={translate(locale, "legalDocumentsDescription")}
           />
-          {documents.length > 0 ? (
+          {availableDocuments.length > 0 ? (
             <AttachmentGroup className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {documents.map((document) => (
+              {availableDocuments.map((document) => (
                 <Attachment key={document.title} orientation="vertical" className="w-full">
                   <AttachmentMedia variant="icon">
                     <FileText />
@@ -136,9 +147,9 @@ export default function LegalitasPage() {
                   </AttachmentContent>
                   <AttachmentActions>
                     <a
-                      href={document.href}
+                      href={document.href!}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noreferrer noopener"
                       aria-label={`${translate(locale, "documentView")} ${document.title}`}
                       title={translate(locale, "documentView")}
                       className={buttonVariants({
@@ -149,8 +160,8 @@ export default function LegalitasPage() {
                       <Eye />
                     </a>
                     <a
-                      href={document.href}
-                      download
+                      href={document.href!}
+                      download={document.title || undefined}
                       aria-label={`${translate(locale, "documentDownload")} ${document.title}`}
                       title={translate(locale, "documentDownload")}
                       className={buttonVariants({
@@ -182,16 +193,16 @@ export default function LegalitasPage() {
         </div>
       </section>
 
-      <section className="bg-foreground px-6 py-24 text-background lg:px-8 lg:py-32">
+      <section className="bg-background px-6 py-24 text-foreground lg:px-8 lg:py-32">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <Badge variant="outline" className="border-background/30 text-background">
+            <Badge variant="outline" className="border-border text-foreground">
               {translate(locale, "informationTransparency")}
             </Badge>
             <Heading level={2} className="mt-5">
               {translate(locale, "publicDocumentsTitle")}
             </Heading>
-            <Text variant="lead" className="mt-5 text-background/70">
+            <Text variant="lead" className="mt-5 text-muted-foreground">
               {translate(locale, "publicDocumentsDescription")}
             </Text>
           </div>
@@ -199,7 +210,7 @@ export default function LegalitasPage() {
             <Link
               href="/tentang-kami/kemitraan"
               className={buttonVariants({
-                className: "bg-background text-foreground hover:bg-background/90",
+                className: "bg-base-color text-base-color-foreground hover:bg-base-color/90",
               })}
             >
               {translate(locale, "viewPartnership")}
@@ -210,14 +221,14 @@ export default function LegalitasPage() {
               className={buttonVariants({
                 variant: "outline",
                 className:
-                  "border-background/30 text-background hover:bg-background/10 hover:text-background",
+                  "border-border text-foreground hover:bg-base-color/10 hover:text-base-color",
               })}
             >
               {translate(locale, "contactUsAction")}
             </Link>
           </div>
         </div>
-        <Separator className="mx-auto mt-12 max-w-7xl bg-background/15" />
+        <Separator className="mx-auto mt-12 max-w-7xl bg-border" />
       </section>
     </main>
   )

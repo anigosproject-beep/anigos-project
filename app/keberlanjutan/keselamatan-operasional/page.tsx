@@ -7,6 +7,8 @@ import { CorporateTopicPage } from "@/components/sections/corporate-topic-page"
 export default function KeselamatanOperasionalPage() {
   return (
     <CorporateTopicPage
+      pageKey="keselamatan-operasional"
+      heroAppearance="plain"
       eyebrow="operationalSafetyEyebrow"
       title="operationalSafetyPageTitle"
       description="operationalSafetyPageDescription"
@@ -18,9 +20,21 @@ export default function KeselamatanOperasionalPage() {
       introTitle="operationalPriorityTitle"
       introDescription="operationalPriorityDescription"
       topics={[
-        { title: "accidentFree", description: "accidentFreeDescription", icon: ShieldCheck },
-        { title: "punctuality", description: "punctualityDescription", icon: Clock3 },
-        { title: "routeCoordination", description: "routeCoordinationDescription", icon: Route },
+        {
+          title: "accidentFree",
+          description: "accidentFreeDescription",
+          icon: ShieldCheck,
+        },
+        {
+          title: "punctuality",
+          description: "punctualityDescription",
+          icon: Clock3,
+        },
+        {
+          title: "routeCoordination",
+          description: "routeCoordinationDescription",
+          icon: Route,
+        },
       ]}
       note="safetyNote"
       cta={{ label: "viewCoverage", href: "/jangkauan" }}

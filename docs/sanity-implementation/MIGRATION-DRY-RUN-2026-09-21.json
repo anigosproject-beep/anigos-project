@@ -1,0 +1,112 @@
+{
+  "generatedAt": "2026-09-21T03:09:09.066Z",
+  "projectId": "wm8u3z2o",
+  "dataset": "production",
+  "perspective": "published",
+  "mode": "read-only",
+  "mutations": 0,
+  "counts": {
+    "articles": 0,
+    "companyDocuments": 0,
+    "fleetOptions": 0,
+    "legacyArticles": 0,
+    "legacyCategories": 3,
+    "legacyLegalDocuments": 0,
+    "partnershipPages": 0,
+    "partnerships": 0,
+    "products": 0,
+    "publicationDocuments": 0
+  },
+  "mappings": [
+    {
+      "source": {
+        "id": "36decfc6-edd6-4202-af33-d3e98dc7e3a5",
+        "type": "newsroomCategory"
+      },
+      "target": {
+        "targetType": "manual-review",
+        "confidence": "not-migratable"
+      },
+      "sourceSummary": {
+        "slug": "nasional",
+        "category": null,
+        "documentType": null,
+        "isPublished": null,
+        "hasImage": false,
+        "hasFile": false,
+        "hasContent": null
+      },
+      "exceptions": [
+        "Kategori legacy tidak memiliki target dokumen kanonis otomatis."
+      ]
+    },
+    {
+      "source": {
+        "id": "a4d99634-d516-4976-a4ec-80ffe386e268",
+        "type": "newsroomCategory"
+      },
+      "target": {
+        "targetType": "manual-review",
+        "confidence": "not-migratable"
+      },
+      "sourceSummary": {
+        "slug": "energi",
+        "category": null,
+        "documentType": null,
+        "isPublished": null,
+        "hasImage": false,
+        "hasFile": false,
+        "hasContent": null
+      },
+      "exceptions": [
+        "Kategori legacy tidak memiliki target dokumen kanonis otomatis."
+      ]
+    },
+    {
+      "source": {
+        "id": "dc836251-868b-4076-8d34-40b54a28d707",
+        "type": "newsroomCategory"
+      },
+      "target": {
+        "targetType": "manual-review",
+        "confidence": "not-migratable"
+      },
+      "sourceSummary": {
+        "slug": "operasional",
+        "category": null,
+        "documentType": null,
+        "isPublished": null,
+        "hasImage": false,
+        "hasFile": false,
+        "hasContent": null
+      },
+      "exceptions": [
+        "Kategori legacy tidak memiliki target dokumen kanonis otomatis."
+      ]
+    }
+  ],
+  "domainReadiness": [],
+  "exceptions": [
+    {
+      "sourceId": "36decfc6-edd6-4202-af33-d3e98dc7e3a5",
+      "sourceType": "newsroomCategory",
+      "reasons": [
+        "Kategori legacy tidak memiliki target dokumen kanonis otomatis."
+      ]
+    },
+    {
+      "sourceId": "a4d99634-d516-4976-a4ec-80ffe386e268",
+      "sourceType": "newsroomCategory",
+      "reasons": [
+        "Kategori legacy tidak memiliki target dokumen kanonis otomatis."
+      ]
+    },
+    {
+      "sourceId": "dc836251-868b-4076-8d34-40b54a28d707",
+      "sourceType": "newsroomCategory",
+      "reasons": [
+        "Kategori legacy tidak memiliki target dokumen kanonis otomatis."
+      ]
+    }
+  ]
+}

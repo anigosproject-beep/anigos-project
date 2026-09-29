@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "source": "Development estimates; replace with approved commercial rates before publishing.",
+  "prices": [
+    {
+      "id": "product-b40-biosolar",
+      "name": "B40 Biosolar",
+      "basePricePerLiter": 10500
+    },
+    {
+      "id": "product-solar-hsd-industri",
+      "name": "Solar / HSD Industri",
+      "basePricePerLiter": 10000
+    }
+  ]
+}

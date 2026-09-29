@@ -41,11 +41,11 @@ export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
   const weather = weatherCities[weatherIndex]
   const WeatherIcon = weather.icon
   const ribbonLabelClass = isScrolled
-    ? "text-foreground group-hover:text-foreground"
-    : "text-background group-hover:text-background"
+    ? "text-foreground group-hover:text-foreground dark:text-white dark:group-hover:text-white"
+    : "text-white group-hover:text-white"
   const ribbonValueClass = isScrolled
-    ? "text-foreground/90 group-hover:text-foreground"
-    : "text-background/95 group-hover:text-background"
+    ? "text-foreground/90 group-hover:text-foreground dark:text-white/90 dark:group-hover:text-white"
+    : "text-white/95 group-hover:text-white"
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -66,8 +66,8 @@ export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
       <div
         className={`mx-auto grid max-w-7xl px-4 text-[11px] sm:px-6 sm:text-xs lg:px-8 ${
           isScrolled
-            ? "divide-y divide-current/10 lg:grid-cols-[30%_70%] lg:divide-x lg:divide-y-0"
-            : "text-background lg:grid-cols-[30%_70%]"
+            ? "divide-y divide-current/10 dark:divide-white/10 lg:grid-cols-[30%_70%] lg:divide-x lg:divide-y-0"
+            : "text-white lg:grid-cols-[30%_70%]"
         }`}
       >
         <div className="min-w-0 py-2 lg:py-2.5 lg:pr-5">
@@ -148,8 +148,8 @@ export function HeaderMarketRibbon({ isScrolled }: HeaderMarketRibbonProps) {
                     key={`${market.symbol}-${index}`}
                     className={`flex shrink-0 items-center gap-2 whitespace-nowrap transition-colors ${
                       isScrolled
-                        ? "text-foreground/90 group-hover:text-foreground"
-                        : "text-background/95 group-hover:text-background"
+                        ? "text-foreground/90 group-hover:text-foreground dark:text-white/90 dark:group-hover:text-white"
+                        : "text-white/95 group-hover:text-white"
                     }`}
                   >
                     <span className="font-semibold">{market.symbol}</span>

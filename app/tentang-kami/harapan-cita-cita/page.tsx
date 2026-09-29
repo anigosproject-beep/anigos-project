@@ -45,6 +45,7 @@ export default function HarapanCitaCitaPage() {
   return (
     <>
       <PageHero
+        pageKey="harapan-cita-cita"
         eyebrow={translate(locale, "aboutSectionLabel")}
         title={translate(locale, "aspirationsPageTitle")}
         description={translate(locale, "aspirationsPageDescription")}
@@ -76,12 +77,12 @@ export default function HarapanCitaCitaPage() {
               </div>
             </div>
             <div
-              aria-label="Pattern visual harapan dan cita-cita Petro Anigos"
+              aria-label={translate(locale, "hopesPatternAlt")}
               className="relative isolate min-h-[22rem] overflow-hidden bg-muted/30 sm:min-h-[28rem] lg:min-h-[32rem]"
             >
               <Image
                 src="/images/patterns/home-section-01/home-section-01-pattern.svg"
-                alt="Pattern visual harapan dan cita-cita Petro Anigos"
+                alt={translate(locale, "hopesPatternAlt")}
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-contain p-6 sm:p-10"
@@ -104,14 +105,14 @@ export default function HarapanCitaCitaPage() {
                 {translate(locale, "aspirationsCompanyBody")}
               </Text>
             </div>
-            <Card className="bg-foreground text-background lg:mt-8">
+            <Card className="bg-base-color text-base-color-foreground lg:mt-8">
               <CardHeader>
-                <CardTitle className="text-background">
+                <CardTitle className="text-base-color-foreground">
                   {translate(locale, "aspirationsStandardTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-lg leading-8 text-background/75">
+                <p className="text-lg leading-8 text-base-color-foreground/75">
                   {translate(locale, "aspirationsStandardDescription")}
                 </p>
               </CardContent>
@@ -153,21 +154,21 @@ export default function HarapanCitaCitaPage() {
           </div>
         </section>
 
-        <section className="bg-foreground py-24 text-background lg:py-32">
+        <section className="bg-background py-24 text-foreground lg:py-32">
           <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
-            <Heading level={2} className="text-background">
+            <Heading level={2} className="text-foreground">
               {translate(locale, "aspirationsTodayTitle")}
             </Heading>
-            <Text variant="lead" className="mt-6 text-background/75">
+            <Text variant="lead" className="mt-6 text-muted-foreground">
               {translate(locale, "aspirationsTodayDescription")}
             </Text>
-            <Text variant="body-muted" className="mt-5 text-background/65">
+            <Text variant="body-muted" className="mt-5 text-muted-foreground">
               {translate(locale, "aspirationsTodaySecondary")}
             </Text>
             <Link
               href="/tentang-kami/profil-perusahaan"
               className={buttonVariants({
-                className: "mt-8 bg-background text-foreground hover:bg-background/90",
+                className: "mt-8 bg-base-color text-base-color-foreground hover:bg-base-color/90",
               })}
             >
               {translate(locale, "knowOurCompany")}

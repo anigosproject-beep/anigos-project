@@ -1,0 +1,267 @@
+{
+  "generatedAt": "2026-09-21T03:08:53.425Z",
+  "projectId": "wm8u3z2o",
+  "dataset": "production",
+  "perspective": "published",
+  "mode": "read-only",
+  "errors": [],
+  "warnings": [
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero jangkauan has no image.",
+      "id": "media-hero-jangkauan",
+      "page": "jangkauan"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero artikel has no image.",
+      "id": "media-hero-artikel",
+      "page": "artikel"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero anigos-news has no image.",
+      "id": "media-hero-anigos-news",
+      "page": "anigos-news"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero publikasi has no image.",
+      "id": "media-hero-publikasi",
+      "page": "publikasi"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero profil-perusahaan has no image.",
+      "id": "media-hero-profil-perusahaan",
+      "page": "profil-perusahaan"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero harapan-cita-cita has no image.",
+      "id": "media-hero-harapan-cita-cita",
+      "page": "harapan-cita-cita"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero kemitraan has no image.",
+      "id": "media-hero-kemitraan",
+      "page": "kemitraan"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero legalitas has no image.",
+      "id": "media-hero-legalitas",
+      "page": "legalitas"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero struktur-perusahaan has no image.",
+      "id": "media-hero-struktur-perusahaan",
+      "page": "struktur-perusahaan"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero karir has no image.",
+      "id": "media-hero-karir",
+      "page": "karir"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero keberlanjutan has no image.",
+      "id": "media-hero-keberlanjutan",
+      "page": "keberlanjutan"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero energi-berkelanjutan has no image.",
+      "id": "media-hero-energi-berkelanjutan",
+      "page": "energi-berkelanjutan"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero kemitraan-tata-kelola has no image.",
+      "id": "media-hero-kemitraan-tata-kelola",
+      "page": "kemitraan-tata-kelola"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero keselamatan-operasional has no image.",
+      "id": "media-hero-keselamatan-operasional",
+      "page": "keselamatan-operasional"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero produk has no image.",
+      "id": "media-hero-produk",
+      "page": "produk"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero kenali-produk has no image.",
+      "id": "media-hero-kenali-produk",
+      "page": "kenali-produk"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero armada has no image.",
+      "id": "media-hero-armada",
+      "page": "armada"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero penawaran has no image.",
+      "id": "media-hero-penawaran",
+      "page": "penawaran"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero kebijakan-data has no image.",
+      "id": "media-hero-kebijakan-data",
+      "page": "kebijakan-data"
+    },
+    {
+      "code": "EMPTY_PAGE_HERO",
+      "message": "Page hero ketentuan-cookies has no image.",
+      "id": "media-hero-ketentuan-cookies",
+      "page": "ketentuan-cookies"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot home/tentang-kami/background has no image.",
+      "id": "media-slot-home-tentang-kami-background",
+      "page": "home",
+      "section": "tentang-kami",
+      "slot": "background"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot home/pencapaian/background has no image.",
+      "id": "media-slot-home-pencapaian-background",
+      "page": "home",
+      "section": "pencapaian",
+      "slot": "background"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot home/produk/image has no image.",
+      "id": "media-slot-home-produk-image",
+      "page": "home",
+      "section": "produk",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot home/kemitraan/image has no image.",
+      "id": "media-slot-home-kemitraan-image",
+      "page": "home",
+      "section": "kemitraan",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot home/publikasi/thumbnail has no image.",
+      "id": "media-slot-home-publikasi-thumbnail",
+      "page": "home",
+      "section": "publikasi",
+      "slot": "thumbnail"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot artikel/artikel/image has no image.",
+      "id": "media-slot-artikel-artikel-image",
+      "page": "artikel",
+      "section": "artikel",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot anigos-news/artikel/image has no image.",
+      "id": "media-slot-anigos-news-artikel-image",
+      "page": "anigos-news",
+      "section": "artikel",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot publikasi/publikasi/thumbnail has no image.",
+      "id": "media-slot-publikasi-publikasi-thumbnail",
+      "page": "publikasi",
+      "section": "publikasi",
+      "slot": "thumbnail"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot profil-perusahaan/tentang-kami/image has no image.",
+      "id": "media-slot-profil-perusahaan-tentang-kami-image",
+      "page": "profil-perusahaan",
+      "section": "tentang-kami",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot harapan-cita-cita/tentang-kami/image has no image.",
+      "id": "media-slot-harapan-cita-cita-tentang-kami-image",
+      "page": "harapan-cita-cita",
+      "section": "tentang-kami",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot kemitraan/kemitraan/image has no image.",
+      "id": "media-slot-kemitraan-kemitraan-image",
+      "page": "kemitraan",
+      "section": "kemitraan",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot legalitas/legalitas/thumbnail has no image.",
+      "id": "media-slot-legalitas-legalitas-thumbnail",
+      "page": "legalitas",
+      "section": "legalitas",
+      "slot": "thumbnail"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot struktur-perusahaan/tim/image has no image.",
+      "id": "media-slot-struktur-perusahaan-tim-image",
+      "page": "struktur-perusahaan",
+      "section": "tim",
+      "slot": "image"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot produk/produk/artwork has no image.",
+      "id": "media-slot-produk-produk-artwork",
+      "page": "produk",
+      "section": "produk",
+      "slot": "artwork"
+    },
+    {
+      "code": "EMPTY_MEDIA_SLOT",
+      "message": "Active media slot armada/produk/image has no image.",
+      "id": "media-slot-armada-produk-image",
+      "page": "armada",
+      "section": "produk",
+      "slot": "image"
+    },
+    {
+      "code": "MISSING_SITE_SETTINGS",
+      "message": "The siteSettings singleton is missing; frontend fallback will be used."
+    }
+  ],
+  "info": [
+    {
+      "code": "CONTENT_COUNTS",
+      "message": "Published Content Lake contract scan completed.",
+      "pageHeroes": 20,
+      "mediaAssets": 15,
+      "articles": 0,
+      "companyDocuments": 0,
+      "publicationDocuments": 0,
+      "teamDivisions": 0,
+      "teamMembers": 0
+    }
+  ]
+}

@@ -7,6 +7,8 @@ import { CorporateTopicPage } from "@/components/sections/corporate-topic-page"
 export default function KemitraanTataKelolaPage() {
   return (
     <CorporateTopicPage
+      pageKey="kemitraan-tata-kelola"
+      heroAppearance="plain"
       eyebrow="partnershipGovernanceEyebrow"
       title="partnershipGovernanceTitle"
       description="partnershipGovernanceDescription"
@@ -18,9 +20,21 @@ export default function KemitraanTataKelolaPage() {
       introTitle="governanceIntroTitle"
       introDescription="governanceIntroDescription"
       topics={[
-        { title: "goodRelationships", description: "goodRelationshipsDescription", icon: Handshake },
-        { title: "compliance", description: "complianceDescription", icon: FileCheck2 },
-        { title: "integrity", description: "integrityDescription", icon: Scale },
+        {
+          title: "goodRelationships",
+          description: "goodRelationshipsDescription",
+          icon: Handshake,
+        },
+        {
+          title: "compliance",
+          description: "complianceDescription",
+          icon: FileCheck2,
+        },
+        {
+          title: "integrity",
+          description: "integrityDescription",
+          icon: Scale,
+        },
       ]}
       note="governanceNote"
       cta={{ label: "viewPartnerships", href: "/tentang-kami/kemitraan" }}

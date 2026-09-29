@@ -14,6 +14,7 @@ import {
 
 import { DistributionLinePattern } from "@/components/patterns"
 import { PageHero } from "@/components/sections"
+import { SectionContainer, SectionShell } from "@/components/layout/section-shell"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
@@ -76,19 +77,20 @@ export default function PenawaranPage() {
         title={translate(locale, "offerPageTitle")}
         description={translate(locale, "offerPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
+        pageKey="penawaran"
         breadcrumbs={[
           { label: translate(locale, "products"), href: "/produk/kenali-produk" },
           { label: translate(locale, "offer"), href: "/produk/penawaran" },
         ]}
       />
 
-      <section className="relative isolate overflow-hidden border-b border-border bg-muted/40 py-24 lg:py-32">
+      <SectionShell className="relative isolate overflow-hidden bg-muted/40 py-24 lg:py-32">
         <DistributionLinePattern className="text-primary opacity-[0.1] blur-[2px]" />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -right-24 top-24 size-80 rounded-full bg-primary/10 blur-3xl"
         />
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-20 lg:px-8">
+        <SectionContainer className="relative z-10 grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-20">
           <div>
             <Badge variant="secondary">{translate(locale, "needsBasedOffer")}</Badge>
             <SectionHeading
@@ -124,11 +126,11 @@ export default function PenawaranPage() {
               })}
             </CardContent>
           </Card>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
 
-      <section className="border-b border-border bg-background py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <SectionShell className="bg-background py-24 lg:py-32">
+        <SectionContainer>
           <SectionHeading
             eyebrow={translate(locale, "offerFlowEyebrow")}
             title={translate(locale, "offerFlowTitle")}
@@ -156,11 +158,11 @@ export default function PenawaranPage() {
               )
             })}
           </div>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
 
-      <section className="border-b border-border bg-muted/40 py-24 lg:py-32">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-20 lg:px-8">
+      <SectionShell className="bg-muted/40 py-24 lg:py-32">
+        <SectionContainer className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-20">
           <SectionHeading
             eyebrow={translate(locale, "discussionScopeEyebrow")}
             title={translate(locale, "discussionScopeTitle")}
@@ -198,19 +200,19 @@ export default function PenawaranPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
 
-      <section className="bg-foreground px-6 py-24 text-background lg:px-8 lg:py-32">
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
+      <SectionShell className="border-b-0 bg-base-color py-24 text-base-color-foreground lg:py-32">
+        <SectionContainer className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <Badge variant="outline" className="border-background/30 text-background">
+            <Badge variant="outline" className="border-base-color-foreground/30 text-base-color-foreground">
               {translate(locale, "offerCtaEyebrow")}
             </Badge>
-            <Heading level={2} className="mt-5 text-background">
+            <Heading level={2} className="mt-5 text-base-color-foreground">
               {translate(locale, "offerCtaTitle")}
             </Heading>
-            <Text variant="lead" className="mt-5 text-background/70">
+            <Text variant="lead" className="mt-5 text-base-color-foreground/70">
               {translate(locale, "offerCtaDescription")}
             </Text>
           </div>
@@ -223,8 +225,8 @@ export default function PenawaranPage() {
             {translate(locale, "requestOffer")}
             <ArrowRight data-icon="inline-end" />
           </Link>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
     </main>
   )
 }

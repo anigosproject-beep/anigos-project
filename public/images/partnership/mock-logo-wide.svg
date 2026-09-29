@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" role="img" aria-labelledby="title">
+  <title>Mock wide partner logo</title>
+  <rect width="800" height="240" rx="42" fill="#0f766e"/>
+  <circle cx="124" cy="120" r="70" fill="#fff"/>
+  <path d="m91 123 23 23 45-52" fill="none" stroke="#0f766e" stroke-linecap="round" stroke-linejoin="round" stroke-width="15"/>
+  <text x="230" y="143" fill="#fff" font-family="Arial, sans-serif" font-size="58" font-weight="700">NUSA PARTNER</text>
+</svg>

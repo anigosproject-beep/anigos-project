@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title">
+  <title>Mock square partner logo</title>
+  <circle cx="200" cy="200" r="176" fill="#111827"/>
+  <path d="M200 78 296 132v136l-96 54-96-54V132z" fill="none" stroke="#fff" stroke-width="16"/>
+  <path d="m154 215 31 31 62-70" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="18"/>
+</svg>

@@ -1,19 +1,24 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
+import type { ReactNode } from "react"
+import Link, { type LinkProps } from "next/link"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-4xl border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity,transform] outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg[data-icon='inline-end']]:transition-transform [&_svg[data-icon='inline-end']]:duration-200 [&_svg[data-icon='inline-end']]:ease-out group-hover/button:[&_svg[data-icon='inline-end']]:translate-x-0.5",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-4xl border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity,transform,padding] outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg[data-icon='inline-end']]:transition-transform [&_svg[data-icon='inline-end']]:duration-200 [&_svg[data-icon='inline-end']]:ease-out group-hover/button:[&_svg[data-icon='inline-end']]:translate-x-0.5",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default:
+          "bg-primary text-primary-foreground hover:border-primary hover:bg-primary/90 hover:text-primary-foreground",
+        overlay:
+          "button-overlay border-transparent bg-white text-primary hover:border-transparent hover:bg-white/90 hover:text-primary focus-visible:border-transparent focus-visible:bg-white focus-visible:text-primary",
         outline:
-          "border-border bg-transparent text-foreground hover:border-foreground hover:bg-foreground hover:text-background focus-visible:border-foreground focus-visible:bg-foreground focus-visible:text-background aria-expanded:bg-foreground aria-expanded:text-background dark:border-background/40 dark:text-background dark:hover:border-background dark:hover:bg-background dark:hover:text-foreground dark:focus-visible:border-background dark:focus-visible:bg-background dark:focus-visible:text-foreground",
+          "border-border bg-transparent text-foreground hover:border-primary hover:bg-primary hover:text-primary-foreground focus-visible:border-primary focus-visible:bg-primary focus-visible:text-primary-foreground aria-expanded:border-primary aria-expanded:bg-primary aria-expanded:text-primary-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-secondary-foreground hover:border-primary/30 hover:bg-primary/10 hover:text-primary aria-expanded:border-primary/30 aria-expanded:bg-primary/10 aria-expanded:text-primary",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "hover:bg-primary/10 hover:text-primary aria-expanded:bg-primary/10 aria-expanded:text-primary",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
@@ -42,7 +47,8 @@ function Button({
   variant = "default",
   size = "default",
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants>) {
   return (
     <ButtonPrimitive
       data-slot="button"
@@ -52,4 +58,27 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+type MotionButtonLinkProps = LinkProps &
+  VariantProps<typeof buttonVariants> & {
+    className?: string
+    children?: ReactNode
+  }
+
+function MotionButtonLink({
+  className,
+  variant,
+  size,
+  children,
+  ...props
+}: MotionButtonLinkProps) {
+  return (
+    <Link
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    >
+      {children}
+    </Link>
+  )
+}
+
+export { Button, MotionButtonLink, buttonVariants }

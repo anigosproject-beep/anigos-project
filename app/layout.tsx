@@ -4,11 +4,13 @@ import "./globals.css"
 import { Footer } from "@/components/footer"
 import { CookieConsent } from "@/components/cookie-consent"
 import { Header } from "@/components/header"
+import { HeaderAppearanceProvider } from "@/components/header-appearance-provider"
 import { PageTransition } from "@/components/motion"
 import { LocaleProvider } from "@/components/locale-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { getSanitySiteSettings, resolveUiTheme, type UiThemeToken } from "@/lib/sanity-site-settings"
 import type { Metadata } from "next"
 
 const siteUrl = (
@@ -18,46 +20,79 @@ const siteUrl = (
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Petro Anigos | Distributor BBM Industri",
-    template: "%s | Petro Anigos",
+    default: "PT. Anigos Jaya Perkasa | Distributor BBM Industri",
+    template: "%s | PT. Anigos Jaya Perkasa",
   },
   description:
-    "Petro Anigos menyediakan solusi distribusi BBM industri yang aman, profesional, dan dapat diandalkan untuk kebutuhan bisnis di Indonesia.",
+    "PT. Anigos Jaya Perkasa menyediakan solusi distribusi BBM industri yang aman, profesional, dan dapat diandalkan untuk kebutuhan bisnis di Indonesia.",
   robots: {
     index: true,
     follow: true,
   },
 }
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-inter",
 })
 
-export default function RootLayout({
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+})
+
+const themeTokens: Record<UiThemeToken, `--${string}`> = {
+  baseColor: "--base-color",
+  baseColorForeground: "--base-color-foreground",
+  primary: "--primary",
+  primaryForeground: "--primary-foreground",
+  accent: "--accent",
+  accentForeground: "--accent-foreground",
+  background: "--background",
+  foreground: "--foreground",
+  muted: "--muted",
+  mutedForeground: "--muted-foreground",
+  border: "--border",
+  card: "--card",
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const siteSettings = await getSanitySiteSettings()
+  const themeStyle: React.CSSProperties & Record<`--${string}`, string> = {}
+  const uiTheme = resolveUiTheme(siteSettings?.uiTheme)
+  for (const [token, variable] of Object.entries(themeTokens) as Array<[UiThemeToken, `--${string}`]>) {
+    const value = uiTheme?.[token]
+    if (value) themeStyle[variable] = value
+  }
+
   return (
     <html
       lang="id"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
+      className={cn(
+        "antialiased",
+        inter.variable,
+        geistMono.variable,
+        "font-sans",
+      )}
     >
-      <body>
+      <body style={themeStyle}>
         <ThemeProvider>
           <LocaleProvider>
             <TooltipProvider>
               <div className="flex min-h-svh flex-col">
-                <Header />
-                <main className="flex-1">
-                  <PageTransition>{children}</PageTransition>
-                </main>
-                <Footer />
-                <CookieConsent />
+                <HeaderAppearanceProvider>
+                  <Header />
+                  <main className="flex-1">
+                    <PageTransition>{children}</PageTransition>
+                  </main>
+                  <Footer />
+                  <CookieConsent />
+                </HeaderAppearanceProvider>
               </div>
             </TooltipProvider>
           </LocaleProvider>

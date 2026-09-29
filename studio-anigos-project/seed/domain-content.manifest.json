@@ -1,0 +1,335 @@
+{
+  "version": 1,
+  "approvalStatus": "pending",
+  "source": "See docs/sanity-implementation/DOMAIN-SEED-MANIFEST-REQUIREMENTS.md",
+  "products": [
+    {
+      "id": "b40-biosolar",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-7-produk-kenali-produk",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "name": {
+          "id": "B40 Biosolar",
+          "en": "B40 Biodiesel Blend"
+        },
+        "slug": {
+          "_type": "slug",
+          "current": "b40-biosolar"
+        },
+        "description": {
+          "id": "Bahan bakar hasil pencampuran 40% Biodiesel dengan 60% Solar (HSD), mengikuti program pemerintah dan spesifikasi mutu Ditjen Migas RI.",
+          "en": "A fuel blend containing 40% biodiesel and 60% diesel (HSD), aligned with the government program and Directorate General of Oil and Gas quality specifications."
+        },
+        "category": "biosolar",
+        "basePricePerLiter": 10500,
+        "specs": [
+          {
+            "label": {
+              "id": "Komposisi",
+              "en": "Composition"
+            },
+            "value": "40% Biodiesel + 60% Solar (HSD)"
+          },
+          {
+            "label": {
+              "id": "Standar mutu",
+              "en": "Quality standard"
+            },
+            "value": "Ditjen Migas RI"
+          },
+          {
+            "label": {
+              "id": "Merek",
+              "en": "Brand"
+            },
+            "value": "Petro Anigos"
+          }
+        ],
+        "availableForQuote": true,
+        "order": 0,
+        "isPublished": false,
+        "artwork": {
+          "_type": "image",
+          "asset": {
+            "_type": "reference",
+            "_ref": "image-5ea0b7b22190584ff80ac461b5f5005c157013dd-1448x1086-png"
+          },
+          "alt": "Development mock for [object Object]"
+        }
+      }
+    },
+    {
+      "id": "solar-hsd-industri",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-1-data-inti-perusahaan",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "name": {
+          "id": "Solar / HSD Industri",
+          "en": "Industrial Diesel / HSD"
+        },
+        "slug": {
+          "_type": "slug",
+          "current": "solar-hsd-industri"
+        },
+        "description": {
+          "id": "Bahan bakar minyak jenis solar (HSD) untuk kebutuhan distribusi dan operasional industri.",
+          "en": "Diesel fuel (HSD) for industrial distribution and operational needs."
+        },
+        "category": "bbm-industri",
+        "basePricePerLiter": 10000,
+        "specs": [
+          {
+            "label": {
+              "id": "Jenis produk",
+              "en": "Product type"
+            },
+            "value": "Solar (HSD)"
+          },
+          {
+            "label": {
+              "id": "Standar mutu",
+              "en": "Quality standard"
+            },
+            "value": "Ditjen Migas RI"
+          },
+          {
+            "label": {
+              "id": "Merek",
+              "en": "Brand"
+            },
+            "value": "Petro Anigos"
+          }
+        ],
+        "availableForQuote": true,
+        "order": 1,
+        "isPublished": false,
+        "artwork": {
+          "_type": "image",
+          "asset": {
+            "_type": "reference",
+            "_ref": "image-15b4614b2e37460d13d2cb969050f47446494dab-1448x1086-png"
+          },
+          "alt": "Development mock for [object Object]"
+        }
+      }
+    }
+  ],
+  "fleetOptions": [
+    {
+      "id": "armada-5000-liter",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-9-produk-armada",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "label": "5.000 liter",
+        "capacity": 5000,
+        "unit": "liter",
+        "transportMode": "darat",
+        "note": {
+          "id": "Pilihan kapasitas untuk kebutuhan distribusi.",
+          "en": "A capacity option for distribution needs."
+        },
+        "order": 0,
+        "isPublished": false,
+        "gallery": [
+          {
+            "_type": "image",
+            "asset": {
+              "_type": "reference",
+              "_ref": "image-89ac01df742089b37d3af88828e323e3434e4370-1672x940-png"
+            },
+            "alt": "Development mock for 5.000 liter"
+          }
+        ]
+      }
+    },
+    {
+      "id": "armada-8000-liter",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-9-produk-armada",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "label": "8.000 liter",
+        "capacity": 8000,
+        "unit": "liter",
+        "transportMode": "darat",
+        "note": {
+          "id": "Pilihan kapasitas untuk kebutuhan distribusi.",
+          "en": "A capacity option for distribution needs."
+        },
+        "order": 1,
+        "isPublished": false,
+        "gallery": [
+          {
+            "_type": "image",
+            "asset": {
+              "_type": "reference",
+              "_ref": "image-89ac01df742089b37d3af88828e323e3434e4370-1672x940-png"
+            },
+            "alt": "Development mock for 8.000 liter"
+          }
+        ]
+      }
+    },
+    {
+      "id": "armada-10000-liter",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-9-produk-armada",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "label": "10.000 liter",
+        "capacity": 10000,
+        "unit": "liter",
+        "transportMode": "darat",
+        "note": {
+          "id": "Pilihan kapasitas untuk kebutuhan distribusi.",
+          "en": "A capacity option for distribution needs."
+        },
+        "order": 2,
+        "isPublished": false,
+        "gallery": [
+          {
+            "_type": "image",
+            "asset": {
+              "_type": "reference",
+              "_ref": "image-89ac01df742089b37d3af88828e323e3434e4370-1672x940-png"
+            },
+            "alt": "Development mock for 10.000 liter"
+          }
+        ]
+      }
+    },
+    {
+      "id": "armada-16000-liter",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-9-produk-armada",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "label": "16.000 liter",
+        "capacity": 16000,
+        "unit": "liter",
+        "transportMode": "darat",
+        "note": {
+          "id": "Pilihan kapasitas untuk kebutuhan distribusi.",
+          "en": "A capacity option for distribution needs."
+        },
+        "order": 3,
+        "isPublished": false,
+        "gallery": [
+          {
+            "_type": "image",
+            "asset": {
+              "_type": "reference",
+              "_ref": "image-89ac01df742089b37d3af88828e323e3434e4370-1672x940-png"
+            },
+            "alt": "Development mock for 16.000 liter"
+          }
+        ]
+      }
+    },
+    {
+      "id": "armada-24000-liter",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-9-produk-armada",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "label": "24.000 liter",
+        "capacity": 24000,
+        "unit": "liter",
+        "transportMode": "darat",
+        "note": {
+          "id": "Pilihan kapasitas untuk kebutuhan distribusi.",
+          "en": "A capacity option for distribution needs."
+        },
+        "order": 4,
+        "isPublished": false,
+        "gallery": [
+          {
+            "_type": "image",
+            "asset": {
+              "_type": "reference",
+              "_ref": "image-89ac01df742089b37d3af88828e323e3434e4370-1672x940-png"
+            },
+            "alt": "Development mock for 24.000 liter"
+          }
+        ]
+      }
+    },
+    {
+      "id": "armada-30000-liter",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-9-produk-armada",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "label": "30.000 liter",
+        "capacity": 30000,
+        "unit": "liter",
+        "transportMode": "darat",
+        "note": {
+          "id": "Pilihan kapasitas untuk kebutuhan distribusi skala besar.",
+          "en": "A capacity option for large-scale distribution needs."
+        },
+        "order": 5,
+        "isPublished": false,
+        "gallery": [
+          {
+            "_type": "image",
+            "asset": {
+              "_type": "reference",
+              "_ref": "image-89ac01df742089b37d3af88828e323e3434e4370-1672x940-png"
+            },
+            "alt": "Development mock for 30.000 liter"
+          }
+        ]
+      }
+    }
+  ],
+  "partnerships": [
+    {
+      "id": "pt-masinton-nusa-perkasa",
+      "source": "docs/company-reference/mapping-konten-website-anigos-jaya-perkasa.md#bagian-5-tentang-kami-kemitraan",
+      "assetOwner": "Development mock asset; replace and re-approve before publish",
+      "approvalStatus": "pending",
+      "fields": {
+        "name": "PT Masinton Nusa Perkasa",
+        "slug": {
+          "_type": "slug",
+          "current": "pt-masinton-nusa-perkasa"
+        },
+        "portfolio": {
+          "id": "Mitra transportir resmi untuk mendukung distribusi BBM antarwilayah.",
+          "en": "Official transport partner supporting interregional fuel distribution."
+        },
+        "body": {
+          "id": "PT Masinton Nusa Perkasa disebut sebagai mitra transportir resmi Petro Anigos. Detail legal dan izin mitra perlu diverifikasi dari dokumen asli.",
+          "en": "PT Masinton Nusa Perkasa is identified as an official transport partner of Petro Anigos. Partner legal and permit details require verification from original documents."
+        },
+        "order": 0,
+        "isPublished": false,
+        "image": {
+          "_type": "image",
+          "asset": {
+            "_type": "reference",
+            "_ref": "image-4481067493463dee38f75bc4ce687d9de8dd3a57-800x240-svg"
+          },
+          "alt": "Development mock for PT Masinton Nusa Perkasa"
+        }
+      }
+    }
+  ],
+  "assetPolicy": {
+    "imagesAndFilesMustBeSanityAssetRefs": true,
+    "requiredApprovalFields": [
+      "source",
+      "assetOwner",
+      "approvalStatus"
+    ]
+  },
+  "partnershipPage": {
+    "approvalStatus": "pending",
+    "documentId": "partnershipPage-main",
+    "fields": {}
+  }
+}

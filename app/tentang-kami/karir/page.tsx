@@ -1,16 +1,18 @@
 "use client"
 
+import { useCareerOpenings } from "@/components/use-career-openings"
 import Link from "next/link"
 import { ArrowRight, MapPin } from "lucide-react"
 
-import { careerBenefits, careerOpenings } from "@/lib/careers-data"
+import { careerBenefits } from "@/lib/careers-data"
 import { PageHero } from "@/components/sections"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { buttonVariants } from "@/components/ui/button"
 import { useLocale } from "@/components/locale-provider"
-import { translate } from "@/lib/i18n"
+import { translate as translateCommon, translate } from "@/lib/i18n"
+import { CareerRecruitmentDisclaimer } from "@/components/career-recruitment-disclaimer"
 
 const benefitKeys = [
   ["purposeAtWork", "purposeAtWorkDescription"],
@@ -21,22 +23,20 @@ const benefitKeys = [
   ["roomToGrow", "roomToGrowDescription"],
 ] as const
 
-const openingKeys = {
-  "staff-operasional-distribusi": ["distributionOperationsStaff", "distributionOperationsSummary", "operations"],
-  "sales-account-executive": ["salesAccountExecutive", "salesAccountSummary", "commercial"],
-} as const
-
 export default function KarirPage() {
   const { locale } = useLocale()
+  const { openings, isLoading, error } = useCareerOpenings(locale)
 
   return (
     <main>
+      <CareerRecruitmentDisclaimer />
       <PageHero
         eyebrow={translate(locale, "careersEyebrow")}
         title={translate(locale, "careersTitle")}
         description={translate(locale, "careersDescription")}
         image="/images/page-hero/tentang-kami.webp"
-        breadcrumbs={[{ label: translate(locale, "about"), href: "/tentang-kami/profil-perusahaan" }]}
+        pageKey="karir"
+        breadcrumbs={[{ label: translateCommon(locale, "about"), href: "/tentang-kami/profil-perusahaan" }]}
       />
 
       <section className="border-b border-border bg-background py-20 lg:py-28">
@@ -46,14 +46,14 @@ export default function KarirPage() {
             title={translate(locale, "meaningfulWorkTitle")}
             description={translate(locale, "meaningfulWorkDescription")}
           />
-          <div className="rounded-4xl bg-foreground p-8 text-background shadow-xl sm:p-12">
-            <Badge variant="secondary" className="bg-background/10 text-background">
+          <div className="rounded-4xl bg-base-color p-8 text-base-color-foreground shadow-xl sm:p-12">
+            <Badge variant="secondary" className="bg-base-color-foreground/10 text-base-color-foreground">
               {translate(locale, "growingTogether")}
             </Badge>
-            <Heading level={2} className="mt-6 text-background">
+            <Heading level={2} className="mt-6 text-base-color-foreground">
               {translate(locale, "professionalHumanTitle")}
             </Heading>
-            <Text variant="lead" className="mt-5 text-background/70">
+            <Text variant="lead" className="mt-5 text-base-color-foreground/70">
               {translate(locale, "professionalHumanDescription")}
             </Text>
           </div>
@@ -102,25 +102,30 @@ export default function KarirPage() {
               title={translate(locale, "careerOpeningsTitle")}
               description={translate(locale, "careerOpeningsDescription")}
             />
-            <Badge variant="outline" className="w-fit">{careerOpenings.length} {translate(locale, "positionsAvailable")}</Badge>
+            <Badge variant="outline" className="w-fit">{openings.length} {translate(locale, "positionsAvailable")}</Badge>
           </div>
           <div className="mt-12 grid gap-5 lg:grid-cols-2">
-            {careerOpenings.map((opening) => {
-              const [titleKey, summaryKey, departmentKey] = openingKeys[opening.slug as keyof typeof openingKeys]
+            {isLoading ? (
+              <p className="text-sm text-muted-foreground">{translate(locale, "careerOpeningsLoading")}</p>
+            ) : error ? (
+              <p role="alert" className="text-sm text-destructive">{error}</p>
+            ) : openings.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{translate(locale, "noCareerOpenings")}</p>
+            ) : openings.map((opening) => {
               return (
               <Card key={opening.slug} className="h-full">
                 <CardHeader>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary">{translate(locale, departmentKey)}</Badge>
-                    <span className="text-xs text-muted-foreground">{translate(locale, "fullTime")}</span>
+                    <Badge variant="secondary">{opening.department}</Badge>
+                    <span className="text-xs text-muted-foreground">{opening.type}</span>
                   </div>
-                  <CardTitle className="mt-4 text-2xl">{translate(locale, titleKey)}</CardTitle>
+                  <CardTitle className="mt-4 text-2xl">{opening.title}</CardTitle>
                   <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                     <MapPin className="size-4" /> {opening.location}
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm leading-6 text-muted-foreground">{translate(locale, summaryKey)}</p>
+                  <p className="text-sm leading-6 text-muted-foreground">{opening.summary}</p>
                   <Link href={`/tentang-kami/karir/lamar?posisi=${opening.slug}`} className={buttonVariants({ className: "mt-7 w-fit" })}>
                     {translate(locale, "viewAndApply")} <ArrowRight data-icon="inline-end" />
                   </Link>

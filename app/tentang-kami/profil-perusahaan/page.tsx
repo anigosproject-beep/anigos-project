@@ -10,7 +10,7 @@ import {
   Target,
 } from "lucide-react"
 
-import { FeatureImageSection, PageHero } from "@/components/sections"
+import { FeatureImageSection, PageHero, VideoFeatureSection } from "@/components/sections"
 import { DistributionLinePattern } from "@/components/patterns/distribution-line-pattern"
 import { Eyebrow, Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
@@ -64,6 +64,7 @@ export default function ProfilPerusahaanPage() {
         title={translate(locale, "profilePageTitle")}
         description={translate(locale, "profilePageDescription")}
         image="/images/page-hero/tentang-kami.webp"
+        pageKey="profil-perusahaan"
         breadcrumbs={[
           {
             label: translate(locale, "aboutSectionLabel"),
@@ -100,6 +101,13 @@ export default function ProfilPerusahaanPage() {
         </div>
       </section>
 
+      <VideoFeatureSection
+        eyebrow={{id: "Cerita perusahaan", en: "Our company story"}}
+        title={{id: "Energi yang bergerak bersama kebutuhan industri.", en: "Energy that moves with industry."}}
+        description={{id: "Video singkat ini menjadi pengantar visual tentang cara PT. Anigos Jaya Perkasa membangun kepercayaan, menjaga standar, dan menghubungkan kebutuhan pelanggan dengan distribusi yang bertanggung jawab.", en: "This short video introduces how PT. Anigos Jaya Perkasa builds trust, maintains standards, and connects customer needs with responsible distribution."}}
+        videoTitle={{id: "Video profil perusahaan PT. Anigos Jaya Perkasa", en: "PT. Anigos Jaya Perkasa company profile video"}}
+      />
+
       <FeatureImageSection
         id="sejarah-perusahaan"
         eyebrow={translate(locale, "companyJourneyEyebrow")}
@@ -116,18 +124,18 @@ export default function ProfilPerusahaanPage() {
               eyebrow={translate(locale, "companyPurposeEyebrow")}
               title={translate(locale, "companyPurposeTitle")}
             />
-            <div className="relative overflow-hidden rounded-4xl bg-foreground p-8 text-background sm:p-12">
-              <DistributionLinePattern className="text-background opacity-[0.2] [mask-image:linear-gradient(135deg,black_0%,black_46%,transparent_88%)]" />
+            <div className="relative overflow-hidden rounded-4xl bg-base-color p-8 text-base-color-foreground sm:p-12">
+              <DistributionLinePattern className="text-base-color-foreground opacity-[0.2] [mask-image:linear-gradient(135deg,black_0%,black_46%,transparent_88%)]" />
               <div
                 aria-hidden="true"
-                className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_42%),linear-gradient(135deg,transparent_0%,rgba(0,0,0,0.16)_100%)]"
+                className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--background)_18%,transparent),transparent_42%),linear-gradient(135deg,transparent_0%,color-mix(in_oklab,var(--foreground)_16%,transparent)_100%)]"
               />
               <div className="relative z-10">
-                <Eye className="size-8 text-background/70" />
+                <Eye className="size-8 text-base-color-foreground/70" />
                 <blockquote className="mt-8 text-2xl leading-relaxed font-medium tracking-tight sm:text-3xl">
                   “{translate(locale, "companyPurposeQuote")}”
                 </blockquote>
-                <p className="mt-8 text-sm text-background/60">
+                <p className="mt-8 text-sm text-base-color-foreground/60">
                   {translate(locale, "companyPurposeCaption")}
                 </p>
               </div>
@@ -171,15 +179,15 @@ export default function ProfilPerusahaanPage() {
 
       <section className="border-b border-border bg-muted/40 py-24 lg:py-32">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-2 lg:px-8">
-          <Card className="relative overflow-hidden bg-foreground text-background">
-            <DistributionLinePattern className="text-background opacity-[0.18] [mask-image:linear-gradient(135deg,black_0%,black_42%,transparent_90%)]" />
+          <Card className="relative overflow-hidden bg-base-color text-base-color-foreground">
+            <DistributionLinePattern className="text-base-color-foreground opacity-[0.18] [mask-image:linear-gradient(135deg,black_0%,black_42%,transparent_90%)]" />
             <div
               aria-hidden="true"
-              className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_44%),linear-gradient(135deg,transparent_0%,rgba(0,0,0,0.12)_100%)] backdrop-blur-[1px]"
+              className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--background)_14%,transparent),transparent_44%),linear-gradient(135deg,transparent_0%,color-mix(in_oklab,var(--foreground)_12%,transparent)_100%)] backdrop-blur-[1px]"
             />
             <div className="relative z-10">
               <CardHeader>
-                <Badge variant="outline" className="border-background/30 text-background">
+                <Badge variant="outline"                 className="border-base-color-foreground/30 text-base-color-foreground">
                   {translate(locale, "visionLabel")}
                 </Badge>
                 <CardTitle className="mt-5 text-3xl leading-tight">
@@ -187,7 +195,7 @@ export default function ProfilPerusahaanPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="leading-7 text-background/70">
+                <p className="leading-7 text-base-color-foreground/70">
                   {translate(locale, "visionDescription")}
                 </p>
               </CardContent>
@@ -197,7 +205,7 @@ export default function ProfilPerusahaanPage() {
             <DistributionLinePattern className="text-foreground opacity-[0.12] [mask-image:linear-gradient(135deg,black_0%,black_40%,transparent_90%)]" />
             <div
               aria-hidden="true"
-              className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.45),transparent_44%),linear-gradient(135deg,transparent_0%,rgba(255,255,255,0.08)_100%)] backdrop-blur-[1px]"
+              className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--background)_45%,transparent),transparent_44%),linear-gradient(135deg,transparent_0%,color-mix(in_oklab,var(--background)_8%,transparent)_100%)] backdrop-blur-[1px]"
             />
             <div className="relative z-10">
               <CardHeader>
@@ -247,10 +255,10 @@ export default function ProfilPerusahaanPage() {
         </div>
       </section>
 
-      <section className="bg-foreground px-6 py-24 text-background lg:px-8 lg:py-32">
+      <section className="bg-background px-6 py-24 text-foreground lg:px-8 lg:py-32">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <Badge variant="outline" className="border-background/30 text-background">
+            <Badge variant="outline" className="border-border text-foreground">
               {translate(locale, "nextStepLabel")}
             </Badge>
             <Heading level={2} className="mt-5">
@@ -267,7 +275,7 @@ export default function ProfilPerusahaanPage() {
             </Link>
             <Link
               href="/tentang-kami/legalitas"
-              className={buttonVariants({ variant: "outline", className: "border-background/30 text-background hover:bg-background/10 hover:text-background" })}
+              className={buttonVariants({ variant: "outline", className: "border-border text-foreground hover:bg-base-color/10 hover:text-base-color" })}
             >
               {translate(locale, "viewLegality")}
             </Link>

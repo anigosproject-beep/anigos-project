@@ -1,28 +1,15 @@
-"use client"
+import {CsrPage} from "@/components/sections/csr-page"
+import {getSanityCsrPage} from "@/lib/sanity-csr"
+import type {Metadata} from "next"
 
-import { Droplets, Leaf, Scale } from "lucide-react"
+export const metadata: Metadata = {
+  title: "CSR",
+  description:
+    "Dokumentasi kegiatan tanggung jawab sosial Petro Anigos dari tahun ke tahun.",
+}
 
-import { CorporateTopicPage } from "@/components/sections/corporate-topic-page"
+export default async function CsrAnnualActivitiesPage() {
+  const content = await getSanityCsrPage()
 
-export default function EnergiBerkelanjutanPage() {
-  return (
-    <CorporateTopicPage
-      eyebrow="sustainableEnergyEyebrow"
-      title="sustainableEnergyTitle"
-      description="sustainableEnergyDescription"
-      breadcrumbs={[
-        { label: "sustainability", href: "/keberlanjutan" },
-        { label: "sustainableEnergy", href: "/keberlanjutan/energi-berkelanjutan" },
-      ]}
-      introEyebrow="b40IntroEyebrow"
-      introTitle="b40IntroTitle"
-      introDescription="b40IntroDescription"
-      topics={[
-        { title: "biodiesel40Title", description: "biodiesel40Description", icon: Leaf },
-        { title: "diesel60Title", description: "diesel60Description", icon: Droplets },
-        { title: "specificationTitle", description: "specificationDescription", icon: Scale },
-      ]}
-      cta={{ label: "productsOverview", href: "/produk/kenali-produk" }}
-    />
-  )
+  return <CsrPage content={content} />
 }

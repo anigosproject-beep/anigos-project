@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import * as React from "react"
 import { useState } from "react"
 import {
   ArrowRight,
@@ -15,7 +16,7 @@ import {
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 
 import { DistributionLinePattern } from "@/components/patterns"
-import { PageHero } from "@/components/sections"
+import { PageHero, VideoFeatureSection } from "@/components/sections"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
@@ -32,6 +33,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { buttonVariants } from "@/components/ui/button"
 import { useLocale } from "@/components/locale-provider"
 import { translate, type TranslationKey } from "@/lib/i18n"
+import type {SanityProduct} from "@/lib/sanity-content-types"
 
 const purchaseSteps = [
   {
@@ -60,28 +62,62 @@ const purchaseSteps = [
   },
 ] as const
 
-const productSpecs: [TranslationKey, string][] = [
-  ["productType", "Solar/HSD dan B40 Biosolar"],
-  ["b40Composition", "40% Biodiesel + 60% Solar/HSD"],
-  ["productQualityStandard", "Mengacu pada spesifikasi Ditjen Migas RI"],
-  ["trademark", "Petro Anigos"],
-  ["productServiceScale", "Kecil, menengah, besar, hingga nasional"],
+const productSpecs: [TranslationKey, TranslationKey][] = [
+  ["productType", "productTypeValue"],
+  ["b40Composition", "productCompositionValue"],
+  ["productQualityStandard", "productQualityStandardValue"],
+  ["trademark", "productTrademarkValue"],
+  ["productServiceScale", "productServiceScaleValue"],
 ] as const
 
 const b40ChartData = [
-  { component: "Biodiesel", percentage: 40 },
-  { component: "Solar/HSD", percentage: 60 },
+  { component: "productBiodiesel", percentage: 40 },
+  { component: "productDiesel", percentage: 60 },
 ]
 
 const b40ChartConfig = {
-  percentage: { label: "Komposisi (%)" },
-  biodiesel: { label: "Biodiesel", color: "var(--chart-1)" },
-  solar: { label: "Solar/HSD", color: "var(--chart-2)" },
+  percentage: { label: "b40Composition" },
+  biodiesel: { label: "productBiodiesel", color: "var(--chart-1)" },
+  solar: { label: "productDiesel", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 export default function KenaliProdukPage() {
   const { locale } = useLocale()
-  const [activeComponent, setActiveComponent] = useState("Biodiesel")
+  const [activeComponent, setActiveComponent] = useState("productBiodiesel")
+  const [products, setProducts] = useState<SanityProduct[]>([])
+
+  React.useEffect(() => {
+    const controller = new AbortController()
+    void fetch(`/api/products?lang=${locale}`, {signal: controller.signal, cache: "no-store"})
+      .then((response) => {
+        if (!response.ok) throw new Error(`Product request failed: ${response.status}`)
+        return response.json() as Promise<{products?: SanityProduct[]}>
+      })
+      .then((data) => setProducts(data.products ?? []))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error("Failed to load Sanity product content", error)
+      })
+
+    return () => controller.abort()
+  }, [locale])
+
+  const displayProducts = products.length
+    ? products
+    : [
+        {
+          _id: "fallback-solar",
+          name: translate(locale, "fuelProductTitle"),
+          description: translate(locale, "fuelProductDescription"),
+          category: "bbm-industri",
+        },
+        {
+          _id: "fallback-biosolar",
+          name: translate(locale, "biodieselBlendTitle"),
+          description: translate(locale, "biodieselBlendDescription"),
+          category: "biosolar",
+        },
+      ]
 
   return (
     <main>
@@ -90,6 +126,7 @@ export default function KenaliProdukPage() {
         title={translate(locale, "productPageTitle")}
         description={translate(locale, "productPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
+        pageKey="kenali-produk"
         breadcrumbs={[{ label: translate(locale, "products"), href: "/produk/kenali-produk" }]}
       />
 
@@ -101,43 +138,34 @@ export default function KenaliProdukPage() {
             description={translate(locale, "productOverviewDescription")}
           />
           <div className="mt-12 grid gap-5 lg:grid-cols-2">
-            <Card className="h-full">
+            {displayProducts.map((product, index) => (
+            <Card key={product._id} className={`h-full ${index % 2 === 1 ? "bg-base-color text-base-color-foreground" : ""}`}>
               <CardHeader>
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
+                <div className={`flex size-12 items-center justify-center rounded-2xl ${index % 2 === 1 ? "bg-background/10" : "bg-muted"}`}>
                   <Droplets className="size-6" />
                 </div>
-                <Badge variant="secondary" className="mt-5 w-fit">
-                  Solar / HSD
+                <Badge variant={index % 2 === 1 ? "outline" : "secondary"} className={`mt-5 w-fit ${index % 2 === 1 ? "border-base-color-foreground/30 text-base-color-foreground" : ""}`}>
+                  {product.category === "biosolar" ? "B40 Biosolar" : "Solar / HSD"}
                 </Badge>
-                <CardTitle className="text-2xl">                {translate(locale, "fuelProductTitle")}</CardTitle>
+                <CardTitle className={`text-2xl ${index % 2 === 1 ? "text-base-color-foreground" : ""}`}>{product.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <Text variant="body-muted">
-                  {translate(locale, "fuelProductDescription")}
+                <Text variant="body-muted" className={index % 2 === 1 ? "text-base-color-foreground/70" : ""}>
+                  {product.description}
                 </Text>
               </CardContent>
             </Card>
-            <Card className="h-full bg-foreground text-background">
-              <CardHeader>
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-background/10">
-                  <Droplets className="size-6" />
-                </div>
-                <Badge variant="outline" className="mt-5 w-fit border-background/30 text-background">
-                  B40 Biosolar
-                </Badge>
-                <CardTitle className="text-2xl text-background">
-                  {translate(locale, "biodieselBlendTitle")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Text variant="body-muted" className="text-background/70">
-                  {translate(locale, "biodieselBlendDescription")}
-                </Text>
-              </CardContent>
-            </Card>
+            ))}
           </div>
         </div>
       </section>
+
+      <VideoFeatureSection
+        eyebrow={{id: translate(locale, "productVideoEyebrow"), en: translate("en", "productVideoEyebrow")}}
+        title={{id: translate(locale, "productVideoTitle"), en: translate("en", "productVideoTitle")}}
+        description={{id: translate(locale, "productVideoDescription"), en: translate("en", "productVideoDescription")}}
+        videoTitle={{id: translate(locale, "productVideoTitleLabel"), en: translate("en", "productVideoTitleLabel")}}
+      />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:px-8">
@@ -155,7 +183,7 @@ export default function KenaliProdukPage() {
                 {b40ChartData.map((item) => {
                   const isActive = activeComponent === item.component
                   const configKey =
-                    item.component === "Biodiesel" ? "biodiesel" : "solar"
+                    item.component === "productBiodiesel" ? "biodiesel" : "solar"
 
                   return (
                     <button
@@ -166,7 +194,7 @@ export default function KenaliProdukPage() {
                       className="flex flex-col gap-1 px-4 py-3 text-left transition-colors data-[active=true]:bg-muted/60"
                     >
                       <span className="text-xs text-muted-foreground">
-                        {b40ChartConfig[configKey].label}
+                        {translate(locale, b40ChartConfig[configKey].label as TranslationKey)}
                       </span>
                       <span className="text-2xl font-bold">{item.percentage}%</span>
                     </button>
@@ -188,12 +216,13 @@ export default function KenaliProdukPage() {
                     tickLine={false}
                     axisLine={false}
                     width={76}
+                    tickFormatter={(value) => translate(locale, value as TranslationKey)}
                   />
                   <ChartTooltip
                     content={
                       <ChartTooltipContent
                         nameKey="percentage"
-                        formatter={(value) => [`${value}%`, "Komposisi"]}
+                        formatter={(value) => [`${value}%`, translate(locale, "b40Composition")]}
                       />
                     }
                   />
@@ -467,16 +496,16 @@ export default function KenaliProdukPage() {
         </div>
       </section>
 
-      <section className="bg-foreground px-6 py-24 text-background lg:px-8 lg:py-32">
+      <section className="bg-base-color px-6 py-24 text-base-color-foreground lg:px-8 lg:py-32">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <Badge variant="outline" className="border-background/30 text-background">
+            <Badge variant="outline" className="border-base-color-foreground/30 text-base-color-foreground">
               {translate(locale, "productReadyToDiscuss")}
             </Badge>
             <Heading level={2} className="mt-5">
               {translate(locale, "productCtaTitle")}
             </Heading>
-            <Text variant="lead" className="mt-5 text-background/70">
+            <Text variant="lead" className="mt-5 text-base-color-foreground/70">
               {translate(locale, "productCtaDescription")}
             </Text>
           </div>

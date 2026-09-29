@@ -3,6 +3,7 @@
 import Link from "next/link"
 
 import { PageHero } from "@/components/sections"
+import { SectionContainer, SectionShell } from "@/components/layout/section-shell"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,6 +34,7 @@ export default function KetentuanCookiesPage() {
   return (
     <main>
       <PageHero
+        pageKey="ketentuan-cookies"
         eyebrow={translate(locale, "cookieTerms")}
         title={translate(locale, "cookieTermsTitle")}
         description={translate(locale, "cookieTermsDescription")}
@@ -40,8 +42,8 @@ export default function KetentuanCookiesPage() {
         breadcrumbs={[{ label: translate(locale, "cookieTerms"), href: "/ketentuan-cookies" }]}
       />
 
-      <section className="border-b border-border bg-background py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <SectionShell className="bg-background py-20 lg:py-28">
+        <SectionContainer className="px-4 sm:px-6">
           <div className="max-w-3xl">
             <Badge variant="secondary">{translate(locale, "usageTransparency")}</Badge>
             <Heading level={2} className="mt-5">
@@ -67,11 +69,11 @@ export default function KetentuanCookiesPage() {
               </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
 
-      <section className="border-b border-border bg-muted/40 py-20 lg:py-28">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:px-8">
+      <SectionShell className="bg-muted/40 py-20 lg:py-28">
+        <SectionContainer className="grid gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-20">
           <SectionHeading
             eyebrow={translate(locale, "consentCookies")}
             title={translate(locale, "consentDurationTitle")}
@@ -88,22 +90,22 @@ export default function KetentuanCookiesPage() {
               {translate(locale, "clearCookieDescription")}
             </p>
           </div>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
 
-      <section className="bg-background py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-4xl bg-foreground p-8 text-background sm:p-12">
-            <p className="text-sm font-medium text-background/60">{translate(locale, "termsUpdate")}</p>
+      <SectionShell className="border-b-0 bg-background py-16 lg:py-20">
+        <SectionContainer className="px-4 sm:px-6">
+          <div className="rounded-4xl bg-base-color p-8 text-base-color-foreground sm:p-12">
+            <p className="text-sm font-medium text-base-color-foreground/60">{translate(locale, "termsUpdate")}</p>
             <blockquote className="mt-5 max-w-4xl text-xl leading-relaxed font-medium tracking-tight sm:text-2xl">
               {translate(locale, "termsUpdateDescription")}
             </blockquote>
-            <Link href="/kebijakan-data" className="mt-8 inline-block text-sm text-background/70 hover:text-background hover:underline">
+            <Link href="/kebijakan-data" className="mt-8 inline-block text-sm text-base-color-foreground/70 hover:text-base-color-foreground hover:underline">
               {translate(locale, "viewDataPolicy")}
             </Link>
           </div>
-        </div>
-      </section>
+        </SectionContainer>
+      </SectionShell>
     </main>
   )
 }

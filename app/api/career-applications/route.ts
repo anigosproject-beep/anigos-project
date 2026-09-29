@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto"
 import { NextResponse } from "next/server"
+import { CAREER_APPLICATION_FIELDS } from "@/lib/form-contract"
 import { FieldValue } from "firebase-admin/firestore"
 
 import {
@@ -24,12 +25,12 @@ function isString(value: FormDataEntryValue | null): value is string {
 
 export async function POST(request: Request) {
   const formData = await request.formData()
-  const fullName = formData.get("fullName")
-  const email = formData.get("email")
-  const phone = formData.get("phone")
-  const position = formData.get("position")
-  const message = formData.get("message")
-  const files = formData.getAll("files")
+  const fullName = formData.get(CAREER_APPLICATION_FIELDS.fullName)
+  const email = formData.get(CAREER_APPLICATION_FIELDS.email)
+  const phone = formData.get(CAREER_APPLICATION_FIELDS.phone)
+  const position = formData.get(CAREER_APPLICATION_FIELDS.position)
+  const message = formData.get(CAREER_APPLICATION_FIELDS.message)
+  const files = formData.getAll(CAREER_APPLICATION_FIELDS.files)
 
   if (
     !isString(fullName) ||

@@ -16,6 +16,8 @@ import {
   InputGroupAddon,
 } from "@/components/ui/input-group"
 import { SearchIcon, CheckIcon } from "lucide-react"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 
 function Command({
   className,
@@ -34,8 +36,8 @@ function Command({
 }
 
 function CommandDialog({
-  title = "Command Palette",
-  description = "Search for a command to run...",
+  title,
+  description,
   children,
   className,
   showCloseButton = false,
@@ -47,11 +49,15 @@ function CommandDialog({
   showCloseButton?: boolean
   children: React.ReactNode
 }) {
+  const { locale } = useLocale()
+  const dialogTitle = title ?? translate(locale, "commandPaletteTitle")
+  const dialogDescription = description ?? translate(locale, "commandPaletteDescription")
+
   return (
     <Dialog {...props}>
       <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
+        <DialogTitle>{dialogTitle}</DialogTitle>
+        <DialogDescription>{dialogDescription}</DialogDescription>
       </DialogHeader>
       <DialogContent
         className={cn(

@@ -2,16 +2,19 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { ChevronDown, Menu } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { ChevronDown, Menu, Moon, Sun } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { HeaderLanguageSelect } from "@/components/header-language-select"
 import { HeaderMarketRibbon } from "@/components/header-market-ribbon"
 import { navigationItems, type NavigationItem } from "@/components/navigation-config"
 import { useLocale } from "@/components/locale-provider"
+import { useTheme } from "@/components/theme-provider"
+import { useHeaderAppearance } from "@/components/header-appearance-provider"
 import { translate, type TranslationKey } from "@/lib/i18n"
-import { buttonVariants, Button } from "@/components/ui/button"
+import { MotionButtonLink, Button } from "@/components/ui/button"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -34,7 +37,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 
-function DesktopNavigation({ isScrolled }: { isScrolled: boolean }) {
+function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
   const { locale } = useLocale()
   const navigationLabels: Record<string, TranslationKey> = {
     Beranda: "home",
@@ -50,13 +53,15 @@ function DesktopNavigation({ isScrolled }: { isScrolled: boolean }) {
     "Struktur Perusahaan": "structure",
     Kemitraan: "partnership",
     Legalitas: "legality",
+    Karir: "career",
     "Kenali Produk": "productsOverview",
     Penawaran: "offer",
-    Armada: "fleet",
+    Layanan: "services",
     "Anigos News": "news",
     Publikasi: "publications",
     "Landasan Informasi Publik": "publicInformation",
-    "Energi Berkelanjutan": "sustainableEnergy",
+    "Energi Berkelanjutan": "csr",
+    CSR: "csr",
     "Keselamatan Operasional": "safety",
     "Kemitraan & Tata Kelola": "governance",
     "Pencapaian Perusahaan": "achievements",
@@ -71,9 +76,9 @@ function DesktopNavigation({ isScrolled }: { isScrolled: boolean }) {
               <>
                 <NavigationMenuTrigger
                   className={
-                    isScrolled
+                    isSolid
                       ? "text-foreground hover:bg-muted hover:text-foreground data-popup-open:!bg-muted data-popup-open:!text-foreground data-open:!bg-muted data-open:!text-foreground"
-                      : "text-background hover:bg-background/10 hover:text-background data-popup-open:!bg-background/10 data-popup-open:!text-background data-open:!bg-background/10 data-open:!text-background"
+                      : "text-white hover:bg-white/10 hover:text-white data-popup-open:!bg-white/10 data-popup-open:!text-white data-open:!bg-white/10 data-open:!text-white"
                   }
                 >
                   {translate(locale, navigationLabels[item.label] ?? "home")}
@@ -81,22 +86,29 @@ function DesktopNavigation({ isScrolled }: { isScrolled: boolean }) {
                 <NavigationMenuContent>
                   <div className="grid w-[420px] gap-1 p-2 text-foreground">
                     <div className="grid gap-1">
-                      {item.children.map((child) => (
-                        <NavigationMenuLink
-                          key={child.href}
-                          href={child.href}
-                          className="flex-col items-start text-foreground hover:text-foreground focus:text-foreground"
-                        >
-                          <span className="font-medium">
-                            {translate(locale, childLabels[child.label] ?? "home")}
-                          </span>
-                          {child.description ? (
-                            <span className="text-xs text-muted-foreground">
-                              {child.description}
+                      {item.children.map((child) => {
+                        const descriptionKey =
+                          child.href === "/keberlanjutan/energi-berkelanjutan"
+                            ? "navCsrDescription"
+                            : child.descriptionKey
+
+                        return (
+                          <NavigationMenuLink
+                            key={child.href}
+                            href={child.href}
+                            className="flex-col items-start text-foreground hover:text-foreground focus:text-foreground"
+                          >
+                            <span className="font-medium">
+                              {translate(locale, childLabels[child.label] ?? "home")}
                             </span>
-                          ) : null}
-                        </NavigationMenuLink>
-                      ))}
+                            {descriptionKey ? (
+                              <span className="text-xs text-muted-foreground">
+                                {translate(locale, descriptionKey)}
+                              </span>
+                            ) : null}
+                          </NavigationMenuLink>
+                        )
+                      })}
                     </div>
                   </div>
                 </NavigationMenuContent>
@@ -105,9 +117,9 @@ function DesktopNavigation({ isScrolled }: { isScrolled: boolean }) {
               <NavigationMenuLink
                 href={item.href}
                 className={
-                  isScrolled
+                  isSolid
                     ? "text-foreground hover:bg-muted hover:text-foreground data-[active=true]:text-foreground"
-                    : "text-background hover:bg-background/10 hover:text-background"
+                    : "text-white hover:bg-white/10 hover:text-white"
                 }
               >
                 {translate(locale, navigationLabels[item.label] ?? "home")}
@@ -143,13 +155,15 @@ function MobileNavigationItem({
     "Struktur Perusahaan": "structure",
     Kemitraan: "partnership",
     Legalitas: "legality",
+    Karir: "career",
     "Kenali Produk": "productsOverview",
     Penawaran: "offer",
-    Armada: "fleet",
+    Layanan: "services",
     "Anigos News": "news",
     Publikasi: "publications",
     "Landasan Informasi Publik": "publicInformation",
-    "Energi Berkelanjutan": "sustainableEnergy",
+    "Energi Berkelanjutan": "csr",
+    CSR: "csr",
     "Keselamatan Operasional": "safety",
     "Kemitraan & Tata Kelola": "governance",
     "Pencapaian Perusahaan": "achievements",
@@ -193,14 +207,30 @@ function MobileNavigationItem({
 
 export function Header() {
   const { locale, setLocale } = useLocale()
+  const { theme, setTheme } = useTheme()
+  const { forceSolid } = useHeaderAppearance()
+  const pathname = usePathname()
   const prefersReducedMotion = useReducedMotion()
+  const headerRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
+  const newsroomLandingRoutes = new Set([
+    "/artikel/anigos-news",
+    "/artikel/publikasi",
+    "/artikel/landasan-informasi-publik",
+  ])
+  const isArticleTemplate =
+    /^\/artikel\/[^/]+$/.test(pathname) &&
+    !newsroomLandingRoutes.has(pathname)
+  const isCategoryGalleryPage = pathname === "/artikel/publikasi/kategori"
+  const isSolid =
+    isScrolled || forceSolid || isArticleTemplate || isCategoryGalleryPage
   const content = {
     contact: translate(locale, "contact"),
     language: translate(locale, "language"),
     mobileMenu: translate(locale, "mobileMenu"),
     mobileDescription: translate(locale, "mobileDescription"),
+    theme: theme === "dark" ? translate(locale, "switchToLight") : translate(locale, "switchToDark"),
   }
 
   useEffect(() => {
@@ -229,12 +259,34 @@ export function Header() {
     }
   }, [prefersReducedMotion])
 
+  useEffect(() => {
+    const header = headerRef.current
+    if (!header) return
+
+    const updateHeaderHeight = () => {
+      document.documentElement.style.setProperty(
+        "--site-header-height",
+        `${header.getBoundingClientRect().height}px`
+      )
+    }
+
+    updateHeaderHeight()
+    const observer = new ResizeObserver(updateHeaderHeight)
+    observer.observe(header)
+
+    return () => {
+      observer.disconnect()
+      document.documentElement.style.removeProperty("--site-header-height")
+    }
+  }, [])
+
   return (
     <motion.header
+      ref={headerRef}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        isScrolled
+        isSolid
           ? "border-b border-border/70 bg-background text-foreground shadow-sm"
-          : "border-transparent bg-transparent text-background"
+          : "border-transparent bg-transparent text-white"
       }`}
       initial={false}
       animate={{ y: isVisible ? 0 : "-100%" }}
@@ -251,39 +303,49 @@ export function Header() {
         >
           <Image
             src={
-              isScrolled
+              isSolid
                 ? "/logo/petro%20anigos.svg"
                 : "/logo/petro%20anigos%20white.svg"
             }
-            alt="Petro Anigos"
+            alt="PT. Anigos Jaya Perkasa"
             width={44}
             height={44}
             priority
             className="h-11 w-11 object-contain"
           />
-          <span className="text-lg font-semibold tracking-tight">Petro Anigos</span>
+          <span className="text-lg font-semibold tracking-tight">PT. Anigos Jaya Perkasa</span>
         </Link>
 
-        <DesktopNavigation isScrolled={isScrolled} />
+        <DesktopNavigation isSolid={isSolid} />
 
         <div className="hidden md:block">
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={isSolid ? "text-foreground hover:bg-muted" : "text-white hover:bg-white/10"}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label={content.theme}
+              title={content.theme}
+            >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </Button>
             <HeaderLanguageSelect
               locale={locale}
               setLocale={setLocale}
               label={content.language}
-              variant={isScrolled ? "active" : "idle"}
+              variant={isSolid ? "active" : "idle"}
             />
-            <Link
+            <MotionButtonLink
               href="/produk/penawaran"
-              className={buttonVariants({
-                className: isScrolled
-                  ? "bg-foreground text-background hover:bg-foreground/90"
-                  : "bg-background text-foreground hover:bg-background/90",
-              })}
+              className={
+                isSolid
+                  ? "bg-base-color text-base-color-foreground hover:bg-base-color/90"
+                  : "bg-white text-black hover:bg-white/90"
+              }
             >
               {content.contact}
-            </Link>
+            </MotionButtonLink>
           </div>
         </div>
 
@@ -294,11 +356,11 @@ export function Header() {
                 variant="ghost"
                 size="icon"
                 className={
-                  isScrolled
+                  isSolid
                     ? "text-foreground hover:bg-muted hover:text-foreground md:hidden"
-                    : "text-background hover:bg-background/10 hover:text-background md:hidden"
+                    : "text-white hover:bg-white/10 hover:text-white md:hidden"
                 }
-                aria-label="Buka menu navigasi"
+                aria-label={translate(locale, "openNavigation")}
               />
             }
           >
@@ -313,7 +375,7 @@ export function Header() {
             </SheetHeader>
             <nav
               className="flex flex-col gap-2 overflow-y-auto px-6 pb-6"
-              aria-label="Navigasi mobile"
+              aria-label={translate(locale, "mobileNavigation")}
             >
               {navigationItems.map((item) => (
                 <MobileNavigationItem
@@ -323,23 +385,31 @@ export function Header() {
                   onNavigate={() => undefined}
                 />
               ))}
-              <Link
+              <MotionButtonLink
                 href="/produk/penawaran"
-                className={buttonVariants({ className: "mt-3 w-full" })}
+                className="mt-3 w-full"
               >
                 {content.contact}
-              </Link>
+              </MotionButtonLink>
               <HeaderLanguageSelect
                 locale={locale}
                 setLocale={setLocale}
                 label={content.language}
                 variant="active"
               />
+              <Button
+                variant="outline"
+                className="mt-2 w-full justify-center"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? <Sun data-icon="inline-start" /> : <Moon data-icon="inline-start" />}
+                {content.theme}
+              </Button>
             </nav>
           </SheetContent>
         </Sheet>
       </div>
-      <HeaderMarketRibbon isScrolled={isScrolled} />
+      <HeaderMarketRibbon isScrolled={isSolid} />
     </motion.header>
   )
 }

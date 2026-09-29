@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Lamaran Karir",
-  description: "Formulir lamaran karir Petro Anigos.",
+  description: "Formulir lamaran karir PT. Anigos Jaya Perkasa.",
   robots: {
     index: false,
     follow: false,

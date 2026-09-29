@@ -5,6 +5,8 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
+import { useLocale } from "@/components/locale-provider"
+import { translate } from "@/lib/i18n"
 import { XIcon } from "lucide-react"
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
@@ -47,6 +49,7 @@ function DialogContent({
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
 }) {
+  const { locale } = useLocale()
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -72,7 +75,7 @@ function DialogContent({
           >
             <XIcon
             />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{translate(locale, "dialogClose")}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>

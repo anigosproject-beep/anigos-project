@@ -2,8 +2,14 @@
 
 import Link from "next/link"
 import { format } from "date-fns"
-import { ArrowLeft, ArrowRight, CalendarDays, CircleAlert, ReceiptText } from "lucide-react"
-import { useState } from "react"
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  CircleAlert,
+  ReceiptText,
+} from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { PageHero } from "@/components/sections"
 import { Heading, SectionHeading, Text } from "@/components/typography"
@@ -57,11 +63,15 @@ const scheduleOptions = [
   },
 ] as const
 
-// Temporary values until product pricing is managed through the CMS.
-const productBasePrices: Record<string, number> = {
-  "Solar / HSD": 10000,
-  "B40 Biosolar": 10500,
+type ProductOption = {
+  value: string
+  price: number
 }
+
+const fallbackProductOptions: ProductOption[] = [
+  { value: "Solar / HSD", price: 10000 },
+  { value: "B40 Biosolar", price: 10500 },
+]
 
 const coverageAreas = [
   { value: "Bekasi", label: "Bekasi", province: "Jawa Barat" },
@@ -101,15 +111,72 @@ export default function AjukanPenawaranPage() {
   const { locale } = useLocale()
   const [step, setStep] = useState(1)
   const [form, setForm] = useState(initialForm)
+  const [productOptions, setProductOptions] = useState(fallbackProductOptions)
   const [pbbkbRate, setPbbkbRate] = useState("")
   const [deliveryDate, setDeliveryDate] = useState<Date>()
+
+  useEffect(() => {
+    let cancelled = false
+
+    fetch("/api/products?lang=id")
+      .then(async (response) => {
+        if (!response.ok)
+          throw new Error(`Product request failed: ${response.status}`)
+        return response.json() as Promise<{
+          products?: Array<{
+            name?: string
+            slug?: string
+            basePricePerLiter?: number
+            availableForQuote?: boolean
+          }>
+        }>
+      })
+      .then((payload) => {
+        const products = (payload.products ?? [])
+          .filter(
+            (product) =>
+              product.availableForQuote !== false &&
+              typeof product.basePricePerLiter === "number" &&
+              product.basePricePerLiter > 0 &&
+              product.name
+          )
+          .map((product) => ({
+            value:
+              product.slug === "solar-hsd-industri" ||
+              product.name?.toLowerCase().includes("solar / hsd")
+                ? "Solar / HSD"
+                : (product.name ?? ""),
+            price: product.basePricePerLiter as number,
+          }))
+          .filter((product) => product.value)
+
+        if (!cancelled && products.length) {
+          setProductOptions(
+            products.filter(
+              (product, index, all) =>
+                all.findIndex(
+                  (candidate) => candidate.value === product.value
+                ) === index
+            )
+          )
+        }
+      })
+      .catch(() => {
+        // Keep the approved development fallback when CMS data is unavailable.
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const update = (key: keyof typeof initialForm, value: string) => {
     setForm((current) => ({ ...current, [key]: value }))
   }
 
   const volume = Number(form.volume) || 0
-  const basePrice = productBasePrices[form.product] ?? 0
+  const basePrice =
+    productOptions.find((product) => product.value === form.product)?.price ?? 0
   const taxRate = Number(pbbkbRate) || 0
   const selectedCoverage = coverageAreas.find(
     (area) => area.value === form.region
@@ -118,9 +185,7 @@ export default function AjukanPenawaranPage() {
   const estimatedPbbkb = subtotal * (taxRate / 100)
   const estimatedTotal = subtotal + estimatedPbbkb
   const formatCurrency = (value: number) =>
-    value > 0
-      ? `Rp ${value.toLocaleString("id-ID")}`
-      : "Belum dihitung"
+    value > 0 ? `Rp ${value.toLocaleString("id-ID")}` : "Belum dihitung"
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -135,7 +200,9 @@ export default function AjukanPenawaranPage() {
       `Wilayah: ${form.region}`,
       `Jadwal: ${form.schedule}`,
       ...(form.schedule === "Terjadwal" && deliveryDate
-        ? [`Tanggal penerimaan yang diharapkan: ${format(deliveryDate, "dd/MM/yyyy")}`]
+        ? [
+            `Tanggal penerimaan yang diharapkan: ${format(deliveryDate, "dd/MM/yyyy")}`,
+          ]
         : []),
       `Perusahaan: ${form.company}`,
       `Narahubung: ${form.contact}`,
@@ -155,13 +222,17 @@ export default function AjukanPenawaranPage() {
         title={translate(locale, "offerFormTitle")}
         description={translate(locale, "offerFormDescription")}
         image="/images/page-hero/tentang-kami.webp"
+        pageKey="ajukan-penawaran"
         breadcrumbs={[
-          { label: translate(locale, "products"), href: "/produk/kenali-produk" },
+          {
+            label: translate(locale, "products"),
+            href: "/produk/kenali-produk",
+          },
           { label: translate(locale, "offer"), href: "/produk/penawaran" },
         ]}
       />
 
-      <section className="border-b border-border bg-[linear-gradient(135deg,white_0%,color-mix(in_oklab,var(--muted)_42%,white)_52%,white_100%)] py-24 lg:py-32">
+      <section className="border-b border-border bg-[linear-gradient(135deg,var(--background)_0%,color-mix(in_oklab,var(--muted)_42%,var(--background))_52%,var(--background)_100%)] py-24 lg:py-32">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20 lg:px-8">
           <div>
             <SectionHeading
@@ -191,18 +262,25 @@ export default function AjukanPenawaranPage() {
                       <FieldContent>
                         <RadioGroup
                           value={form.product}
-                          onValueChange={(value) => update("product", String(value))}
+                          onValueChange={(value) =>
+                            update("product", String(value))
+                          }
                           className="sm:grid-cols-2"
                         >
-                          {["Solar / HSD", "B40 Biosolar"].map((product) => (
-                            <label key={product} className="flex cursor-pointer gap-3 rounded-2xl border border-border p-4 has-data-checked:border-primary">
-                              <RadioGroupItem value={product} />
+                          {productOptions.map((product) => (
+                            <label
+                              key={product.value}
+                              className="flex cursor-pointer gap-3 rounded-2xl border border-border p-4 has-data-checked:border-primary"
+                            >
+                              <RadioGroupItem value={product.value} />
                               <span>
-                                <span className="block text-sm font-medium">{product}</span>
+                                <span className="block text-sm font-medium">
+                                  {product.value}
+                                </span>
                                 <span className="mt-1 block text-xs leading-5 text-muted-foreground">
                                   {translate(
                                     locale,
-                                    product === "B40 Biosolar"
+                                    product.value === "B40 Biosolar"
                                       ? "b40FuelDescription"
                                       : "dieselFuelDescription"
                                   )}
@@ -214,7 +292,9 @@ export default function AjukanPenawaranPage() {
                       </FieldContent>
                     </Field>
                     <Field>
-                      <FieldLabel>{translate(locale, "requiredVolume")}</FieldLabel>
+                      <FieldLabel>
+                        {translate(locale, "requiredVolume")}
+                      </FieldLabel>
                       <FieldContent>
                         <div className="flex items-center justify-between gap-4">
                           <span className="text-2xl font-semibold">
@@ -248,7 +328,10 @@ export default function AjukanPenawaranPage() {
                               type="button"
                               onClick={() => update("volume", String(volume))}
                               className={buttonVariants({
-                                variant: form.volume === String(volume) ? "default" : "outline",
+                                variant:
+                                  form.volume === String(volume)
+                                    ? "default"
+                                    : "outline",
                                 size: "sm",
                               })}
                             >
@@ -260,11 +343,15 @@ export default function AjukanPenawaranPage() {
                     </Field>
                     <div className="grid gap-6 sm:grid-cols-2">
                       <Field>
-                        <FieldLabel htmlFor="region">{translate(locale, "deliveryRegion")}</FieldLabel>
+                        <FieldLabel htmlFor="region">
+                          {translate(locale, "deliveryRegion")}
+                        </FieldLabel>
                         <FieldContent>
                           <Select
                             value={form.region}
-                            onValueChange={(value) => update("region", String(value))}
+                            onValueChange={(value) =>
+                              update("region", String(value))
+                            }
                           >
                             <SelectTrigger id="region" className="w-full">
                               <SelectValue />
@@ -284,11 +371,15 @@ export default function AjukanPenawaranPage() {
                         </FieldContent>
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="schedule">{translate(locale, "deliverySchedule")}</FieldLabel>
+                        <FieldLabel htmlFor="schedule">
+                          {translate(locale, "deliverySchedule")}
+                        </FieldLabel>
                         <FieldContent>
                           <Select
                             value={form.schedule}
-                            onValueChange={(value) => update("schedule", String(value))}
+                            onValueChange={(value) =>
+                              update("schedule", String(value))
+                            }
                           >
                             <SelectTrigger id="schedule" className="w-full">
                               <SelectValue />
@@ -301,8 +392,10 @@ export default function AjukanPenawaranPage() {
                                   className="rounded-xl px-3 py-2 leading-5"
                                 >
                                   <span className="flex min-w-0 flex-col items-start gap-0.5">
-                                    <span>{translate(locale, option.label)}</span>
-                                    <span className="text-[11px] font-normal leading-4 text-muted-foreground">
+                                    <span>
+                                      {translate(locale, option.label)}
+                                    </span>
+                                    <span className="text-[11px] leading-4 font-normal text-muted-foreground">
                                       {translate(locale, option.description)}
                                     </span>
                                   </span>
@@ -320,31 +413,88 @@ export default function AjukanPenawaranPage() {
                   <FieldGroup>
                     <div className="grid gap-6 sm:grid-cols-2">
                       <Field>
-                        <FieldLabel htmlFor="company">{translate(locale, "companyName")}</FieldLabel>
-                        <FieldContent><Input id="company" value={form.company} onChange={(event) => update("company", event.target.value)} required /></FieldContent>
+                        <FieldLabel htmlFor="company">
+                          {translate(locale, "companyName")}
+                        </FieldLabel>
+                        <FieldContent>
+                          <Input
+                            id="company"
+                            value={form.company}
+                            onChange={(event) =>
+                              update("company", event.target.value)
+                            }
+                            required
+                          />
+                        </FieldContent>
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="contact">{translate(locale, "contactName")}</FieldLabel>
-                        <FieldContent><Input id="contact" value={form.contact} onChange={(event) => update("contact", event.target.value)} required /></FieldContent>
+                        <FieldLabel htmlFor="contact">
+                          {translate(locale, "contactName")}
+                        </FieldLabel>
+                        <FieldContent>
+                          <Input
+                            id="contact"
+                            value={form.contact}
+                            onChange={(event) =>
+                              update("contact", event.target.value)
+                            }
+                            required
+                          />
+                        </FieldContent>
                       </Field>
                     </div>
                     <div className="grid gap-6 sm:grid-cols-2">
                       <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
-                        <FieldContent><Input id="email" type="email" value={form.email} onChange={(event) => update("email", event.target.value)} required /></FieldContent>
+                        <FieldContent>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={form.email}
+                            onChange={(event) =>
+                              update("email", event.target.value)
+                            }
+                            required
+                          />
+                        </FieldContent>
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="phone">{translate(locale, "phoneNumber")}</FieldLabel>
-                        <FieldContent><Input id="phone" type="tel" value={form.phone} onChange={(event) => update("phone", event.target.value)} required /></FieldContent>
+                        <FieldLabel htmlFor="phone">
+                          {translate(locale, "phoneNumber")}
+                        </FieldLabel>
+                        <FieldContent>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            value={form.phone}
+                            onChange={(event) =>
+                              update("phone", event.target.value)
+                            }
+                            required
+                          />
+                        </FieldContent>
                       </Field>
                     </div>
                     <Field>
-                      <FieldLabel htmlFor="address">{translate(locale, "unloadingAddress")}</FieldLabel>
-                      <FieldContent><Input id="address" value={form.address} onChange={(event) => update("address", event.target.value)} required /></FieldContent>
+                      <FieldLabel htmlFor="address">
+                        {translate(locale, "unloadingAddress")}
+                      </FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id="address"
+                          value={form.address}
+                          onChange={(event) =>
+                            update("address", event.target.value)
+                          }
+                          required
+                        />
+                      </FieldContent>
                     </Field>
                     {form.schedule === "Terjadwal" ? (
                       <Field>
-                        <FieldLabel>{translate(locale, "expectedReceivingDate")}</FieldLabel>
+                        <FieldLabel>
+                          {translate(locale, "expectedReceivingDate")}
+                        </FieldLabel>
                         <FieldContent>
                           <Popover>
                             <PopoverTrigger
@@ -353,7 +503,8 @@ export default function AjukanPenawaranPage() {
                                   type="button"
                                   className={buttonVariants({
                                     variant: "outline",
-                                    className: "w-full justify-between font-normal",
+                                    className:
+                                      "w-full justify-between font-normal",
                                   })}
                                 />
                               }
@@ -363,7 +514,10 @@ export default function AjukanPenawaranPage() {
                                 : translate(locale, "chooseReceivingDate")}
                               <CalendarDays className="size-4 text-muted-foreground" />
                             </PopoverTrigger>
-                            <PopoverContent align="start" className="w-auto p-0">
+                            <PopoverContent
+                              align="start"
+                              className="w-auto p-0"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={deliveryDate}
@@ -384,10 +538,21 @@ export default function AjukanPenawaranPage() {
                       </Field>
                     ) : null}
                     <Field>
-                      <FieldLabel htmlFor="notes">{translate(locale, "requirementNotes")}</FieldLabel>
+                      <FieldLabel htmlFor="notes">
+                        {translate(locale, "requirementNotes")}
+                      </FieldLabel>
                       <FieldContent>
-                        <Textarea id="notes" rows={5} value={form.notes} onChange={(event) => update("notes", event.target.value)} />
-                        <FieldDescription>{translate(locale, "requirementNotesDescription")}</FieldDescription>
+                        <Textarea
+                          id="notes"
+                          rows={5}
+                          value={form.notes}
+                          onChange={(event) =>
+                            update("notes", event.target.value)
+                          }
+                        />
+                        <FieldDescription>
+                          {translate(locale, "requirementNotesDescription")}
+                        </FieldDescription>
                       </FieldContent>
                     </Field>
                   </FieldGroup>
@@ -395,13 +560,25 @@ export default function AjukanPenawaranPage() {
               )}
               <div className="mt-8 flex flex-wrap justify-between gap-3 border-t border-border pt-6">
                 {step === 2 ? (
-                  <button type="button" onClick={() => setStep(1)} className={buttonVariants({ variant: "outline" })}>
-                    <ArrowLeft data-icon="inline-start" /> {translate(locale, "back")}
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className={buttonVariants({ variant: "outline" })}
+                  >
+                    <ArrowLeft data-icon="inline-start" />{" "}
+                    {translate(locale, "back")}
                   </button>
-                ) : <span />}
+                ) : (
+                  <span />
+                )}
                 {step === 1 ? (
-                  <button type="button" onClick={() => setStep(2)} className={buttonVariants()}>
-                    {translate(locale, "continueApplicantDetails")} <ArrowRight data-icon="inline-end" />
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className={buttonVariants()}
+                  >
+                    {translate(locale, "continueApplicantDetails")}{" "}
+                    <ArrowRight data-icon="inline-end" />
                   </button>
                 ) : (
                   <button type="submit" className={buttonVariants()}>
@@ -419,8 +596,12 @@ export default function AjukanPenawaranPage() {
                   <ReceiptText className="size-4" />
                 </div>
                 <div className="min-w-0">
-                  <CardTitle className="truncate text-sm">{translate(locale, "requirementEstimate")}</CardTitle>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">{translate(locale, "temporarySummary")}</p>
+                  <CardTitle className="truncate text-sm">
+                    {translate(locale, "requirementEstimate")}
+                  </CardTitle>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                    {translate(locale, "temporarySummary")}
+                  </p>
                 </div>
               </div>
               <span className="shrink-0 rounded-full border border-border bg-background/70 px-2 py-1 text-[10px] font-medium text-muted-foreground">
@@ -430,40 +611,63 @@ export default function AjukanPenawaranPage() {
             <CardContent className="space-y-4 p-5 text-xs">
               <div className="space-y-2.5">
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">{translate(locale, "products")}</span>
+                  <span className="text-muted-foreground">
+                    {translate(locale, "products")}
+                  </span>
                   <span className="text-right font-medium">{form.product}</span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">{translate(locale, "requiredVolume")}</span>
-                  <span className="font-medium">{volume.toLocaleString("id-ID")} L</span>
+                  <span className="text-muted-foreground">
+                    {translate(locale, "requiredVolume")}
+                  </span>
+                  <span className="font-medium">
+                    {volume.toLocaleString("id-ID")} L
+                  </span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">{translate(locale, "region")}</span>
-                  <span className="text-right font-medium">{form.region || translate(locale, "notFilled")}</span>
+                  <span className="text-muted-foreground">
+                    {translate(locale, "region")}
+                  </span>
+                  <span className="text-right font-medium">
+                    {form.region || translate(locale, "notFilled")}
+                  </span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">{translate(locale, "schedule")}</span>
-                  <span className="text-right font-medium">{form.schedule || translate(locale, "notFilled")}</span>
+                  <span className="text-muted-foreground">
+                    {translate(locale, "schedule")}
+                  </span>
+                  <span className="text-right font-medium">
+                    {form.schedule || translate(locale, "notFilled")}
+                  </span>
                 </div>
               </div>
               <Separator />
               <div className="space-y-4">
                 <div>
-                  <p className="font-medium">{translate(locale, "fuelTaxEstimate")}</p>
+                  <p className="font-medium">
+                    {translate(locale, "fuelTaxEstimate")}
+                  </p>
                   <Text variant="small" className="mt-1 text-xs">
                     {translate(locale, "fuelTaxDescription")}
                   </Text>
                 </div>
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <label htmlFor="coverage-area" className="text-[11px] font-medium">
+                    <label
+                      htmlFor="coverage-area"
+                      className="text-[11px] font-medium"
+                    >
                       {translate(locale, "serviceArea")}
                     </label>
                     <Select
                       value={form.region}
                       onValueChange={(value) => update("region", String(value))}
                     >
-                      <SelectTrigger id="coverage-area" size="sm" className="w-full">
+                      <SelectTrigger
+                        id="coverage-area"
+                        size="sm"
+                        className="w-full"
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl p-1.5">
@@ -483,16 +687,24 @@ export default function AjukanPenawaranPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-2.5">
                     <div>
-                      <p className="text-[11px] font-medium">{translate(locale, "basePricePerLiter")}</p>
+                      <p className="text-[11px] font-medium">
+                        {translate(locale, "basePricePerLiter")}
+                      </p>
                       <p className="text-[10px] text-muted-foreground">
                         {form.product} · {translate(locale, "temporary")}
                       </p>
                     </div>
-                    <span className="font-medium">{formatCurrency(basePrice)}</span>
+                    <span className="font-medium">
+                      {formatCurrency(basePrice)}
+                    </span>
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="pbbkb-rate" className="text-[11px] font-medium">
-                      {translate(locale, "pbbkbRate")} {selectedCoverage ? `(${selectedCoverage.province})` : ""}
+                    <label
+                      htmlFor="pbbkb-rate"
+                      className="text-[11px] font-medium"
+                    >
+                      {translate(locale, "pbbkbRate")}{" "}
+                      {selectedCoverage ? `(${selectedCoverage.province})` : ""}
                     </label>
                     <Input
                       id="pbbkb-rate"
@@ -508,11 +720,15 @@ export default function AjukanPenawaranPage() {
                 </div>
                 <div className="rounded-xl bg-muted/60 p-3 text-xs">
                   <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">{translate(locale, "priceBasis")}</span>
+                    <span className="text-muted-foreground">
+                      {translate(locale, "priceBasis")}
+                    </span>
                     <span>{formatCurrency(subtotal)}</span>
                   </div>
                   <div className="mt-2 flex justify-between gap-4">
-                    <span className="text-muted-foreground">{translate(locale, "estimatedPbbkb")}</span>
+                    <span className="text-muted-foreground">
+                      {translate(locale, "estimatedPbbkb")}
+                    </span>
                     <span>{formatCurrency(estimatedPbbkb)}</span>
                   </div>
                   <Separator className="my-3" />
@@ -521,16 +737,25 @@ export default function AjukanPenawaranPage() {
                     <span>{formatCurrency(estimatedTotal)}</span>
                   </div>
                 </div>
-                <Text variant="small" className="flex items-start gap-2 text-[11px] leading-4">
+                <Text
+                  variant="small"
+                  className="flex items-start gap-2 text-[11px] leading-4"
+                >
                   <CircleAlert className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-                  <span>
-                  {translate(locale, "taxSimulationNote")}
-                  </span>
+                  <span>{translate(locale, "taxSimulationNote")}</span>
                 </Text>
               </div>
               <Separator />
-              <Text variant="body-muted">{translate(locale, "emailOpeningNote")}</Text>
-              <Link href="/produk/kenali-produk" className={buttonVariants({ variant: "outline", className: "w-full" })}>
+              <Text variant="body-muted">
+                {translate(locale, "emailOpeningNote")}
+              </Text>
+              <Link
+                href="/produk/kenali-produk"
+                className={buttonVariants({
+                  variant: "outline",
+                  className: "w-full",
+                })}
+              >
                 {translate(locale, "backToProducts")}
               </Link>
             </CardContent>
@@ -538,11 +763,21 @@ export default function AjukanPenawaranPage() {
         </div>
       </section>
 
-      <section className="bg-foreground px-6 py-20 text-background lg:px-8">
+      <section className="bg-base-color px-6 py-20 text-base-color-foreground lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <Heading level={2} className="text-background">{translate(locale, "directDiscussionTitle")}</Heading>
-          <a href="mailto:anigospetro@gmail.com" className={buttonVariants({ variant: "outline", className: "mt-6 border-background/30 text-background hover:bg-background/10 hover:text-background" })}>
-            {translate(locale, "emailPetroAnigos")} <ArrowRight data-icon="inline-end" />
+          <Heading level={2} className="text-base-color-foreground">
+            {translate(locale, "directDiscussionTitle")}
+          </Heading>
+          <a
+            href="mailto:anigospetro@gmail.com"
+            className={buttonVariants({
+              variant: "outline",
+              className:
+                "mt-6 border-base-color-foreground/30 text-base-color-foreground hover:bg-base-color-foreground/10 hover:text-base-color-foreground",
+            })}
+          >
+            {translate(locale, "emailPetroAnigos")}{" "}
+            <ArrowRight data-icon="inline-end" />
           </a>
         </div>
       </section>

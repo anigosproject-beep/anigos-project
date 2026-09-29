@@ -11,6 +11,12 @@ type ThemeContextValue = {
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null)
 
+export function useTheme() {
+  const context = React.useContext(ThemeContext)
+  if (!context) throw new Error("useTheme must be used inside ThemeProvider")
+  return context
+}
+
 function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = React.useState<Theme>("light")
 
@@ -18,6 +24,7 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
     setThemeState(nextTheme)
     window.localStorage.setItem("theme", nextTheme)
     document.documentElement.classList.toggle("dark", nextTheme === "dark")
+    document.documentElement.classList.toggle("light", nextTheme === "light")
   }, [])
 
   React.useEffect(() => {

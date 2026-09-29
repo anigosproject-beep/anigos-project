@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-09-21T03:43:57.102Z",
+  "projectId": "wm8u3z2o",
+  "dataset": "production",
+  "mode": "dry-run",
+  "approvalStatus": "pending",
+  "issues": [
+    "Manifest approvalStatus must be approved before domain seed."
+  ],
+  "create": 0,
+  "existing": 0,
+  "conflicts": 0,
+  "mutations": 0,
+  "details": {
+    "create": [],
+    "existing": [],
+    "conflicts": []
+  }
+}

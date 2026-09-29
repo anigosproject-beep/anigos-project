@@ -1,14 +1,14 @@
 "use client"
 
-import Link from "next/link"
 import type { LucideIcon } from "lucide-react"
 import { ArrowRight } from "lucide-react"
 
+import { VideoFeatureSection } from "@/components/sections/video-feature-section"
 import { PageHero } from "@/components/sections"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { buttonVariants } from "@/components/ui/button"
+import { MotionButtonLink } from "@/components/ui/button"
 import { useLocale } from "@/components/locale-provider"
 import { messages, translate, type TranslationKey } from "@/lib/i18n"
 
@@ -19,6 +19,8 @@ type Topic = {
 }
 
 type CorporateTopicPageProps = {
+  pageKey?: string
+  heroAppearance?: "overlay" | "plain"
   eyebrow: string
   title: string
   description: string
@@ -29,9 +31,17 @@ type CorporateTopicPageProps = {
   topics: Topic[]
   note?: string
   cta?: { label: string; href: string }
+  video?: {
+    eyebrow: { id: string; en: string }
+    title: { id: string; en: string }
+    description: { id: string; en: string }
+    videoTitle: { id: string; en: string }
+  }
 }
 
 export function CorporateTopicPage({
+  pageKey,
+  heroAppearance = "overlay",
   eyebrow,
   title,
   description,
@@ -42,6 +52,7 @@ export function CorporateTopicPage({
   topics,
   note,
   cta,
+  video,
 }: CorporateTopicPageProps) {
   const { locale } = useLocale()
   const localize = (value: string) =>
@@ -56,6 +67,8 @@ export function CorporateTopicPage({
         title={localize(title)}
         description={localize(description)}
         image="/images/page-hero/tentang-kami.webp"
+        pageKey={pageKey}
+        appearance={heroAppearance}
         breadcrumbs={breadcrumbs.map((breadcrumb) => ({
           ...breadcrumb,
           label: localize(breadcrumb.label),
@@ -69,19 +82,24 @@ export function CorporateTopicPage({
             title={localize(introTitle)}
             description={localize(introDescription)}
           />
-          <div className="rounded-4xl bg-foreground p-8 text-background shadow-xl sm:p-12">
-            <Badge variant="secondary" className="bg-background/10 text-background">
+          <div className="rounded-4xl bg-base-color p-8 text-base-color-foreground shadow-xl sm:p-12">
+            <Badge
+              variant="secondary"
+              className="bg-base-color-foreground/10 text-base-color-foreground"
+            >
               {translate(locale, "howWeWork")}
             </Badge>
-            <Heading level={2} className="mt-6 text-background">
+            <Heading level={2} className="mt-6 text-base-color-foreground">
               {translate(locale, "actionPrinciplesTitle")}
             </Heading>
-            <Text variant="lead" className="mt-5 text-background/70">
+            <Text variant="lead" className="mt-5 text-base-color-foreground/70">
               {translate(locale, "actionPrinciplesDescription")}
             </Text>
           </div>
         </div>
       </section>
+
+      {video ? <VideoFeatureSection {...video} /> : null}
 
       <section className="border-b border-border bg-muted/40 py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -91,14 +109,19 @@ export function CorporateTopicPage({
               title={translate(locale, "consistentPracticeTitle")}
               description={translate(locale, "referenceSummary")}
             />
-            <p className="text-sm font-medium text-primary">01 — {String(topics.length).padStart(2, "0")}</p>
+            <p className="text-sm font-medium text-primary">
+              01 — {String(topics.length).padStart(2, "0")}
+            </p>
           </div>
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {topics.map((topic, index) => {
               const Icon = topic.icon
 
               return (
-                <Card key={topic.title} className="h-full bg-background transition-transform duration-300 hover:-translate-y-1">
+                <Card
+                  key={topic.title}
+                  className="h-full bg-background transition-transform duration-300 hover:-translate-y-1"
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -108,10 +131,15 @@ export function CorporateTopicPage({
                         {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
-                    <CardTitle className="mt-5">                    {localize(topic.title)}</CardTitle>
+                    <CardTitle className="mt-5">
+                      {" "}
+                      {localize(topic.title)}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm leading-6 text-muted-foreground">{localize(topic.description)}</p>
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      {localize(topic.description)}
+                    </p>
                   </CardContent>
                 </Card>
               )
@@ -124,7 +152,9 @@ export function CorporateTopicPage({
         <section className="border-b border-border bg-background py-16 lg:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="rounded-3xl border border-dashed border-border bg-muted/30 p-6 sm:p-8">
-              <p className="text-sm leading-6 text-muted-foreground">{localize(note)}</p>
+              <p className="text-sm leading-6 text-muted-foreground">
+                {localize(note)}
+              </p>
             </div>
           </div>
         </section>
@@ -132,15 +162,19 @@ export function CorporateTopicPage({
 
       {cta ? (
         <section className="bg-background py-16 lg:py-20">
-          <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <div>
-              <p className="text-sm font-medium text-primary">{translate(locale, "continueExploring")}</p>
-              <Heading level={2} className="mt-2">{translate(locale, "serveNeedsTitle")}</Heading>
+              <p className="text-sm font-medium text-primary">
+                {translate(locale, "continueExploring")}
+              </p>
+              <Heading level={2} className="mt-2">
+                {translate(locale, "serveNeedsTitle")}
+              </Heading>
             </div>
-            <Link href={cta.href} className={buttonVariants({ className: "w-fit" })}>
+            <MotionButtonLink href={cta.href} className="w-fit">
               {localize(cta.label)}
               <ArrowRight data-icon="inline-end" />
-            </Link>
+            </MotionButtonLink>
           </div>
         </section>
       ) : null}
