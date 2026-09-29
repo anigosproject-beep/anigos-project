@@ -74,23 +74,23 @@ const fallbackProductOptions: ProductOption[] = [
 ]
 
 const coverageAreas = [
-  { value: "Bekasi", label: "Bekasi", province: "Jawa Barat" },
-  { value: "Palembang", label: "Palembang", province: "Sumatera Selatan" },
-  { value: "Medan", label: "Medan", province: "Sumatera Utara" },
+  { value: "Bekasi", label: "coverageBekasi", province: "provinceWestJava" },
+  { value: "Palembang", label: "coveragePalembang", province: "provinceSouthSumatra" },
+  { value: "Medan", label: "coverageMedan", province: "provinceNorthSumatra" },
   {
     value: "Palangka Raya",
-    label: "Palangka Raya",
-    province: "Kalimantan Tengah",
+    label: "coveragePalangkaRaya",
+    province: "provinceCentralKalimantan",
   },
   {
     value: "Sulawesi Utara",
-    label: "Sulawesi — titik operasional 1",
-    province: "Sulawesi Utara",
+    label: "coverageNorthSulawesi",
+    province: "provinceNorthSulawesi",
   },
   {
     value: "Sulawesi Selatan",
-    label: "Sulawesi — titik operasional 2",
-    province: "Sulawesi Selatan",
+    label: "coverageSouthSulawesi",
+    province: "provinceSouthSulawesi",
   },
 ] as const
 
@@ -181,35 +181,47 @@ export default function AjukanPenawaranPage() {
   const selectedCoverage = coverageAreas.find(
     (area) => area.value === form.region
   )
+  const selectedSchedule = scheduleOptions.find(
+    (option) => option.value === form.schedule
+  )
   const subtotal = volume * basePrice
   const estimatedPbbkb = subtotal * (taxRate / 100)
   const estimatedTotal = subtotal + estimatedPbbkb
   const formatCurrency = (value: number) =>
-    value > 0 ? `Rp ${value.toLocaleString("id-ID")}` : "Belum dihitung"
+    value > 0
+      ? new Intl.NumberFormat(locale === "id" ? "id-ID" : "en-US", {
+          style: "currency",
+          currency: "IDR",
+          maximumFractionDigits: 0,
+        }).format(value)
+      : translate(locale, "notCalculated")
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const subject = `Pengajuan Penawaran BBM - ${form.company || "Calon pelanggan"}`
+    const subject = `${translate(locale, "offerEmailSubject")} - ${form.company || translate(locale, "prospectiveCustomer")}`
+    const deliveryRegion = selectedCoverage
+      ? `${translate(locale, selectedCoverage.label)} · ${translate(locale, selectedCoverage.province)}`
+      : form.region
     const body = [
-      `Produk: ${form.product}`,
-      `Volume: ${Number(form.volume).toLocaleString("id-ID")} liter`,
-      `Harga dasar per liter: ${formatCurrency(basePrice)} (${form.product})`,
-      `Tarif PBBKB yang digunakan: ${taxRate}%`,
-      `Estimasi PBBKB: ${formatCurrency(estimatedPbbkb)}`,
-      `Estimasi total: ${formatCurrency(estimatedTotal)}`,
-      `Wilayah: ${form.region}`,
-      `Jadwal: ${form.schedule}`,
+      `${translate(locale, "fuelType")}: ${form.product}`,
+      `${translate(locale, "requiredVolume")}: ${Number(form.volume).toLocaleString(locale === "id" ? "id-ID" : "en-US")} ${translate(locale, "liter")}`,
+      `${translate(locale, "basePricePerLiter")}: ${formatCurrency(basePrice)} (${form.product})`,
+      `${translate(locale, "pbbkbRate")}: ${taxRate}%`,
+      `${translate(locale, "estimatedPbbkb")}: ${formatCurrency(estimatedPbbkb)}`,
+      `${translate(locale, "estimatedTotal")}: ${formatCurrency(estimatedTotal)}`,
+      `${translate(locale, "deliveryRegion")}: ${deliveryRegion}`,
+      `${translate(locale, "deliverySchedule")}: ${selectedSchedule ? translate(locale, selectedSchedule.label) : form.schedule}`,
       ...(form.schedule === "Terjadwal" && deliveryDate
         ? [
-            `Tanggal penerimaan yang diharapkan: ${format(deliveryDate, "dd/MM/yyyy")}`,
+            `${translate(locale, "expectedReceivingDate")}: ${format(deliveryDate, locale === "id" ? "dd/MM/yyyy" : "MMM d, yyyy")}`,
           ]
         : []),
-      `Perusahaan: ${form.company}`,
-      `Narahubung: ${form.contact}`,
-      `Email: ${form.email}`,
-      `Telepon: ${form.phone}`,
-      `Alamat: ${form.address}`,
-      `Catatan: ${form.notes}`,
+      `${translate(locale, "companyName")}: ${form.company}`,
+      `${translate(locale, "contactName")}: ${form.contact}`,
+      `${translate(locale, "emailAddress")}: ${form.email}`,
+      `${translate(locale, "phoneNumber")}: ${form.phone}`,
+      `${translate(locale, "unloadingAddress")}: ${form.address}`,
+      `${translate(locale, "requirementNotes")}: ${form.notes}`,
     ].join("\n")
 
     window.location.href = `mailto:anigospetro@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
@@ -363,7 +375,7 @@ export default function AjukanPenawaranPage() {
                                   value={area.value}
                                   className="rounded-xl px-3 py-2 text-xs leading-5"
                                 >
-                                  {area.label} · {area.province}
+                                  {translate(locale, area.label)} · {translate(locale, area.province)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -629,7 +641,9 @@ export default function AjukanPenawaranPage() {
                     {translate(locale, "region")}
                   </span>
                   <span className="text-right font-medium">
-                    {form.region || translate(locale, "notFilled")}
+                    {selectedCoverage
+                      ? translate(locale, selectedCoverage.label)
+                      : form.region || translate(locale, "notFilled")}
                   </span>
                 </div>
                 <div className="flex justify-between gap-4">
@@ -637,7 +651,9 @@ export default function AjukanPenawaranPage() {
                     {translate(locale, "schedule")}
                   </span>
                   <span className="text-right font-medium">
-                    {form.schedule || translate(locale, "notFilled")}
+                    {selectedSchedule
+                      ? translate(locale, selectedSchedule.label)
+                      : form.schedule || translate(locale, "notFilled")}
                   </span>
                 </div>
               </div>
@@ -677,7 +693,7 @@ export default function AjukanPenawaranPage() {
                             value={area.value}
                             className="rounded-xl px-3 py-2 text-sm leading-5"
                           >
-                            {area.label} · {area.province}
+                            {translate(locale, area.label)} · {translate(locale, area.province)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -704,7 +720,9 @@ export default function AjukanPenawaranPage() {
                       className="text-[11px] font-medium"
                     >
                       {translate(locale, "pbbkbRate")}{" "}
-                      {selectedCoverage ? `(${selectedCoverage.province})` : ""}
+                      {selectedCoverage
+                        ? `(${translate(locale, selectedCoverage.province)})`
+                        : ""}
                     </label>
                     <Input
                       id="pbbkb-rate"

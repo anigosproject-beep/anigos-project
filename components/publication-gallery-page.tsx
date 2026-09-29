@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react"
 
 import { GalleryLightbox } from "@/components/commissioner-gallery"
+import { GalleryThumbnailSelector } from "@/components/gallery-thumbnail-selector"
 import { PageHero } from "@/components/sections"
 import { useLocale } from "@/components/locale-provider"
 import { translate, type Locale } from "@/lib/i18n"
@@ -182,7 +183,6 @@ export function PublicationGalleryPage() {
   const [content, setContent] = React.useState<PartnershipPageResponse | null>(
     null
   )
-  const [api, setApi] = React.useState<CarouselApi>()
   const [selectedIndex, setSelectedIndex] = React.useState(0)
   const [isLoading, setIsLoading] = React.useState(true)
   const [selectedCategory, setSelectedCategory] =
@@ -218,13 +218,6 @@ export function PublicationGalleryPage() {
     sanityPartners.length > 0 ? sanityPartners : mockActivePartners
   const images = React.useMemo(() => getGalleryEntries(partners), [partners])
   const activeImage = images[selectedIndex] ?? images[0]
-
-  const selectImage = (index: number) => {
-    if (images.length === 0) return
-    const nextIndex = (index + images.length) % images.length
-    setSelectedIndex(nextIndex)
-    api?.scrollTo(nextIndex)
-  }
 
   return (
     <main>
@@ -298,10 +291,11 @@ export function PublicationGalleryPage() {
               </Dialog>
 
               <div className="flex min-w-0 flex-col">
-                <div className="min-h-16 text-sm leading-6 text-muted-foreground">
+                <div className="h-20 overflow-hidden text-sm leading-6 text-muted-foreground">
                   <AnimatePresence initial={false} mode="wait">
                     <motion.p
                       key={activeImage.src}
+                      className="line-clamp-3"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
@@ -316,82 +310,20 @@ export function PublicationGalleryPage() {
                   </AnimatePresence>
                 </div>
 
-                <Carousel
-                  setApi={setApi}
-                  opts={{ align: "start", containScroll: "trimSnaps" }}
+                <GalleryThumbnailSelector
+                  images={images}
+                  selectedIndex={selectedIndex}
+                  onSelect={setSelectedIndex}
+                  photoLabel={(index) =>
+                    `${translate(locale, "galleryShowPhoto")} ${index}`
+                  }
+                  previousLabel={translate(locale, "previousPhoto")}
+                  nextLabel={translate(locale, "nextPhoto")}
+                  positionLabel={translate(locale, "galleryPhotoPosition")}
                   className="relative mt-auto pb-10"
-                >
-                  <div
-                    className="overflow-hidden"
-                    style={{
-                      maskImage:
-                        "radial-gradient(ellipse 58% 260% at center, #000 78%, transparent 100%)",
-                      WebkitMaskImage:
-                        "radial-gradient(ellipse 58% 260% at center, #000 78%, transparent 100%)",
-                    }}
-                  >
-                    <CarouselContent className="!ml-0 gap-3 px-2">
-                      {images.map((image, index) => (
-                        <CarouselItem
-                          key={`${image.src}-${index}`}
-                          className="basis-1/4 !pl-0 sm:basis-1/5 lg:basis-1/4"
-                        >
-                          <button
-                            type="button"
-                            aria-label={`${translate(locale, "galleryShowPhoto")} ${index + 1}`}
-                            aria-pressed={index === selectedIndex}
-                            onClick={() => selectImage(index)}
-                            className={`group relative block aspect-square w-full overflow-hidden rounded-xl border-2 bg-background transition-[border-color,opacity,box-shadow] focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none ${
-                              index === selectedIndex
-                                ? "border-foreground shadow-md"
-                                : "border-foreground/20 opacity-75 hover:border-foreground/60 hover:opacity-100"
-                            }`}
-                          >
-                            <Image
-                              src={image.src}
-                              alt=""
-                              width={220}
-                              height={220}
-                              className="absolute inset-0 size-full object-cover"
-                            />
-                            <span
-                              aria-hidden="true"
-                              className={`absolute inset-x-2 bottom-1.5 z-10 h-0.5 rounded-full ${index === selectedIndex ? "bg-base-color" : "bg-transparent group-hover:bg-foreground/40"}`}
-                            />
-                          </button>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                  </div>
-                  <button
-                    type="button"
-                    aria-label={
-                      translate(locale, "previousPhoto")
-                    }
-                    onClick={() => selectImage(selectedIndex - 1)}
-                    className="absolute bottom-0 left-0 z-20 flex size-7 items-center justify-center rounded-full border border-border bg-background/90 text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
-                  >
-                    <ChevronLeft className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={
-                      translate(locale, "nextPhoto")
-                    }
-                    onClick={() => selectImage(selectedIndex + 1)}
-                    className="absolute bottom-0 left-9 z-20 flex size-7 items-center justify-center rounded-full border border-border bg-background/90 text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
-                  >
-                    <ChevronRight className="size-4" aria-hidden="true" />
-                  </button>
-                  <p
-                    aria-live="polite"
-                    className="absolute bottom-0 left-[4.75rem] z-20 flex h-7 items-center text-xs text-muted-foreground"
-                  >
-                    {translate(locale, "galleryPhotoPosition")
-                      .replace("{current}", String(selectedIndex + 1))
-                      .replace("{total}", String(images.length))}
-                  </p>
-                </Carousel>
+                  maskedEdges
+                  accent="primary"
+                />
               </div>
             </div>
           ) : (

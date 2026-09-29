@@ -77,8 +77,8 @@ function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
                 <NavigationMenuTrigger
                   className={
                     isSolid
-                      ? "text-foreground hover:bg-muted hover:text-foreground data-popup-open:!bg-muted data-popup-open:!text-foreground data-open:!bg-muted data-open:!text-foreground"
-                      : "text-white hover:bg-white/10 hover:text-white data-popup-open:!bg-white/10 data-popup-open:!text-white data-open:!bg-white/10 data-open:!text-white"
+                      ? "text-foreground hover:bg-muted focus:bg-muted active:bg-muted hover:text-foreground data-popup-open:!bg-muted data-popup-open:!text-foreground data-open:!bg-muted data-open:!text-foreground"
+                      : "text-white hover:bg-white/10 focus:bg-white/10 active:bg-white/10 hover:text-white data-popup-open:!bg-white/10 data-popup-open:!text-white data-open:!bg-white/10 data-open:!text-white"
                   }
                 >
                   {translate(locale, navigationLabels[item.label] ?? "home")}
@@ -118,8 +118,8 @@ function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
                 href={item.href}
                 className={
                   isSolid
-                    ? "text-foreground hover:bg-muted hover:text-foreground data-[active=true]:text-foreground"
-                    : "text-white hover:bg-white/10 hover:text-white"
+                    ? "text-foreground hover:bg-muted focus:bg-muted active:bg-muted hover:text-foreground data-[active=true]:bg-muted/50 data-[active=true]:focus:bg-muted data-[active=true]:text-foreground"
+                    : "text-white hover:bg-white/10 focus:bg-white/10 active:bg-white/10 hover:text-white data-[active=true]:bg-transparent data-[active=true]:focus:bg-white/10"
                 }
               >
                 {translate(locale, navigationLabels[item.label] ?? "home")}
@@ -337,11 +337,11 @@ export function Header() {
               variant={isSolid ? "active" : "idle"}
             />
             <MotionButtonLink
-              href="/produk/penawaran"
+              href="/hubungi-kami"
               className={
                 isSolid
-                  ? "bg-base-color text-base-color-foreground hover:bg-base-color/90"
-                  : "bg-white text-black hover:bg-white/90"
+                  ? "bg-base-color text-base-color-foreground hover:bg-base-color/90 hover:text-base-color-foreground focus-visible:text-base-color-foreground"
+                  : "bg-white text-black hover:bg-white/90 hover:text-black focus-visible:bg-white focus-visible:text-black active:bg-white/80 active:text-black"
               }
             >
               {content.contact}
@@ -386,7 +386,7 @@ export function Header() {
                 />
               ))}
               <MotionButtonLink
-                href="/produk/penawaran"
+                href="/hubungi-kami"
                 className="mt-3 w-full"
               >
                 {content.contact}

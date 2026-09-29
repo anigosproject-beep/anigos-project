@@ -394,7 +394,9 @@ export default function JangkauanPage() {
           </div>
           <Link
             href="/produk/penawaran/ajukan"
-            className={buttonVariants({ className: "bg-white text-neutral-950 hover:bg-white/90" })}
+            className={buttonVariants({
+              className: "shadow-lg",
+            })}
           >
             {translate(locale, "submitRequirement")}
             <ArrowRight data-icon="inline-end" />

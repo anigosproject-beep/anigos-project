@@ -12,14 +12,8 @@ import {
   GalleryLightbox,
   type GalleryImage,
 } from "@/components/commissioner-gallery"
+import { GalleryThumbnailSelector } from "@/components/gallery-thumbnail-selector"
 import { SectionHeading, Text } from "@/components/typography"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -193,26 +187,20 @@ function PartnershipGallery({
   images: Array<{ url?: string; alt?: string; caption?: string }>
 }) {
   const { locale } = useLocale()
-  const [api, setApi] = React.useState<CarouselApi>()
   const [selectedIndex, setSelectedIndex] = React.useState(0)
   const activeImage = images[selectedIndex] ?? images[0]
-  const selectImage = (index: number) => {
-    const nextIndex = (index + images.length) % images.length
-    setSelectedIndex(nextIndex)
-    api?.scrollTo(nextIndex)
-  }
 
   if (!activeImage?.url) return null
 
   return (
     <div className="mt-10 grid gap-8 lg:h-[min(60vw,calc(100svh-18rem))] lg:min-h-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(260px,0.65fr)] lg:items-stretch">
-      <div className="overflow-hidden rounded-2xl bg-background">
+      <div className="relative aspect-[4/3] min-h-0 overflow-hidden rounded-2xl bg-background lg:aspect-auto">
         <Dialog>
           <DialogTrigger
             render={
               <button
                 type="button"
-                className="group relative block size-full min-h-0 cursor-zoom-in bg-muted/20 text-left focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
+                className="group absolute inset-0 block size-full touch-manipulation cursor-zoom-in bg-muted/20 text-left focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
                 aria-label={`${translate(locale, "partnershipPreview")} ${partnerName}`}
               />
             }
@@ -250,10 +238,11 @@ function PartnershipGallery({
       </div>
 
       <div className="min-w-0 lg:flex lg:h-full lg:flex-col">
-        <div className="min-h-12 text-sm leading-6 text-muted-foreground">
+        <div className="h-12 overflow-hidden text-sm leading-6 text-muted-foreground">
           <AnimatePresence initial={false} mode="wait">
             <motion.p
               key={`${activeImage.url}-${activeImage.alt ?? ""}`}
+              className="line-clamp-2"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -266,80 +255,18 @@ function PartnershipGallery({
           </AnimatePresence>
         </div>
 
-        <Carousel
-          setApi={setApi}
-          opts={{ align: "start", containScroll: "trimSnaps" }}
+        <GalleryThumbnailSelector
+          images={images.flatMap((image) => (image.url ? [{ src: image.url }] : []))}
+          selectedIndex={selectedIndex}
+          onSelect={setSelectedIndex}
+          photoLabel={(index) =>
+            `${translate(locale, "galleryPhotoSelect")} ${index} ${partnerName}`
+          }
+          previousLabel={translate(locale, "previousPhoto")}
+          nextLabel={translate(locale, "nextPhoto")}
+          positionLabel={translate(locale, "galleryPhotoPosition")}
           className="mt-4 pb-10 lg:mt-auto"
-        >
-          <CarouselContent className="!ml-0 gap-3 px-2">
-            {images.map((image, index) => (
-              <CarouselItem
-                key={`${image.url}-${index}`}
-                className="basis-1/4 !pl-0 sm:basis-1/5 lg:basis-1/4"
-              >
-                <button
-                  type="button"
-                  aria-label={`${translate(locale, "galleryPhotoSelect")} ${index + 1} ${partnerName}`}
-                  aria-pressed={index === selectedIndex}
-                  onClick={() => selectImage(index)}
-                  className={`group relative block aspect-square w-full overflow-hidden rounded-xl border-2 bg-background text-left shadow-sm transition-[border-color,opacity,box-shadow] focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none ${
-                    index === selectedIndex
-                      ? "border-foreground bg-foreground/5 shadow-md"
-                      : "border-foreground/20 bg-muted/30 opacity-75 hover:border-foreground/60 hover:opacity-100"
-                  }`}
-                >
-                  {image.url ? (
-                    <Image
-                      src={image.url}
-                      alt=""
-                      width={180}
-                      height={180}
-                      className="absolute inset-0 size-full object-cover"
-                    />
-                  ) : null}
-                  <span
-                    aria-hidden="true"
-                    className={`absolute inset-x-2 bottom-1.5 z-10 h-0.5 rounded-full transition-colors ${
-                      index === selectedIndex
-                        ? "bg-foreground"
-                        : "bg-transparent group-hover:bg-foreground/40"
-                    }`}
-                  />
-                </button>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-muted/40 to-transparent"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-muted/40 to-transparent"
-          />
-          <button
-            type="button"
-            aria-label={translate(locale, "previousPhoto")}
-            onClick={() => selectImage(selectedIndex - 1)}
-            className="absolute bottom-0 left-0 flex size-7 items-center justify-center rounded-full border border-border bg-background/90 text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
-          >
-            <ChevronLeft className="size-4" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            aria-label={translate(locale, "nextPhoto")}
-            onClick={() => selectImage(selectedIndex + 1)}
-            className="absolute bottom-0 left-9 flex size-7 items-center justify-center rounded-full border border-border bg-background/90 text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
-          >
-            <ChevronRight className="size-4" aria-hidden="true" />
-          </button>
-          <p
-            aria-live="polite"
-            className="absolute bottom-0 left-[4.75rem] flex h-7 items-center text-xs text-muted-foreground"
-          >
-            {translate(locale, "galleryPhotoPosition").replace("{current}", String(selectedIndex + 1)).replace("{total}", String(images.length))}
-          </p>
-        </Carousel>
+        />
       </div>
     </div>
   )

@@ -61,11 +61,11 @@ function FeatureImageSection({
       />
       <div
         aria-hidden="true"
-        className="section-image-dynamic-overlay absolute inset-0 -z-10 backdrop-blur-[1px] bg-[linear-gradient(110deg,rgba(0,0,0,0.42)_0%,rgba(0,0,0,0.22)_42%,rgba(0,0,0,0.06)_100%)]"
+        className="section-image-dynamic-overlay absolute inset-0 -z-10 backdrop-blur-[1px] bg-[linear-gradient(110deg,rgba(0,0,0,0.52)_0%,rgba(0,0,0,0.34)_42%,rgba(0,0,0,0.14)_100%)]"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 -z-10 h-[72%] bg-gradient-to-t from-black/62 via-black/24 to-transparent"
+        className="absolute inset-x-0 bottom-0 -z-10 h-[76%] bg-gradient-to-t from-black/72 via-black/34 to-transparent"
       />
 
       <SectionContainer className="flex min-h-[inherit] items-center px-4 py-12 sm:px-6 sm:py-16 lg:py-20">

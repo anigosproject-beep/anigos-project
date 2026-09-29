@@ -327,15 +327,15 @@ export function HomeHero() {
       ))}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.3)_0%,rgba(0,0,0,0.18)_52%,rgba(0,0,0,0.07)_100%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.42)_0%,rgba(0,0,0,0.28)_52%,rgba(0,0,0,0.12)_100%)]"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_18%_72%,rgba(0,0,0,0.3),transparent_54%)]"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_18%_72%,rgba(0,0,0,0.42),transparent_58%)]"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 -z-10 h-[62%] bg-gradient-to-t from-black/65 via-black/28 to-transparent"
+        className="absolute inset-x-0 bottom-0 -z-10 h-[70%] bg-gradient-to-t from-black/72 via-black/36 to-transparent"
       />
 
       <div className="relative mx-auto flex min-h-[100svh] w-full max-w-7xl flex-col justify-end px-4 pt-[calc(var(--site-header-height,9rem)+1rem)] pb-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10">

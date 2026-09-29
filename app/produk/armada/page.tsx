@@ -5,9 +5,10 @@ import Link from "next/link"
 import * as React from "react"
 import {ArrowRight, Images} from "lucide-react"
 
-import {PageHero, MarineFuelShowcase} from "@/components/sections"
+import {PageHero} from "@/components/sections"
 import {SectionContainer, SectionShell} from "@/components/layout/section-shell"
 import {Heading, Text} from "@/components/typography"
+import {GalleryThumbnailSelector} from "@/components/gallery-thumbnail-selector"
 import {Badge} from "@/components/ui/badge"
 import {buttonVariants} from "@/components/ui/button"
 import {Dialog, DialogContent, DialogDescription, DialogTitle} from "@/components/ui/dialog"
@@ -92,12 +93,6 @@ export default function ArmadaPage() {
 
   const galleryImages = getGalleryImages(fleet)
   const selectedImage = galleryImages[galleryImageIndex] ?? galleryImages[0]
-  const capacities = [...new Set(fleet.map((option) => option.capacity).filter(
-    (capacity): capacity is number => typeof capacity === "number" && capacity > 0,
-  ))].sort((first, second) => first - second)
-  const fleetCapacities = capacities.length
-    ? capacities
-    : [5000, 8000, 10000, 16000, 24000, 30000]
 
   return (
     <main>
@@ -116,38 +111,24 @@ export default function ArmadaPage() {
       <SectionShell id="armada-darat" className="bg-muted/40 py-20 sm:py-24 lg:py-32">
         <SectionContainer>
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
-            <div className="grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4">
-              {galleryImages.slice(0, 3).map((image, index) => (
-                <button
-                  key={image.url}
-                  type="button"
-                  className={`group relative overflow-hidden rounded-3xl bg-muted text-left ${
-                    index === 0
-                      ? "row-span-2 min-h-[22rem] sm:min-h-[30rem]"
-                      : "aspect-[4/3]"
-                  }`}
-                  onClick={() => {
-                    setGalleryImageIndex(index)
-                    setGalleryOpen(true)
-                  }}
-                  aria-label={`${translate(locale, "fleetOpenPhoto")} ${index + 1}`}
-                >
-                  <Image
-                    src={image.url}
-                    alt={image.alt}
-                    fill
-                    sizes={index === 0 ? "(min-width: 1024px) 38vw, 50vw" : "(min-width: 1024px) 19vw, 50vw"}
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
-                  {index === 0 ? (
-                    <span className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-full bg-background/90 px-3 py-2 text-xs font-medium text-foreground sm:right-4 sm:bottom-4">
-                      <Images className="size-4" />
-                      {translate(locale, "fleetGallery")}
-                    </span>
-                  ) : null}
-                </button>
-              ))}
-            </div>
+            <button
+              type="button"
+              className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted text-left"
+              onClick={() => setGalleryOpen(true)}
+              aria-label={`${translate(locale, "fleetOpenPhoto")} ${galleryImageIndex + 1}`}
+            >
+              <Image
+                src={selectedImage.url}
+                alt={selectedImage.alt}
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              />
+              <span className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-full bg-background/90 px-3 py-2 text-xs font-medium text-foreground sm:right-4 sm:bottom-4">
+                <Images aria-hidden="true" className="size-4" />
+                {translate(locale, "fleetGallery")}
+              </span>
+            </button>
 
             <div className="max-w-xl">
               <Badge variant="secondary">{translate(locale, "landServiceEyebrow")}</Badge>
@@ -158,23 +139,6 @@ export default function ArmadaPage() {
                 {translate(locale, "landServiceDescription")}
               </Text>
 
-              <div className="mt-8 rounded-2xl border border-border bg-background p-5 sm:p-6">
-                <p className="text-sm font-semibold">{translate(locale, "serviceFleetCapacity")}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {fleetCapacities.map((capacity) => (
-                    <span
-                      key={capacity}
-                      className="rounded-full border border-border bg-muted/50 px-3 py-1.5 text-sm font-medium"
-                    >
-                      {capacity.toLocaleString(locale === "id" ? "id-ID" : "en-US")} L
-                    </span>
-                  ))}
-                </div>
-                <p className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground">
-                  {translate(locale, "serviceFleetCoverage")}
-                </p>
-              </div>
-
               <Link
                 href="/produk/penawaran/ajukan"
                 className={buttonVariants({className: "mt-7"})}
@@ -182,12 +146,24 @@ export default function ArmadaPage() {
                 {translate(locale, "submitRequirement")}
                 <ArrowRight data-icon="inline-end" />
               </Link>
+
+              <GalleryThumbnailSelector
+                images={galleryImages.map(({url}) => ({src: url}))}
+                selectedIndex={galleryImageIndex}
+                onSelect={setGalleryImageIndex}
+                photoLabel={(index) =>
+                  `${translate(locale, "fleetChoosePhoto")} ${index}`
+                }
+                previousLabel={translate(locale, "previousPhoto")}
+                nextLabel={translate(locale, "nextPhoto")}
+                positionLabel={translate(locale, "galleryPhotoPosition")}
+                className="mt-8 pb-10"
+                accent="primary"
+              />
             </div>
           </div>
         </SectionContainer>
       </SectionShell>
-
-      <MarineFuelShowcase />
 
       <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
         <DialogContent className="max-w-6xl gap-4 p-4 sm:p-6">

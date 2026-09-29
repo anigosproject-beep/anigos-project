@@ -29,6 +29,7 @@ export type HomeContent = {
     slot?: string
     slotId?: string
     image?: { url?: string; alt?: string }
+    video?: { url?: string }
   } | null>
   aspiration?: {
     badge?: string

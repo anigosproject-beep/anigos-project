@@ -106,11 +106,11 @@ export function PageHero({
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.18)_0%,rgba(0,0,0,0.1)_60%,rgba(0,0,0,0.03)_100%)] backdrop-blur-[1px]"
+            className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.34)_58%,rgba(0,0,0,0.16)_100%)] backdrop-blur-[1px]"
           />
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 -z-10 h-[58%] bg-gradient-to-t from-black/54 via-black/20 to-transparent"
+            className="absolute inset-x-0 bottom-0 -z-10 h-[68%] bg-gradient-to-t from-black/72 via-black/34 to-transparent"
           />
         </>
       ) : null}

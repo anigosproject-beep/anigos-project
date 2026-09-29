@@ -7,32 +7,22 @@ import { useState } from "react"
 import {
   ArrowRight,
   Check,
-  CircleAlert,
   ClipboardCheck,
   Droplets,
   FileText,
   Truck,
 } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 
-import { DistributionLinePattern } from "@/components/patterns"
-import { PageHero, VideoFeatureSection } from "@/components/sections"
+import { MarineFuelShowcase, PageHero, VideoFeatureSection } from "@/components/sections"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { buttonVariants } from "@/components/ui/button"
 import { useLocale } from "@/components/locale-provider"
-import { translate, type TranslationKey } from "@/lib/i18n"
+import { translate } from "@/lib/i18n"
 import type {SanityProduct} from "@/lib/sanity-content-types"
 
 const purchaseSteps = [
@@ -62,28 +52,8 @@ const purchaseSteps = [
   },
 ] as const
 
-const productSpecs: [TranslationKey, TranslationKey][] = [
-  ["productType", "productTypeValue"],
-  ["b40Composition", "productCompositionValue"],
-  ["productQualityStandard", "productQualityStandardValue"],
-  ["trademark", "productTrademarkValue"],
-  ["productServiceScale", "productServiceScaleValue"],
-] as const
-
-const b40ChartData = [
-  { component: "productBiodiesel", percentage: 40 },
-  { component: "productDiesel", percentage: 60 },
-]
-
-const b40ChartConfig = {
-  percentage: { label: "b40Composition" },
-  biodiesel: { label: "productBiodiesel", color: "var(--chart-1)" },
-  solar: { label: "productDiesel", color: "var(--chart-2)" },
-} satisfies ChartConfig
-
 export default function KenaliProdukPage() {
   const { locale } = useLocale()
-  const [activeComponent, setActiveComponent] = useState("productBiodiesel")
   const [products, setProducts] = useState<SanityProduct[]>([])
 
   React.useEffect(() => {
@@ -167,157 +137,7 @@ export default function KenaliProdukPage() {
         videoTitle={{id: translate(locale, "productVideoTitleLabel"), en: translate("en", "productVideoTitleLabel")}}
       />
 
-      <section className="border-b border-border bg-background py-24 lg:py-32">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:px-8">
-          <Card>
-            <CardHeader>
-              <Badge variant="secondary" className="w-fit">
-                {translate(locale, "b40Composition")}
-              </Badge>
-              <CardTitle className="mt-4 text-2xl">
-                {translate(locale, "b40CompositionTitle")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-6 grid grid-cols-2 divide-x rounded-2xl border border-border">
-                {b40ChartData.map((item) => {
-                  const isActive = activeComponent === item.component
-                  const configKey =
-                    item.component === "productBiodiesel" ? "biodiesel" : "solar"
-
-                  return (
-                    <button
-                      key={item.component}
-                      type="button"
-                      data-active={isActive}
-                      onClick={() => setActiveComponent(item.component)}
-                      className="flex flex-col gap-1 px-4 py-3 text-left transition-colors data-[active=true]:bg-muted/60"
-                    >
-                      <span className="text-xs text-muted-foreground">
-                        {translate(locale, b40ChartConfig[configKey].label as TranslationKey)}
-                      </span>
-                      <span className="text-2xl font-bold">{item.percentage}%</span>
-                    </button>
-                  )
-                })}
-              </div>
-              <ChartContainer config={b40ChartConfig} className="h-[260px] w-full">
-                <BarChart
-                  accessibilityLayer
-                  data={b40ChartData}
-                  layout="vertical"
-                  margin={{ left: 12, right: 12 }}
-                >
-                  <CartesianGrid horizontal={false} />
-                  <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} unit="%" />
-                  <YAxis
-                    dataKey="component"
-                    type="category"
-                    tickLine={false}
-                    axisLine={false}
-                    width={76}
-                    tickFormatter={(value) => translate(locale, value as TranslationKey)}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        nameKey="percentage"
-                        formatter={(value) => [`${value}%`, translate(locale, "b40Composition")]}
-                      />
-                    }
-                  />
-                  <Bar
-                    dataKey="percentage"
-                    radius={6}
-                  >
-                    {b40ChartData.map((entry) => (
-                      <Cell
-                        key={entry.component}
-                        fill={
-                          entry.component === "Biodiesel"
-                            ? "var(--color-biodiesel)"
-                            : "var(--color-solar)"
-                        }
-                        fillOpacity={entry.component === activeComponent ? 1 : 0.28}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-          <div>
-            <SectionHeading
-              eyebrow={translate(locale, "productUnderstandingEyebrow")}
-              title={translate(locale, "b40ProgramTitle")}
-              description={translate(locale, "b40ProgramDescription")}
-            />
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border p-5">
-                <p className="text-3xl font-semibold text-primary">40%</p>
-                <p className="mt-2 font-medium">Biodiesel</p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {translate(locale, "biodieselShare")}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border p-5">
-                <p className="text-3xl font-semibold text-primary">60%</p>
-                <p className="mt-2 font-medium">Solar/HSD</p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {translate(locale, "dieselShare")}
-                </p>
-              </div>
-            </div>
-            <Text variant="body-muted" className="mt-6 flex items-start gap-2">
-              <CircleAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-              <span>
-              {translate(locale, "compositionNote")}
-              </span>
-            </Text>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative isolate overflow-hidden border-b border-border bg-muted/40 py-24 lg:py-32">
-        <DistributionLinePattern className="text-primary opacity-[0.11] blur-[2px]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-32 top-1/4 size-96 rounded-full bg-primary/15 blur-3xl"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -left-32 bottom-0 size-80 rounded-full bg-chart-2/10 blur-3xl"
-        />
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-12 rounded-[2rem] border border-border/70 bg-background/35 p-6 shadow-sm backdrop-blur-md lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:p-10">
-            <SectionHeading
-              eyebrow={translate(locale, "briefSpecsEyebrow")}
-              title={translate(locale, "briefSpecsTitle")}
-              description={translate(locale, "briefSpecsDescription")}
-            />
-            <Card className="bg-background/80 shadow-lg backdrop-blur-md">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{translate(locale, "information")}</TableHead>
-                      <TableHead>{translate(locale, "details")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {productSpecs.map(([label, value]) => (
-                      <TableRow key={label}>
-                        <TableCell className="font-medium">{translate(locale, label)}</TableCell>
-                        <TableCell className="text-muted-foreground">{value}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      <MarineFuelShowcase variant="product" />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">

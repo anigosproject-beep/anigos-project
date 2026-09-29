@@ -250,12 +250,21 @@ const mediaFields = pageDefinitions.map(({ menu, page }) => {
     title: `${page.title} — Elemen media`,
     type: "array",
     of: [mediaSlot],
-    ...(page.value === "home"
-      ? { components: { input: PageMediaSlotsInput } }
-      : {}),
-    description: `Jumlah slot media untuk halaman ini sudah ditentukan (${page.slots.length}). Item baru tidak dapat ditambahkan setelah seluruh slot tersedia.`,
+    components: { input: PageMediaSlotsInput },
+    options: {
+      sortable: false,
+      disableActions: [
+        "add",
+        "addBefore",
+        "addAfter",
+        "remove",
+        "duplicate",
+        "copy",
+      ],
+    },
+    description: `Slot media halaman ini bersifat tetap (${page.slots.length} slot). Media dan teks yang diizinkan tetap dapat diedit; slot tidak dapat dihapus, ditambah, disalin, diduplikasi, atau dipindahkan.`,
     hidden: ({ document }) => !isSelectedPage(document, menu, page.value),
-    validation: (rule) => rule.max(page.slots.length),
+    validation: (rule) => rule.length(page.slots.length),
   })
 })
 

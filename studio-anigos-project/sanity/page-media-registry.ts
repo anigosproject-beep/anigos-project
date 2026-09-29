@@ -21,7 +21,7 @@ export const pageMediaMenus = [
           },
           {
             id: "home-marine-fuel-background",
-            title: "Latar Marine Fuel",
+            title: "Gambar fallback Marine Fuel",
             sectionName: "Marine Fuel",
             mediaType: "image",
             container: "Latar full-bleed; tinggi 100svh; crop responsif",
@@ -29,6 +29,17 @@ export const pageMediaMenus = [
             expectedRatio: "16:9 disarankan; crop responsif",
             currentSource:
               "/images/distribution/fuel-distribution.png (fallback lokal)",
+          },
+          {
+            id: "home-marine-fuel-video",
+            title: "Video latar Marine Fuel",
+            sectionName: "Marine Fuel",
+            mediaType: "video",
+            container: "Latar full-bleed; tinggi 100svh; crop responsif",
+            fit: "cover",
+            expectedRatio: "16:9 disarankan",
+            currentSource:
+              "Belum ada video; menggunakan gambar fallback Marine Fuel",
           },
           ...Array.from({ length: 4 }, (_, index) => ({
             id: `home-product-logo-${index + 1}`,

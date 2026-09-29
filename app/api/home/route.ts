@@ -8,7 +8,8 @@ const HOME_MEDIA_QUERY = `*[_type == "mediaAsset" && page == "home" && isActive 
 
 const HOME_SUPPORTING_MEDIA_QUERY = `*[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0].homeSlots[]{
   slotId,
-  "image": image{"url": asset->url, "alt": alt}
+  "image": image{"url": asset->url, "alt": alt},
+  "video": {"url": video.asset->url}
 }`
 
 export async function GET(request: NextRequest) {
@@ -23,13 +24,16 @@ export async function GET(request: NextRequest) {
     supportingMediaSlots as Array<{
       slotId?: string
       image?: { url?: string; alt?: string }
+      video?: { url?: string }
     }> | null
   )
-    ?.filter(({ image }) => Boolean(image?.url))
-    .map(({ slotId, image }) => {
+    ?.filter(({ image, video }) => Boolean(image?.url || video?.url))
+    .map(({ slotId, image, video }) => {
       const isAboutBackground = slotId === "home-about-background"
-      const isMarineFuelBackground =
-        slotId === "home-marine-fuel-background"
+      const isMarineFuelBackground = [
+        "home-marine-fuel-background",
+        "home-marine-fuel-video",
+      ].includes(slotId ?? "")
 
       return {
         page: "home",
@@ -42,6 +46,7 @@ export async function GET(request: NextRequest) {
           isAboutBackground || isMarineFuelBackground ? "background" : slotId,
         slotId,
         image,
+        video,
       }
     })
   const mediaSlots = [

@@ -2,9 +2,11 @@
 
 import * as React from "react"
 import Image from "next/image"
+import { X } from "lucide-react"
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
@@ -41,6 +43,7 @@ type LeadershipGalleryProps = {
 }
 
 export function GalleryLightbox({ image }: { image: GalleryImage }) {
+  const { locale } = useLocale()
   const [scale, setScale] = React.useState(1)
   const pointers = React.useRef(new Map<number, { x: number; y: number }>())
   const pinchDistance = React.useRef<number | null>(null)
@@ -88,9 +91,17 @@ export function GalleryLightbox({ image }: { image: GalleryImage }) {
 
   return (
     <DialogContent
+      showCloseButton={false}
       className="fixed inset-0 top-0 left-0 z-50 flex h-dvh !w-screen !max-w-none translate-x-0 translate-y-0 items-center justify-center gap-0 rounded-none border-0 bg-transparent p-0 text-white shadow-none ring-0 outline-none"
       aria-describedby={`gallery-description-${image.src.replace(/[^a-z0-9]/gi, "-")}`}
     >
+      <DialogClose
+        aria-label={translate(locale, "dialogClose")}
+        title={translate(locale, "dialogClose")}
+        className="absolute top-4 right-4 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/40 bg-black/80 text-white shadow-xl backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-200 hover:scale-105 hover:border-white hover:bg-white hover:text-black hover:shadow-2xl active:scale-95 active:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:top-6 sm:right-6"
+      >
+        <X aria-hidden="true" className="size-5" />
+      </DialogClose>
       <DialogTitle className="sr-only">{image.caption}</DialogTitle>
       <DialogDescription
         id={`gallery-description-${image.src.replace(/[^a-z0-9]/gi, "-")}`}

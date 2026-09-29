@@ -3,9 +3,11 @@
 import Link from "next/link"
 import {
   ArrowRight,
+  ClipboardList,
   CircleAlert,
   ClipboardCheck,
   FileText,
+  Handshake,
   MapPin,
   MessageSquareText,
   PackageCheck,
@@ -19,7 +21,6 @@ import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 
@@ -64,6 +65,24 @@ const offerSteps = [
     title: "offerStepThree",
     description: "offerStepThreeDescription",
     icon: ArrowRight,
+  },
+] as const
+
+const discussionItems = [
+  {
+    title: "commercialTerms",
+    description: "offerCommercialDescription",
+    icon: Handshake,
+  },
+  {
+    title: "distributionDetails",
+    description: "offerDistributionDescription",
+    icon: Truck,
+  },
+  {
+    title: "supportingData",
+    description: "supportingDataDescription",
+    icon: ClipboardList,
   },
 ] as const
 
@@ -161,45 +180,58 @@ export default function PenawaranPage() {
         </SectionContainer>
       </SectionShell>
 
-      <SectionShell className="bg-muted/40 py-24 lg:py-32">
-        <SectionContainer className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-20">
-          <SectionHeading
-            eyebrow={translate(locale, "discussionScopeEyebrow")}
-            title={translate(locale, "discussionScopeTitle")}
-            description={translate(locale, "discussionScopeDescription")}
-          />
-          <div className="flex items-start gap-3 rounded-2xl border border-border bg-background/70 p-4">
-            <CircleAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-            <Text variant="small">
-              {translate(locale, "offerScopeNotice")}
-            </Text>
-          </div>
-          <Card>
-            <CardContent className="p-6 lg:p-8">
-              <div className="space-y-6">
-                <div>
-                  <p className="font-medium">{translate(locale, "commercialTerms")}</p>
-                  <Text variant="body-muted" className="mt-2">
-                    {translate(locale, "offerCommercialDescription")}
-                  </Text>
-                </div>
-                <Separator />
-                <div>
-                  <p className="font-medium">{translate(locale, "distributionDetails")}</p>
-                  <Text variant="body-muted" className="mt-2">
-                    {translate(locale, "offerDistributionDescription")}
-                  </Text>
-                </div>
-                <Separator />
-                <div>
-                  <p className="font-medium">{translate(locale, "supportingData")}</p>
-                  <Text variant="body-muted" className="mt-2">
-                    {translate(locale, "supportingDataDescription")}
-                  </Text>
-                </div>
+      <SectionShell className="relative isolate overflow-hidden bg-muted/40 py-16 sm:py-20 lg:py-24">
+        <DistributionLinePattern className="text-primary opacity-[0.07] blur-[2px]" />
+        <SectionContainer className="relative z-10 space-y-8 lg:space-y-10">
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
+            <SectionHeading
+              className="max-w-3xl"
+              eyebrow={translate(locale, "discussionScopeEyebrow")}
+              title={translate(locale, "discussionScopeTitle")}
+              description={translate(locale, "discussionScopeDescription")}
+            />
+            <div className="flex items-start gap-4 rounded-2xl border border-primary/15 bg-background/85 p-5 shadow-sm sm:p-6">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <CircleAlert aria-hidden="true" className="size-5" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold">
+                  {translate(locale, "offerScopeNoticeLabel")}
+                </p>
+                <Text variant="small" className="mt-1.5">
+                  {translate(locale, "offerScopeNotice")}
+                </Text>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {discussionItems.map((item, index) => {
+              const Icon = item.icon
+
+              return (
+                <article
+                  key={item.title}
+                  className="h-full rounded-3xl border border-border/80 bg-background/90 p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6 lg:p-7"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <Icon aria-hidden="true" className="size-5" />
+                    </span>
+                    <span className="text-xs font-semibold tracking-[0.16em] text-muted-foreground">
+                      0{index + 1}
+                    </span>
+                  </div>
+                  <h3 className="mt-6 text-base font-semibold tracking-tight sm:text-lg">
+                    {translate(locale, item.title)}
+                  </h3>
+                  <Text variant="body-muted" className="mt-2">
+                    {translate(locale, item.description)}
+                  </Text>
+                </article>
+              )
+            })}
+          </div>
         </SectionContainer>
       </SectionShell>
 

@@ -1,9 +1,14 @@
-import { PatchEvent, set, type ArrayOfObjectsInputProps } from "sanity"
+import {
+  PatchEvent,
+  set,
+  useFormValue,
+  type ArrayOfObjectsInputProps,
+} from "sanity"
 
 import { findPageMediaPage } from "../page-media-registry"
 
 type SupportingMediaSlot = {
-  _key?: string
+  _key: string
   slotId?: string
   pagePath?: string
   sectionName?: string
@@ -19,22 +24,31 @@ export function PageMediaSlotsInput(
   props: ArrayOfObjectsInputProps<SupportingMediaSlot>
 ) {
   const slots = props.value ?? []
-  const homeSlots =
-    findPageMediaPage("home", "home")?.slots.filter(
-      (slot) =>
-        slot.id.startsWith("home-product-logo-") ||
-        slot.id === "home-marine-fuel-background"
-    ) ?? []
+  const selection = useFormValue(["selection"])
+  const selectedMenu =
+    typeof selection === "object" &&
+    selection !== null &&
+    "menu" in selection &&
+    typeof selection.menu === "string"
+      ? selection.menu
+      : undefined
+  const selectedPage =
+    typeof selection === "object" &&
+    selection !== null &&
+    "page" in selection &&
+    typeof selection.page === "string"
+      ? selection.page
+      : undefined
+  const page = findPageMediaPage(selectedMenu, selectedPage)
+  const pageSlots = page?.slots ?? []
   const existingSlotIds = new Set(slots.map((slot) => slot.slotId))
-  const missingSlots = homeSlots.filter(
-    (slot) => !existingSlotIds.has(slot.id)
-  )
+  const missingSlots = pageSlots.filter((slot) => !existingSlotIds.has(slot.id))
 
   function addMissingSlots() {
     const newSlots = missingSlots.map((slot) => ({
       _key: slot.id,
       slotId: slot.id,
-      pagePath: "/",
+      pagePath: page?.path ?? "",
       sectionName: slot.sectionName,
       mediaType: slot.mediaType,
       containerRatio: slot.container,
@@ -72,10 +86,10 @@ export function PageMediaSlotsInput(
               padding: "8px 12px",
             }}
           >
-            Siapkan {missingSlots.length} slot media
+            Pulihkan {missingSlots.length} slot media
           </button>
           <span style={{ color: "var(--card-muted-fg-color)", fontSize: 13 }}>
-            Menambahkan slot yang belum tersedia tanpa mengubah gambar lain.
+            Memulihkan slot tetap yang hilang tanpa mengubah media lain.
           </span>
         </div>
       )}
