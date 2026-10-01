@@ -322,7 +322,7 @@ export default function PartnershipDetailPage({
               : translate(locale, "partnershipLoading")}
           </p>
           <Link
-            href="/tentang-kami/kemitraan"
+            href="/tentang-kami/client"
             className="mt-5 inline-flex text-sm font-medium underline underline-offset-4"
           >
             {translate(locale, "partnershipBackToList")}
@@ -392,7 +392,7 @@ export default function PartnershipDetailPage({
             label: translate(locale, "aboutSectionLabel"),
             href: "/tentang-kami/profil-perusahaan",
           },
-          { label: translate(locale, "partnership"), href: "/tentang-kami/kemitraan" },
+          { label: translate(locale, "clientNav"), href: "/tentang-kami/client" },
         ]}
       />
 
@@ -586,7 +586,7 @@ export default function PartnershipDetailPage({
         </div>
         <div className="mx-auto mt-12 max-w-7xl px-6 lg:px-8">
           <Link
-            href="/tentang-kami/kemitraan"
+            href="/tentang-kami/client"
             className="text-sm font-medium underline underline-offset-4"
           >
             {translate(locale, "partnershipBackToList")}

@@ -133,7 +133,7 @@ export const mediaCatalog: MediaCatalogItem[] = [
     role: "partnership",
     publicPath: "/images/partnership/partnership-transportation.svg",
     recommendedPath: "media/cards/partnership/transportation",
-    routePaths: ["/", "/produk/kenali-produk", "/produk/armada", "/tentang-kami/kemitraan"],
+    routePaths: ["/", "/produk/kenali-produk", "/produk/armada", "/tentang-kami/client"],
     description: "Visual armada dan transportasi darat/laut untuk card kemitraan.",
     technicalNotes: "SVG mock saat ini; foto final direkomendasikan rasio portrait 5:6.",
   },

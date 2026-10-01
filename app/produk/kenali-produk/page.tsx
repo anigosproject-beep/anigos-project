@@ -263,7 +263,7 @@ export default function KenaliProdukPage() {
                         {translate(locale, "viewFleet")}
                         <ArrowRight data-icon="inline-end" />
                       </Link>
-                      <Link href="/tentang-kami/kemitraan" className={buttonVariants({ variant: "outline" })}>
+                      <Link href="/tentang-kami/client" className={buttonVariants({ variant: "outline" })}>
                         {translate(locale, "viewPartnershipDetails")}
                       </Link>
                     </div>

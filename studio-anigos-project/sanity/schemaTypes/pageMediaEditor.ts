@@ -287,7 +287,7 @@ const initialPageMedia = Object.fromEntries(
 
 export const pageMediaEditor = defineType({
   name: "pageMediaEditor",
-  title: "Gambar Pendukung",
+  title: "Media Pendukung",
   type: "document",
   fields: [selectionField, ...mediaFields],
   initialValue: {

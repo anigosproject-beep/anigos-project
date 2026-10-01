@@ -25,8 +25,8 @@ export const homeHeroLinkMenus = [
       },
       {
         value: "kemitraan",
-        title: "Kemitraan",
-        path: "/tentang-kami/kemitraan",
+        title: "Client",
+        path: "/tentang-kami/client",
       },
       {
         value: "legalitas",

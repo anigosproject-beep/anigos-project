@@ -85,7 +85,13 @@ export type HomeContent = {
       _id: string
       name?: string
       body?: string
-      image?: { url?: string }
+      image?: {
+        url?: string
+        alt?: string
+        width?: number
+        height?: number
+        uploadedAt?: string
+      }
     } | null>
     media?: Array<{ slot?: string; image?: { url?: string } } | null>
     cta?: SanityLink
@@ -111,7 +117,13 @@ export type SanityCoverageArea = {
   body?: string
   modes?: string[]
   active?: boolean
-  image?: { url?: string }
+  image?: {
+    url?: string
+    alt?: string
+    width?: number
+    height?: number
+    uploadedAt?: string
+  }
 }
 
 export type CoveragePageResponse = {
@@ -126,7 +138,13 @@ export type SanityProduct = {
   name?: string
   description?: string
   category?: string
-  artwork?: { url?: string; alt?: string }
+  artwork?: {
+    url?: string
+    alt?: string
+    width?: number
+    height?: number
+    uploadedAt?: string
+  }
   specs?: Array<{ label?: string; value?: string } | null>
   availableForQuote?: boolean
   order?: number
@@ -140,9 +158,21 @@ export type SanityFleetOption = {
   unit?: string
   transportMode?: "darat" | "laut" | "mitra"
   note?: string
-  image?: { url?: string; alt?: string; width?: number; height?: number }
+  image?: {
+    url?: string
+    alt?: string
+    width?: number
+    height?: number
+    uploadedAt?: string
+  }
   gallery?: Array<{
-    image?: { url?: string; alt?: string; width?: number; height?: number }
+    image?: {
+      url?: string
+      alt?: string
+      width?: number
+      height?: number
+      uploadedAt?: string
+    }
   } | null>
   order?: number
   isPublished?: boolean
@@ -198,6 +228,28 @@ export type PartnershipPageResponse = {
     body?: string
     actions?: SanityLink[]
   }
+}
+
+export type SanityClientPortfolioEntry = {
+  _id: string
+  companyName?: string
+  logo?: {
+    url?: string
+    alt?: string
+    width?: number
+    height?: number
+  }
+  location?: string
+  productsUsed?: Array<{ name?: string } | null>
+  gallery?: Array<{
+    _key?: string
+    url?: string
+    alt?: string
+    caption?: string
+    width?: number
+    height?: number
+    uploadedAt?: string
+  } | null>
 }
 
 export function isSanityObject(

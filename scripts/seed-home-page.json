@@ -91,7 +91,7 @@
       "cta": {
         "label": {"id": "Jelajahi Kemitraan", "en": "Explore Partnerships"},
         "kind": "internal",
-        "route": "/tentang-kami/kemitraan",
+        "route": "/tentang-kami/client",
         "variant": "primary"
       },
       "mediaType": "image"

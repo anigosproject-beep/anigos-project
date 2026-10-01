@@ -63,11 +63,11 @@ export const pageHeroMenus = [
       },
       {
         value: "kemitraan",
-        title: "Kemitraan",
-        path: "/tentang-kami/kemitraan",
+        title: "Client",
+        path: "/tentang-kami/client",
         pageKey: "kemitraan",
         pageName: { id: "Tentang Kami", en: "About Us" },
-        heading: { id: "Kemitraan", en: "Partnerships" },
+        heading: { id: "Client", en: "Clients" },
         subtitle: {
           id: "Membangun kerja sama yang bertanggung jawab untuk mendukung distribusi Bahan Bakar Industri ke berbagai wilayah Indonesia.",
           en: "Building responsible cooperation to support industrial fuel distribution across Indonesia.",

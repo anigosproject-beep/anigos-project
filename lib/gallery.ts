@@ -1,6 +1,12 @@
 import type { PartnershipItem } from "@/lib/partnership-fallback"
 
-export type GalleryCategory = "partnership" | "transport" | "distribution"
+export type GalleryCategory =
+  | "partnership"
+  | "transport"
+  | "distribution"
+  | "leadership"
+  | "coverage"
+  | "services"
 export type GalleryCategoryFilter = "all" | GalleryCategory
 export type GallerySortBy = "none" | "date" | "year"
 export type GalleryDateOrder = "newest" | "oldest"
@@ -33,9 +39,21 @@ export const galleryCategories: Array<{
     id: "distribution",
     label: { id: "Distribusi Energi", en: "Energy Distribution" },
   },
+  {
+    id: "leadership",
+    label: { id: "Komisaris & Direksi", en: "Commissioners & Directors" },
+  },
+  {
+    id: "coverage",
+    label: { id: "Jangkauan Layanan", en: "Service Coverage" },
+  },
+  {
+    id: "services",
+    label: { id: "Produk & Layanan", en: "Products & Services" },
+  },
 ]
 
-export const visibleGalleryCategories = galleryCategories.slice(0, 2)
+export const visibleGalleryCategories = galleryCategories
 
 export function isGalleryCategoryFilter(
   value: string

@@ -37,7 +37,7 @@ export default function KemitraanTataKelolaPage() {
         },
       ]}
       note="governanceNote"
-      cta={{ label: "viewPartnerships", href: "/tentang-kami/kemitraan" }}
+      cta={{ label: "viewPartnerships", href: "/tentang-kami/client" }}
     />
   )
 }

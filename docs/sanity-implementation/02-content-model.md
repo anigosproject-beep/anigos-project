@@ -36,6 +36,7 @@ Dapat memiliki banyak dokumen:
 - `mediaAsset`
 - `product`
 - `fleetOption`
+- `client`
 - `partnership`
 - `partnershipPage` (singleton)
 
@@ -65,19 +66,23 @@ File PDF wajib diisi. Gunakan status tampil/nonaktif untuk menyembunyikan dokume
 
 ### Struktur organisasi
 
-Alur field:
+Menu **Struktur Perusahaan** menyediakan tiga daftar:
 
 ```text
-Jabatan
-├── Komisaris → Jabatan resmi
-├── Direksi → Jabatan resmi
+Struktur Perusahaan
+├── Komisaris → Nama, foto, kutipan, biografi Portable Text, galeri foto
+├── Direksi → Nama, jabatan pilihan/lainnya, foto, kutipan, biografi, galeri
 └── Tim dan Divisi
-    ├── Divisi
-    └── Posisi
-        ├── Kepala Divisi
-        ├── Tim Divisi
-        └── Lainnya → Posisi lainnya
+    ├── Daftar Divisi → Nama dan deskripsi divisi
+    └── Anggota Tim → Nama, divisi, jabatan, foto
 ```
+
+`teamMember` menyimpan Komisaris, Direksi, dan anggota divisi dengan
+`structuralClass`; `teamDivision` menjadi sumber pilihan divisi. Biografi
+mendukung bold, italic, daftar, kutipan, serta tautan. Halaman Struktur
+Perusahaan hanya menampilkan dokumen Sanity yang terbit; tidak menggunakan
+profil mock sebagai fallback. Foto profil dan foto galeri anggota juga menjadi
+sumber kategori Komisaris & Direksi pada Galeri Artikel.
 
 ### Media
 
@@ -100,6 +105,22 @@ global media slot:
   partner.
 - `partnershipPage` memiliki isi halaman dan reference ke partner yang
   ditampilkan.
+- `client` adalah model mandiri untuk portofolio end-client, terpisah dari
+  dokumen `partner` yang mengatur logo mitra Beranda. Data client mencakup nama,
+  logo, lokasi, tahun layanan, pilihan jenis layanan BBM industri, layanan
+  manual untuk opsi lainnya, status aktif, dan galeri foto berketerangan.
+- Migrasi awal dari dokumen `partner` aktif menyalin nama, logo, serta galeri;
+  tahun layanan dipetakan dari tanggal bermitra dan jenis Solar Industri/HSD
+  hanya disalin bila bentuk kemitraan sumber menyebut produk tersebut. Lokasi
+  yang tidak tersedia tidak ditebak dan perlu dilengkapi editor.
+- Jalankan `node scripts/migrate-partners-to-clients.mjs` untuk dry-run dan
+  tambahkan `--apply` untuk menulis dokumen Client baru. Migrasi memakai ID
+  deterministik, tidak mengubah dokumen Mitra sumber, dan memerlukan token
+  Sanity dengan akses Editor yang valid.
+- Halaman `/tentang-kami/client` membaca client aktif melalui
+  `/api/kemitraan/clients`. Dokumen `partner` lama yang ditandai `isClient ==
+  true` tetap dibaca sebagai kompatibilitas; dokumen mitra Home lainnya tidak
+  dianggap sebagai client.
 
 Model ini baru menjadi surface editorial. Query frontend dan migrasi data belum
 diaktifkan sampai contract test dan keputusan fallback selesai.

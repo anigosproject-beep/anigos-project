@@ -4,37 +4,61 @@ import Image from "next/image"
 import Link from "next/link"
 import * as React from "react"
 
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react"
 
-import { Heading, Text } from "@/components/typography"
-import { Badge } from "@/components/ui/badge"
-import { MotionButtonLink, buttonVariants } from "@/components/ui/button"
+import { SectionContainer, SectionShell } from "@/components/layout/section-shell"
+import { useLocale } from "@/components/locale-provider"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import {
-  SectionContainer,
-  SectionShell,
-} from "@/components/layout/section-shell"
-import { useLocale } from "@/components/locale-provider"
-import { useHomeContent } from "@/components/home-content-provider"
+import { buttonVariants } from "@/components/ui/button"
 import { translate } from "@/lib/i18n"
 import type { PartnershipItem } from "@/lib/partnership-fallback"
-import type { SiteSettings } from "@/lib/sanity-site-settings"
 import type { PartnershipPageResponse } from "@/lib/sanity-content-types"
 
 function getPartnerLogo(partner: PartnershipItem) {
   return partner.logo?.url ?? partner.image?.url
 }
 
+function PartnerLogo({ partner }: { partner: PartnershipItem }) {
+  const logo = getPartnerLogo(partner)
+  if (!logo) return null
+
+  return (
+    <div
+      role="listitem"
+      className="partnership-logo-item flex h-24 w-32 shrink-0 items-center justify-center px-2 sm:h-28 sm:w-40"
+    >
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <span
+              tabIndex={0}
+              className="flex h-full w-full items-center justify-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4"
+            />
+          }
+        >
+          <Image
+            src={logo}
+            alt={partner.logo?.alt ?? partner.name ?? "Logo mitra"}
+            width={220}
+            height={120}
+            sizes="(min-width: 640px) 160px, 128px"
+            className="h-auto max-h-20 w-auto max-w-full object-contain sm:max-h-24"
+          />
+        </TooltipTrigger>
+        <TooltipContent>{partner.name ?? "Mitra"}</TooltipContent>
+      </Tooltip>
+    </div>
+  )
+}
+
 export function PartnershipShowcase() {
   const { locale } = useLocale()
-  const home = useHomeContent()
-  const configured = home?.partnershipShowcase
   const [partners, setPartners] = React.useState<PartnershipItem[]>([])
-  const [contactEmail, setContactEmail] = React.useState("")
+  const [showAllPartners, setShowAllPartners] = React.useState(false)
 
   React.useEffect(() => {
     const controller = new AbortController()
@@ -66,127 +90,103 @@ export function PartnershipShowcase() {
     return () => controller.abort()
   }, [locale])
 
-  React.useEffect(() => {
-    const controller = new AbortController()
-
-    fetch("/api/site-settings", {
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Site settings request failed: ${response.status}`)
-        }
-        return response.json() as Promise<SiteSettings | null>
-      })
-      .then((settings) => setContactEmail(settings?.email?.trim() ?? ""))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return
-        console.error("Unable to load contact settings from Sanity", error)
-      })
-
-    return () => controller.abort()
-  }, [])
-
-  const partnershipEmail = contactEmail
-    ? `mailto:${contactEmail}?subject=${encodeURIComponent(
-        "Permohonan Informasi Kemitraan PT. Anigos Jaya Perkasa"
-      )}&body=${encodeURIComponent(
-        "Halo PT. Anigos Jaya Perkasa,\r\n\r\nSaya ingin mendapatkan informasi lebih lanjut mengenai peluang kemitraan.\r\n\r\nNama:\r\nPerusahaan/Instansi:\r\nNomor telepon:\r\nKebutuhan kemitraan:\r\n\r\nTerima kasih."
-      )}`
-    : undefined
+  const partnerLogos = partners.flatMap((partner) => {
+    const logo = getPartnerLogo(partner)
+    return logo ? [{ partner, logo }] : []
+  })
 
   return (
     <SectionShell
       id="kemitraan"
-      className="border-b border-border bg-background py-24 lg:py-32"
+      className="border-b border-border bg-background py-14 sm:py-16 lg:py-20"
     >
-      <SectionContainer className="grid gap-14 lg:grid-cols-[3fr_2fr] lg:items-center lg:gap-20">
-        <div className="min-w-0 lg:pr-2">
-          <div className="grid grid-cols-2 items-center gap-x-6 gap-y-10 sm:grid-cols-4 sm:gap-x-8 lg:gap-x-10">
-            {partners.map((partner) => {
-              const logo = getPartnerLogo(partner)
-              if (!logo) return null
+      <SectionContainer className="flex flex-col items-center gap-5 sm:gap-6">
+        <h2 className="text-center text-sm font-medium tracking-wide text-muted-foreground sm:text-base">
+          {translate(locale, "partnershipTrustHeading")}
+        </h2>
 
-              return (
-                <Link
-                  key={partner._id}
-                  href={`/tentang-kami/kemitraan/${partner._id}`}
-                  className="group flex min-h-28 min-w-0 flex-col items-center justify-center rounded-md px-2 py-3 text-center transition-opacity hover:opacity-70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:outline-none"
-                  aria-label={`Lihat detail ${partner.name ?? "mitra"}`}
-                >
-                  <Image
-                    src={logo}
-                    alt={partner.logo?.alt ?? partner.name ?? "Logo mitra"}
-                    width={220}
-                    height={120}
-                    sizes="(min-width: 1024px) 15vw, (min-width: 640px) 20vw, 40vw"
-                    className="h-auto max-h-24 w-auto max-w-full object-contain"
-                  />
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <span className="mt-3 line-clamp-2 max-w-full text-xs leading-4 break-words text-muted-foreground" />
-                      }
-                    >
-                      {partner.name ?? "Mitra"}
-                    </TooltipTrigger>
-                    <TooltipContent>{partner.name ?? "Mitra"}</TooltipContent>
-                  </Tooltip>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        <div className="min-w-0 border-t border-border pt-12 lg:max-w-xl lg:border-t-0 lg:border-l lg:py-4 lg:pt-4 lg:pl-14">
-          <Badge variant="secondary">
-            {configured?.eyebrow ??
-              translate(locale, "partnershipSectionLabel")}
-          </Badge>
-          <Heading level={2} className="mt-5 text-balance">
-            {configured?.title ?? translate(locale, "partnershipTitle")}
-          </Heading>
-          <Text variant="lead" className="mt-6 text-pretty">
-            {configured?.body ?? translate(locale, "partnershipDescription")}
-          </Text>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href={configured?.cta?.href ?? "/tentang-kami/kemitraan"}
-              className={buttonVariants()}
-            >
-              {configured?.cta?.label ?? translate(locale, "partnershipAction")}
-              <ArrowRight data-icon="inline-end" aria-hidden="true" />
-            </Link>
-            {partnershipEmail ? (
-              <MotionButtonLink href={partnershipEmail} variant="outline">
-                {translate(locale, "contact")}
-              </MotionButtonLink>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <span
-                      tabIndex={0}
-                      className="inline-flex rounded-4xl focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
-                    />
-                  }
-                >
-                  <button
-                    type="button"
-                    disabled
-                    className={buttonVariants({
-                      variant: "outline",
-                      className: "cursor-not-allowed opacity-50",
-                    })}
+        {partnerLogos.length > 0 && !showAllPartners ? (
+          <div
+            id="partnership-all-logos"
+            className="partnership-marquee w-full overflow-hidden"
+            role="region"
+            aria-label={translate(locale, "partnershipCarouselLabel")}
+          >
+            <div className="partnership-marquee-track flex w-max">
+              <div
+                className="partnership-marquee-group flex w-max min-w-full items-center justify-around gap-1 px-2 sm:gap-3 sm:px-4"
+                role="list"
+              >
+                {partnerLogos.map(({ partner }) => (
+                  <PartnerLogo key={partner._id} partner={partner} />
+                ))}
+              </div>
+              <div
+                className="partnership-marquee-group partnership-marquee-copy flex w-max min-w-full items-center justify-around gap-1 px-2 sm:gap-3 sm:px-4"
+                aria-hidden="true"
+              >
+                {partnerLogos.map(({ partner, logo }) => (
+                  <div
+                    key={`copy-${partner._id}`}
+                    className="flex h-24 w-32 shrink-0 items-center justify-center px-2 sm:h-28 sm:w-40"
                   >
-                    Hubungi Kami
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>{translate(locale, "partnershipContactUnavailable")}</TooltipContent>
-              </Tooltip>
-            )}
+                    <Image
+                      src={logo}
+                      alt=""
+                      width={220}
+                      height={120}
+                      sizes="(min-width: 640px) 160px, 128px"
+                      className="h-auto max-h-20 w-auto max-w-full object-contain sm:max-h-24"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
+        ) : null}
+
+        {showAllPartners && partnerLogos.length > 0 ? (
+          <div
+            id="partnership-all-logos"
+            className="partnership-logo-grid flex w-full flex-wrap items-center justify-center gap-1 sm:gap-3"
+            role="list"
+            aria-label={translate(locale, "partnershipCarouselLabel")}
+          >
+            {partnerLogos.map(({ partner }) => (
+              <PartnerLogo key={partner._id} partner={partner} />
+            ))}
+          </div>
+        ) : null}
+
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-5">
+          <Link
+            href="/tentang-kami/client"
+            className={buttonVariants()}
+          >
+            {translate(locale, "partnershipAction")}
+            <ArrowRight data-icon="inline-end" aria-hidden="true" />
+          </Link>
+          {partnerLogos.length > 0 ? (
+            <button
+              type="button"
+              aria-expanded={showAllPartners}
+              aria-controls="partnership-all-logos"
+              onClick={() => setShowAllPartners((isShowing) => !isShowing)}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              {translate(
+                locale,
+                showAllPartners
+                  ? "partnershipCloseLogos"
+                  : "partnershipShowAll"
+              )}
+              {showAllPartners ? (
+                <ChevronUp data-icon="inline-end" aria-hidden="true" />
+              ) : (
+                <ChevronDown data-icon="inline-end" aria-hidden="true" />
+              )}
+            </button>
+          ) : null}
         </div>
       </SectionContainer>
     </SectionShell>

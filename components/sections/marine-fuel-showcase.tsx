@@ -1,10 +1,9 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ArrowRight, Anchor, Clapperboard, Compass, Fuel } from "lucide-react"
 
-import { useHomeContent } from "@/components/home-content-provider"
 import { useLocale } from "@/components/locale-provider"
 import { Heading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
@@ -13,7 +12,36 @@ import { translate } from "@/lib/i18n"
 
 export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "product"}) {
   const { locale } = useLocale()
-  const home = useHomeContent()
+  const [media, setMedia] = useState<{
+    variant: "home" | "product"
+    backgroundImage?: string
+    backgroundVideo?: string
+  } | null>(null)
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetch(`/api/marine-fuel-media?variant=${variant}`, {
+      signal: controller.signal,
+      cache: "no-store",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Marine Fuel media request failed: ${response.status}`)
+        }
+        return response.json() as Promise<{
+          variant: "home" | "product"
+          backgroundImage?: string
+          backgroundVideo?: string
+        }>
+      })
+      .then((data) => setMedia(data))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error("Unable to load Marine Fuel media from Sanity", error)
+      })
+
+    return () => controller.abort()
+  }, [variant])
   const copyKeys = variant === "product"
     ? {
         title: "productMarineFuelTitle",
@@ -27,15 +55,10 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
         productSupport: "marineFuelProductSupport",
         distribution: "marineFuelFlexibleDistribution",
       } as const
-  const backgroundImage = home?.mediaSlots?.find(
-    (media) =>
-      media?.page === "home" &&
-      media.section === "marine-fuel" &&
-      media.slotId === "home-marine-fuel-background"
-  )?.image?.url
-  const backgroundVideo = home?.mediaSlots?.find(
-    (media) => media?.slotId === "home-marine-fuel-video"
-  )?.video?.url
+  const backgroundImage =
+    media?.variant === variant ? media.backgroundImage : undefined
+  const backgroundVideo =
+    media?.variant === variant ? media.backgroundVideo : undefined
   const [failedVideoUrl, setFailedVideoUrl] = useState<string | null>(null)
 
   return (

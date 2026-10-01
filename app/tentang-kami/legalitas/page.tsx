@@ -208,7 +208,7 @@ export default function LegalitasPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/tentang-kami/kemitraan"
+              href="/tentang-kami/client"
               className={buttonVariants({
                 className: "bg-base-color text-base-color-foreground hover:bg-base-color/90",
               })}

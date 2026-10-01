@@ -30,11 +30,7 @@ import {
   type GallerySortBy,
   visibleGalleryCategories,
 } from "@/lib/gallery"
-import {
-  mockActivePartners,
-  type PartnershipItem,
-} from "@/lib/partnership-fallback"
-import type { PartnershipPageResponse } from "@/lib/sanity-content-types"
+import { mockActivePartners } from "@/lib/partnership-fallback"
 
 function CategoryGalleryCarousel({
   images,
@@ -180,9 +176,7 @@ function GalleryCategoryPanel({
 
 export function PublicationGalleryPage() {
   const { locale } = useLocale()
-  const [content, setContent] = React.useState<PartnershipPageResponse | null>(
-    null
-  )
+  const [content, setContent] = React.useState<GalleryEntry[] | null>(null)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
   const [isLoading, setIsLoading] = React.useState(true)
   const [selectedCategory, setSelectedCategory] =
@@ -191,16 +185,16 @@ export function PublicationGalleryPage() {
   React.useEffect(() => {
     const controller = new AbortController()
 
-    void fetch(`/api/kemitraan?lang=${locale}`, {
+    void fetch(`/api/galeri?lang=${locale}`, {
       signal: controller.signal,
       cache: "no-store",
     })
       .then((response) => {
         if (!response.ok)
-          throw new Error(`Partnership request failed: ${response.status}`)
-        return response.json() as Promise<PartnershipPageResponse | null>
+          throw new Error(`Gallery request failed: ${response.status}`)
+        return response.json() as Promise<GalleryEntry[] | null>
       })
-      .then(setContent)
+      .then((entries) => setContent(entries ?? []))
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return
         console.error("Failed to load gallery content", error)
@@ -210,13 +204,10 @@ export function PublicationGalleryPage() {
     return () => controller.abort()
   }, [locale])
 
-  const sanityPartners =
-    content?.showcase?.filter((item): item is PartnershipItem =>
-      Boolean(item?.name)
-    ) ?? []
-  const partners =
-    sanityPartners.length > 0 ? sanityPartners : mockActivePartners
-  const images = React.useMemo(() => getGalleryEntries(partners), [partners])
+  const images =
+    content?.length
+      ? content
+      : getGalleryEntries(mockActivePartners)
   const activeImage = images[selectedIndex] ?? images[0]
 
   return (

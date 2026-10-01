@@ -34,42 +34,122 @@ export const structure: StructureResolver = (S) =>
             ])
         ),
       S.listItem()
-        .title("Gambar Statis Pendukung")
+        .title("Media Pendukung")
         .id("supporting-static-images")
         .child(
           S.document()
             .schemaType("pageMediaEditor")
             .documentId("pageMediaEditor")
-            .title("Gambar Statis Pendukung")
+            .title("Media Pendukung")
             .views([S.view.form()])
         ),
       S.listItem()
-        .title("Mitra")
-        .id("partners")
+        .title("Struktur Perusahaan")
+        .id("company-structure")
         .child(
           S.list()
-            .title("Mitra")
+            .title("Struktur Perusahaan")
             .items([
               S.listItem()
-                .title("Daftar Item Mitra Aktif")
-                .id("active-partners")
+                .title("Komisaris")
+                .id("commissioners")
                 .child(
-                  S.documentTypeList("partner")
-                    .title("Daftar Item Mitra Aktif")
-                    .filter('_type == "partner" && isActive == true')
+                  S.documentTypeList("teamMember")
+                    .title("Komisaris")
+                    .filter(
+                      '_type == "teamMember" && structuralClass == "komisaris"'
+                    )
                     .defaultOrdering([
-                      { field: "companyName", direction: "asc" },
+                      { field: "order", direction: "asc" },
+                      { field: "name", direction: "asc" },
                     ])
                 ),
               S.listItem()
-                .title("Arsip Mitra")
-                .id("archived-partners")
+                .title("Direksi")
+                .id("directors")
                 .child(
-                  S.documentTypeList("partner")
-                    .title("Arsip Mitra")
-                    .filter('_type == "partner" && isActive == false')
+                  S.documentTypeList("teamMember")
+                    .title("Direksi")
+                    .filter(
+                      '_type == "teamMember" && structuralClass == "direksi"'
+                    )
+                    .defaultOrdering([
+                      { field: "order", direction: "asc" },
+                      { field: "name", direction: "asc" },
+                    ])
+                ),
+              S.listItem()
+                .title("Tim dan Divisi")
+                .id("team-and-divisions")
+                .child(
+                  S.list()
+                    .title("Tim dan Divisi")
+                    .items([
+                      S.documentTypeListItem("teamDivision")
+                        .title("Daftar Divisi")
+                        .child(
+                          S.documentTypeList("teamDivision")
+                            .title("Daftar Divisi")
+                            .defaultOrdering([
+                              { field: "order", direction: "asc" },
+                              { field: "name", direction: "asc" },
+                            ])
+                        ),
+                      S.listItem()
+                        .title("Anggota Tim")
+                        .id("division-members")
+                        .child(
+                          S.documentTypeList("teamMember")
+                            .title("Anggota Tim")
+                            .filter(
+                              '_type == "teamMember" && structuralClass == "tim-divisi"'
+                            )
+                            .defaultOrdering([
+                              { field: "order", direction: "asc" },
+                              { field: "name", direction: "asc" },
+                            ])
+                        ),
+                    ])
+                ),
+            ])
+        ),
+      S.listItem()
+        .title("Client")
+        .id("clients")
+        .child(
+          S.list()
+            .title("Client")
+            .items([
+              S.listItem()
+                .title("Daftar Client Aktif")
+                .id("active-clients")
+                .child(
+                  S.documentTypeList("client")
+                    .title("Daftar Client Aktif")
+                    .filter('_type == "client" && isActive == true')
                     .defaultOrdering([
                       { field: "companyName", direction: "asc" },
+                    ])
+                    .initialValueTemplates([
+                      S.initialValueTemplateItem("client", {
+                        isActive: true,
+                      }),
+                    ])
+                ),
+              S.listItem()
+                .title("Arsip Client")
+                .id("archived-clients")
+                .child(
+                  S.documentTypeList("client")
+                    .title("Arsip Client")
+                    .filter('_type == "client" && isActive == false')
+                    .defaultOrdering([
+                      { field: "companyName", direction: "asc" },
+                    ])
+                    .initialValueTemplates([
+                      S.initialValueTemplateItem("client", {
+                        isActive: false,
+                      }),
                     ])
                 ),
             ])

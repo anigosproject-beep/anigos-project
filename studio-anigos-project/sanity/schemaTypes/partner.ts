@@ -94,8 +94,9 @@ export const partner = defineType({
   title: "Mitra",
   type: "document",
   groups: [
-    { name: "overview", title: "Informasi Mitra", default: true },
-    { name: "gallery", title: "Galeri Mitra" },
+    { name: "overview", title: "Informasi Perusahaan", default: true },
+    { name: "client", title: "Data Portofolio" },
+    { name: "gallery", title: "Galeri Perusahaan" },
     { name: "portfolio", title: "Portofolio Kemitraan" },
     { name: "background", title: "Detail Kemitraan" },
     { name: "closing", title: "Penutup" },
@@ -108,7 +109,107 @@ export const partner = defineType({
       group: "overview",
       initialValue: true,
       description:
-        "Mitra aktif tampil di tabel Kemitraan dan logo segmen kemitraan pada Beranda.",
+        "Mitra aktif dapat tampil pada logo Beranda. Untuk menampilkannya juga sebagai client pada halaman Kemitraan, aktifkan Tampilkan sebagai client dan lengkapi Data Client.",
+    }),
+    defineField({
+      name: "isClient",
+      title: "Tampilkan di Portofolio",
+      type: "boolean",
+      group: "client",
+      initialValue: false,
+      description:
+        "Perusahaan aktif akan tampil pada tabel portofolio dan kategori galeri. Pengaturan ini tidak mengubah logo mitra di Beranda.",
+    }),
+    defineField({
+      name: "clientLocation",
+      title: "Lokasi perusahaan",
+      type: "localizedHeroText",
+      group: "client",
+      hidden: ({ document }) => document?.isClient !== true,
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          if (context.document?.isClient !== true) return true
+          if (typeof value !== "object" || value === null) {
+            return "Lokasi wajib diisi dalam Bahasa Indonesia dan Inggris."
+          }
+          const localizedValue = value as { id?: unknown; en?: unknown }
+          return typeof localizedValue.id === "string" &&
+            localizedValue.id.trim() &&
+            typeof localizedValue.en === "string" &&
+            localizedValue.en.trim()
+            ? true
+            : "Lokasi wajib diisi dalam Bahasa Indonesia dan Inggris."
+        }),
+    }),
+    defineField({
+      name: "clientProducts",
+      title: "Layanan (produk yang digunakan)",
+      type: "array",
+      group: "client",
+      hidden: ({ document }) => document?.isClient !== true,
+      description:
+        "Tambahkan produk yang digunakan perusahaan dalam Bahasa Indonesia dan Inggris. Nilai ini ditampilkan pada kolom Layanan.",
+      of: [
+        defineArrayMember({
+          name: "clientProduct",
+          title: "Produk yang digunakan",
+          type: "object",
+          fields: [
+            defineField({
+              name: "product",
+              title: "Produk / layanan",
+              type: "localizedHeroText",
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: {
+            select: { title: "product.id", subtitle: "product.en" },
+            prepare: ({ title, subtitle }) => ({
+              title: title || "Produk yang digunakan",
+              subtitle,
+            }),
+          },
+        }),
+      ],
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          if (context.document?.isClient !== true) return true
+          if (!Array.isArray(value) || value.length === 0) {
+            return "Tambahkan minimal satu produk yang digunakan."
+          }
+          const hasIncompleteProduct = value.some((item) => {
+            if (typeof item !== "object" || item === null || !("product" in item)) {
+              return true
+            }
+            const product = item.product
+            if (typeof product !== "object" || product === null) return true
+            return !(
+              "id" in product &&
+              typeof product.id === "string" &&
+              product.id.trim() &&
+              "en" in product &&
+              typeof product.en === "string" &&
+              product.en.trim()
+            )
+          })
+          return hasIncompleteProduct
+            ? "Isi setiap produk yang digunakan dalam Bahasa Indonesia dan Inggris."
+            : true
+        }),
+    }),
+    defineField({
+      name: "clientYear",
+      title: "Tahun layanan",
+      type: "number",
+      group: "client",
+      hidden: ({ document }) => document?.isClient !== true,
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          if (context.document?.isClient !== true) return true
+          return Number.isInteger(value) && value >= 1900 && value <= 2100
+            ? true
+            : "Masukkan tahun layanan antara 1900 dan 2100."
+        }),
     }),
     defineField({
       name: "companyName",
@@ -167,11 +268,11 @@ export const partner = defineType({
     }),
     defineField({
       name: "gallery",
-      title: "Foto Galeri Kemitraan",
+      title: "Foto galeri perusahaan",
       type: "array",
       group: "gallery",
       description:
-        "Tambahkan beberapa foto dokumentasi kemitraan. Foto dapat ditambah, diganti, dihapus, dan diurutkan tanpa batas jumlah.",
+        "Foto ini menjadi dokumentasi perusahaan dan otomatis masuk ke kategori galeri portofolio jika Tampilkan di Portofolio aktif.",
       of: [
         defineArrayMember({
           name: "partnershipGalleryItem",

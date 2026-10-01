@@ -101,7 +101,7 @@ export default function ContactPage() {
                   icon={Mail}
                   label={translate(locale, "contactEmailLabel")}
                   detail={settings.email}
-                  href={`mailto:${settings.email}`}
+                  href="/hubungi-kami/email"
                   action={translate(locale, "contactEmailAction")}
                 />
                 {whatsappNumber ? (

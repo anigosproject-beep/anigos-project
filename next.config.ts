@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/tentang-kami/kemitraan",
+        destination: "/tentang-kami/client",
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {

@@ -30,9 +30,9 @@ export const navigationItems: NavigationItem[] = [
         descriptionKey: "navStructureDescription",
       },
       {
-        label: "Kemitraan",
-        href: "/tentang-kami/kemitraan",
-        descriptionKey: "navPartnershipDescription",
+        label: "Client",
+        href: "/tentang-kami/client",
+        descriptionKey: "navClientDescription",
       },
       {
         label: "Legalitas",

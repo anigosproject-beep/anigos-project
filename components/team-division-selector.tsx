@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { CircleAlert } from "lucide-react"
 import { useState } from "react"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
@@ -13,26 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import { StructureEmptyMessage } from "@/components/structure-empty-message"
 import { type TeamDivisionGroup, type TeamMember } from "@/lib/sanity-team"
 
-type DivisionOption = TeamDivisionGroup & {
-  description: string
-}
-
 type TeamDivisionSelectorProps = {
-  divisions: DivisionOption[]
-  isFallback: boolean
+  divisions: TeamDivisionGroup[]
 }
 
-function PersonCards({
-  people,
-  isFallback,
-}: {
-  people: readonly TeamMember[]
-  isFallback: boolean
-}) {
-  const { locale } = useLocale()
+function PersonCards({ people }: { people: readonly TeamMember[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {people.map((person) => (
@@ -41,40 +28,36 @@ function PersonCards({
           className="rounded-2xl border border-border bg-background p-5"
         >
           <div className="flex gap-4">
-            <Image
-              src={person.image}
-              alt={`Foto ${person.name}`}
-              width={96}
-              height={120}
-              className="h-24 w-20 shrink-0 rounded-xl object-cover"
-            />
+            {person.image ? (
+              <Image
+                src={person.image}
+                alt={`Foto ${person.name}`}
+                width={96}
+                height={120}
+                className="h-24 w-20 shrink-0 rounded-xl object-cover"
+              />
+            ) : (
+              <div className="flex h-24 w-20 shrink-0 items-center justify-center rounded-xl bg-muted text-lg font-semibold text-muted-foreground">
+                {person.initials}
+              </div>
+            )}
             <div>
               <p className="font-medium">{person.name}</p>
               <p className="mt-1 text-sm text-primary">{person.role}</p>
-              <p className="mt-3 text-xs text-muted-foreground">
-                {translate(locale, "profileIllustration")}
-              </p>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">
-            {person.description}
-          </p>
-          <Badge variant="outline" className="mt-4">
-            <span className="inline-flex items-center gap-1.5">
-              <CircleAlert className="size-3" />
-              {translate(locale, isFallback ? "dataFallback" : "dataCms")}
-            </span>
-          </Badge>
+          {person.description ? (
+            <p className="mt-4 text-sm leading-6 text-muted-foreground">
+              {person.description}
+            </p>
+          ) : null}
         </div>
       ))}
     </div>
   )
 }
 
-export function TeamDivisionSelector({
-  divisions,
-  isFallback,
-}: TeamDivisionSelectorProps) {
+export function TeamDivisionSelector({ divisions }: TeamDivisionSelectorProps) {
   const { locale } = useLocale()
   const [selectedDivision, setSelectedDivision] = useState(
     divisions[0]?.name ?? "",
@@ -131,10 +114,11 @@ export function TeamDivisionSelector({
           {activeDivision.description}
         </p>
         <div className="mt-6">
-          <PersonCards
-            people={activeDivision.members}
-            isFallback={isFallback}
-          />
+          {activeDivision.members.length ? (
+            <PersonCards people={activeDivision.members} />
+          ) : (
+            <StructureEmptyMessage messageKey="structureNoDivisionMembers" />
+          )}
         </div>
       </div>
     </div>

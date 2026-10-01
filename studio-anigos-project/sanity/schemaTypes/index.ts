@@ -5,11 +5,16 @@ import { localizedHeroText } from "./localizedHeroText"
 import { homeHeroEditor } from "./homeHeroEditor"
 import { pageHeroEditor } from "./pageHeroEditor"
 import { partner } from "./partner"
+import { client } from "./client"
+import { partnership } from "./partnership"
+import { partnershipPage } from "./partnershipPage"
 import { newsroomArticle } from "./newsroomArticle"
 import { newsroomCategory } from "./newsroomCategory"
 import { careerOpening } from "./careerOpening"
 import { siteSettings } from "./siteSettings"
 import { mediaAsset } from "./mediaAsset"
+import { teamDivision } from "./teamDivision"
+import { teamMember } from "./teamMember"
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   mediaAsset,
@@ -18,8 +23,13 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   homeHeroEditor,
   pageHeroEditor,
   partner,
+  client,
+  partnership,
+  partnershipPage,
   newsroomCategory,
   newsroomArticle,
   careerOpening,
   siteSettings,
+  teamDivision,
+  teamMember,
 ]

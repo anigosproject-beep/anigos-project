@@ -24,7 +24,7 @@ const publicRoutes = [
     changeFrequency: "monthly" as const,
   },
   {
-    path: "/tentang-kami/kemitraan",
+    path: "/tentang-kami/client",
     priority: 0.7,
     changeFrequency: "monthly" as const,
   },

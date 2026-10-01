@@ -9,6 +9,7 @@ const t = (field: string, alias?: string) =>
 
 const image = groq`
   "url": asset->url,
+  "uploadedAt": asset->_createdAt,
   "lqip": asset->metadata.lqip,
   "width": asset->metadata.dimensions.width,
   "height": asset->metadata.dimensions.height,
@@ -100,7 +101,8 @@ const partnership = groq`
     "url": image.asset->url,
     "alt": coalesce(image.alt, "Foto dokumentasi kemitraan"),
     "width": image.asset->metadata.dimensions.width,
-    "height": image.asset->metadata.dimensions.height
+    "height": image.asset->metadata.dimensions.height,
+    "uploadedAt": image.asset->_createdAt
   },
   "logo": logo{${image}},
   "image": logo{${image}},
@@ -226,4 +228,41 @@ export const PARTNERSHIP_PAGE_QUERY = groq`{
     ${t("body")}
   },
   "closing": *[_type == "partnershipPage"][0].closing{${t("title")}, ${t("body")}}
+}`
+
+export const CLIENT_PORTFOLIO_QUERY = groq`*[
+  (_type == "client" && isActive == true) ||
+  (_type == "partner" && isActive == true && isClient == true)
+] | order(companyName asc){
+  _id,
+  companyName,
+  "logo": logo{${image}},
+  "location": select(
+    _type == "client" => coalesce(location[$lang], location.id),
+    coalesce(clientLocation[$lang], clientLocation.id)
+  ),
+  "productsUsed": select(
+    _type == "client" => services[]{
+      "name": select(
+        serviceType == "solar-hsd" => select($lang == "en" => "Industrial Diesel / HSD", "Solar Industri / HSD"),
+        serviceType == "biosolar-b35" => "Biosolar B35",
+        serviceType == "biosolar-b40" => "Biosolar B40",
+        serviceType == "dexlite" => "Dexlite",
+        serviceType == "pertamina-dex" => "Pertamina Dex",
+        serviceType == "marine-fuel-oil" => "Marine Fuel Oil (MFO)",
+        serviceType == "other" => otherService,
+        null
+      )
+    },
+    clientProducts[]{"name": coalesce(product[$lang], product.id)}
+  ),
+  "gallery": gallery[]{
+    _key,
+    caption,
+    "url": image.asset->url,
+    "alt": coalesce(image.alt, "Foto dokumentasi client"),
+    "width": image.asset->metadata.dimensions.width,
+    "height": image.asset->metadata.dimensions.height,
+    "uploadedAt": image.asset->_createdAt
+  }
 }`

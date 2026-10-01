@@ -34,7 +34,7 @@ export type GalleryImage = {
 type LeadershipGalleryProps = {
   personName: string
   personRole: string
-  profileImage: string
+  profileImage?: string
   gallery?: Array<{
     src: string
     alt: string

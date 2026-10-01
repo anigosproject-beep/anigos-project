@@ -212,9 +212,9 @@ const initialHeroSlides = [
     },
     mediaType: "image",
     cta: {
-      label: { id: "Jelajahi Kemitraan", en: "Explore Partnerships" },
+      label: { id: "Lihat Client", en: "Explore Clients" },
       kind: "internal",
-      route: "/tentang-kami/kemitraan",
+      route: "/tentang-kami/client",
     },
   },
 ]

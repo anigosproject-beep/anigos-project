@@ -110,8 +110,8 @@ export const pageMediaMenus = [
       },
       {
         value: "partnership",
-        title: "Kemitraan",
-        path: "/tentang-kami/kemitraan",
+        title: "Client",
+        path: "/tentang-kami/client",
         slots: [
           {
             id: "partnership-intro-image",
@@ -136,6 +136,28 @@ export const pageMediaMenus = [
         title: "Kenali Produk",
         path: "/produk/kenali-produk",
         slots: [
+          {
+            id: "product-marine-fuel-background",
+            title: "Gambar fallback Marine Fuel",
+            sectionName: "Marine Fuel",
+            mediaType: "image",
+            container: "Latar full-bleed; tinggi 100svh; crop responsif",
+            fit: "cover",
+            expectedRatio: "16:9 disarankan; crop responsif",
+            currentSource:
+              "/images/distribution/fuel-distribution.png (fallback lokal)",
+          },
+          {
+            id: "product-marine-fuel-video",
+            title: "Video latar Marine Fuel",
+            sectionName: "Marine Fuel",
+            mediaType: "video",
+            container: "Latar full-bleed; tinggi 100svh; crop responsif",
+            fit: "cover",
+            expectedRatio: "16:9 disarankan",
+            currentSource:
+              "Belum ada video; menggunakan gambar fallback Marine Fuel",
+          },
           {
             id: "product-introduction-video",
             title: "Video di Mengenal produk",

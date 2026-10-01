@@ -177,13 +177,16 @@ Kondisi aplikasi:
 - `pageMediaEditor.homeSlots` mengelola gambar statis terpilih untuk Beranda.
   Empat slot `home-product-logo-1` sampai `home-product-logo-4` mengisi logo
   pada segmen Produk & Layanan; ukuran wadah tetap dan gambar memakai `contain`.
-- Slot `home-marine-fuel-background` mengelola latar segmen Marine Fuel dari
-  Gambar Statis Pendukung → Beranda → Halaman Beranda. Pintasan lama
-  `Latar Marine Fuel` di navigasi Studio dihapus, tetapi dokumen `mediaAsset`
-  lama tetap tersedia sebagai fallback hingga gambar baru diunggah.
-- Untuk dokumen singleton yang sudah ada sebelum slot logo ditambahkan, editor
-  menyediakan tindakan satu kali untuk menyiapkan slot logo atau latar Marine
-  Fuel yang belum ada tanpa mengubah gambar yang sudah tersimpan.
+- Slot `home-marine-fuel-background` dan `home-marine-fuel-video` mengelola
+  media segmen Marine Fuel di Beranda. Slot
+  `product-marine-fuel-background` dan `product-marine-fuel-video` mengelola
+  media segmen yang sama secara terpisah di Produk → Kenali Produk. Semua slot
+  tersedia melalui Media Pendukung → pilih halaman terkait.
+  Pintasan lama `Latar Marine Fuel` di navigasi Studio dihapus, tetapi dokumen
+  `mediaAsset` lama tetap tersedia sebagai fallback hingga gambar baru diunggah.
+- Untuk dokumen singleton yang sudah ada sebelum slot baru ditambahkan, editor
+  menyediakan tindakan satu kali untuk memulihkan slot media yang belum ada
+  tanpa mengubah media yang sudah tersimpan.
 - API Home memprioritaskan slot pendukung yang memiliki gambar, lalu memakai
   media legacy sebagai fallback. Logo `productShowcase.logoItems` tetap menjadi
   fallback untuk logo.
