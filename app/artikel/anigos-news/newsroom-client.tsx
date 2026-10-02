@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import Image from "next/image"
 import { Search } from "lucide-react"
 import { Suspense, useMemo, useState } from "react"

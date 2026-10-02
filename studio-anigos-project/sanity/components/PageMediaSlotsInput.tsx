@@ -86,10 +86,11 @@ export function PageMediaSlotsInput(
               padding: "8px 12px",
             }}
           >
-            Pulihkan {missingSlots.length} slot media
+            Tambahkan {missingSlots.length} slot media
           </button>
           <span style={{ color: "var(--card-muted-fg-color)", fontSize: 13 }}>
-            Memulihkan slot tetap yang hilang tanpa mengubah media lain.
+            Slot ini belum memiliki field untuk diisi. Tambahkan slot terlebih
+            dahulu; media lain tidak akan berubah.
           </span>
         </div>
       )}

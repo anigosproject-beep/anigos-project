@@ -2,6 +2,8 @@
 
 import Image from "next/image"
 import { ArrowRight } from "lucide-react"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { useEffect, useState } from "react"
 
 import { useHomeContent } from "@/components/home-content-provider"
 import { useLocale } from "@/components/locale-provider"
@@ -16,6 +18,39 @@ export function ProductShowcase() {
   const title = home?.productShowcase?.title
   const description = home?.productShowcase?.description
   const logoItems = home?.productShowcase?.logoItems?.slice(0, 4) ?? []
+  const prefersReducedMotion = useReducedMotion()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const slides = Array.from({ length: 4 }, (_, index) => {
+    const item = logoItems[index]
+    const staticLogo = home?.mediaSlots?.find(
+      (media) => media?.slotId === `home-product-logo-${index + 1}`
+    )
+
+    return {
+      item,
+      name: staticLogo?.name ?? item?.name,
+      description: staticLogo?.description ?? item?.description,
+      image: staticLogo?.image?.url ?? item?.logo?.url,
+      alt:
+        staticLogo?.image?.alt ||
+        item?.name ||
+        item?.logo?.alt ||
+        "Logo produk",
+    }
+  }).filter((slide): slide is typeof slide & { image: string } =>
+    Boolean(slide.image)
+  )
+  const activeSlide = slides[activeIndex % Math.max(slides.length, 1)]
+
+  useEffect(() => {
+    if (slides.length < 2) return
+
+    const interval = window.setInterval(() => {
+      setActiveIndex((index) => (index + 1) % slides.length)
+    }, 5000)
+
+    return () => window.clearInterval(interval)
+  }, [slides.length])
 
   return (
     <section
@@ -43,41 +78,57 @@ export function ProductShowcase() {
           </Text>
         </div>
 
-        <div className="grid w-full grid-cols-4 items-center justify-items-center gap-1.5 py-2 sm:gap-4">
-          {Array.from({ length: 4 }, (_, index) => {
-            const item = logoItems[index]
-            const slotId = `home-product-logo-${index + 1}`
-            const staticLogo = home?.mediaSlots?.find(
-              (media) => media?.slotId === slotId
-            )
-            const image = staticLogo?.image?.url ?? item?.logo?.url
-            const alt =
-              staticLogo?.image?.alt ||
-              item?.name ||
-              item?.logo?.alt ||
-              "Logo produk"
-
-            return (
-              <div
-                key={slotId}
-                className="flex h-10 w-full min-w-0 items-center justify-center sm:h-12 lg:h-14"
+        <div className="flex min-h-32 w-full items-center justify-center py-2 sm:min-h-40 lg:min-h-48">
+          <AnimatePresence mode="wait" initial={false}>
+            {activeSlide && (
+              <motion.div
+                key={`${activeIndex}-${activeSlide.image}`}
+                className="grid w-full max-w-3xl grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] items-center gap-4 sm:gap-8"
+                initial={{
+                  opacity: 0,
+                  y: prefersReducedMotion ? 0 : 28,
+                }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 0 }}
+                transition={{
+                  duration: prefersReducedMotion ? 0.25 : 0.55,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                aria-live="polite"
               >
-                {image ? (
+                <div className="flex h-20 items-center justify-center sm:h-28 lg:h-36">
                   <Image
-                    src={image}
-                    alt={alt}
-                    title={item?.description}
-                    width={180}
-                    height={80}
-                    sizes="(max-width: 639px) 4.5rem, (max-width: 1023px) 6rem, 7rem"
+                    src={activeSlide.image}
+                    alt={activeSlide.alt}
+                    width={320}
+                    height={160}
+                    sizes="(max-width: 639px) 42vw, (max-width: 1023px) 16rem, 20rem"
                     className="h-full w-full object-contain"
                   />
-                ) : (
-                  <span aria-hidden="true" className="block size-full" />
-                )}
-              </div>
-            )
-          })}
+                </div>
+                <div className="min-w-0 border-l border-border pl-4 sm:pl-8">
+                  <h3 className="text-sm leading-snug font-semibold text-foreground sm:text-base lg:text-lg">
+                    {activeSlide.name ?? activeSlide.alt}
+                  </h3>
+                  <p className="mt-2 line-clamp-4 text-xs leading-5 text-muted-foreground sm:mt-2.5 sm:text-sm sm:leading-5">
+                    {activeSlide.description ??
+                      description ??
+                      translate(locale, "homeProductsDescription")}
+                  </p>
+                  {slides.length > 1 && (
+                    <p className="mt-2.5 text-[0.65rem] font-medium text-muted-foreground sm:mt-3">
+                      {String((activeIndex % slides.length) + 1).padStart(
+                        2,
+                        "0"
+                      )}
+                      <span className="mx-1.5 opacity-50">/</span>
+                      {String(slides.length).padStart(2, "0")}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="grid grid-cols-[1fr_auto] items-center gap-3">

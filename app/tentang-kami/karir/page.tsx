@@ -1,7 +1,7 @@
 "use client"
 
 import { useCareerOpenings } from "@/components/use-career-openings"
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { ArrowRight, MapPin } from "lucide-react"
 
 import { careerBenefits } from "@/lib/careers-data"
@@ -13,6 +13,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { useLocale } from "@/components/locale-provider"
 import { translate as translateCommon, translate } from "@/lib/i18n"
 import { CareerRecruitmentDisclaimer } from "@/components/career-recruitment-disclaimer"
+import { BriefcaseBusiness } from "lucide-react"
 
 const benefitKeys = [
   ["purposeAtWork", "purposeAtWorkDescription"],
@@ -36,7 +37,12 @@ export default function KarirPage() {
         description={translate(locale, "careersDescription")}
         image="/images/page-hero/tentang-kami.webp"
         pageKey="karir"
-        breadcrumbs={[{ label: translateCommon(locale, "about"), href: "/tentang-kami/profil-perusahaan" }]}
+        breadcrumbs={[
+          {
+            label: translateCommon(locale, "about"),
+            href: "/tentang-kami/profil-perusahaan",
+          },
+        ]}
       />
 
       <section className="border-b border-border bg-background py-20 lg:py-28">
@@ -47,7 +53,10 @@ export default function KarirPage() {
             description={translate(locale, "meaningfulWorkDescription")}
           />
           <div className="rounded-4xl bg-base-color p-8 text-base-color-foreground shadow-xl sm:p-12">
-            <Badge variant="secondary" className="bg-base-color-foreground/10 text-base-color-foreground">
+            <Badge
+              variant="secondary"
+              className="bg-base-color-foreground/10 text-base-color-foreground"
+            >
               {translate(locale, "growingTogether")}
             </Badge>
             <Heading level={2} className="mt-6 text-base-color-foreground">
@@ -72,7 +81,10 @@ export default function KarirPage() {
               const Icon = benefit.icon
               const [titleKey, descriptionKey] = benefitKeys[index]
               return (
-                <Card key={benefit.title} className="h-full bg-background transition-transform duration-300 hover:-translate-y-1">
+                <Card
+                  key={benefit.title}
+                  className="h-full bg-background transition-transform duration-300 hover:-translate-y-1"
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -82,10 +94,14 @@ export default function KarirPage() {
                         {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
-                    <CardTitle className="mt-5">{translate(locale, titleKey)}</CardTitle>
+                    <CardTitle className="mt-5">
+                      {translate(locale, titleKey)}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm leading-6 text-muted-foreground">{translate(locale, descriptionKey)}</p>
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      {translate(locale, descriptionKey)}
+                    </p>
                   </CardContent>
                 </Card>
               )
@@ -94,7 +110,10 @@ export default function KarirPage() {
         </div>
       </section>
 
-      <section id="lowongan" className="border-b border-border bg-background py-20 lg:py-28">
+      <section
+        id="lowongan"
+        className="border-b border-border bg-background py-20 lg:py-28"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <SectionHeading
@@ -102,37 +121,63 @@ export default function KarirPage() {
               title={translate(locale, "careerOpeningsTitle")}
               description={translate(locale, "careerOpeningsDescription")}
             />
-            <Badge variant="outline" className="w-fit">{openings.length} {translate(locale, "positionsAvailable")}</Badge>
+            <Badge variant="outline" className="w-fit">
+              {openings.length} {translate(locale, "positionsAvailable")}
+            </Badge>
           </div>
           <div className="mt-12 grid gap-5 lg:grid-cols-2">
             {isLoading ? (
-              <p className="text-sm text-muted-foreground">{translate(locale, "careerOpeningsLoading")}</p>
+              <p role="status" className="text-sm text-muted-foreground">
+                {translate(locale, "careerOpeningsLoading")}
+              </p>
             ) : error ? (
-              <p role="alert" className="text-sm text-destructive">{error}</p>
+              <p role="alert" className="text-sm text-destructive">
+                {translate(locale, "careerOpeningsLoadError")}
+              </p>
             ) : openings.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{translate(locale, "noCareerOpenings")}</p>
-            ) : openings.map((opening) => {
-              return (
-              <Card key={opening.slug} className="h-full">
-                <CardHeader>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary">{opening.department}</Badge>
-                    <span className="text-xs text-muted-foreground">{opening.type}</span>
-                  </div>
-                  <CardTitle className="mt-4 text-2xl">{opening.title}</CardTitle>
-                  <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <MapPin className="size-4" /> {opening.location}
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm leading-6 text-muted-foreground">{opening.summary}</p>
-                  <Link href={`/tentang-kami/karir/lamar?posisi=${opening.slug}`} className={buttonVariants({ className: "mt-7 w-fit" })}>
-                    {translate(locale, "viewAndApply")} <ArrowRight data-icon="inline-end" />
-                  </Link>
-                </CardContent>
-              </Card>
-              )
-            })}
+              <div className="rounded-3xl border border-border bg-muted/30 p-8 sm:col-span-2 sm:p-12">
+                <BriefcaseBusiness className="size-9 text-muted-foreground" />
+                <h2 className="mt-4 text-lg font-semibold">
+                  {translate(locale, "noCareerOpenings")}
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                  {translate(locale, "noCareerOpeningsDescription")}
+                </p>
+              </div>
+            ) : (
+              openings.map((opening) => {
+                return (
+                  <Card key={opening.slug} className="h-full">
+                    <CardHeader>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="secondary">{opening.department}</Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {opening.type}
+                        </span>
+                      </div>
+                      <CardTitle className="mt-4 text-2xl">
+                        {opening.title}
+                      </CardTitle>
+                      <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <MapPin className="size-4" /> {opening.location}
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm leading-6 text-muted-foreground">
+                        {opening.summary}
+                      </p>
+                      <Link
+                        href={`/tentang-kami/karir/lamar?posisi=${opening.slug}`}
+                        className={buttonVariants({ className: "mt-7 w-fit" })}
+                      >
+                        {translate(locale, "viewAndApply")}{" "}
+                        <ArrowRight data-icon="inline-end" />
+                      </Link>
+                    </CardContent>
+                  </Card>
+                )
+              })
+            )}
           </div>
         </div>
       </section>

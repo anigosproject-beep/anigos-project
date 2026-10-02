@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { BarChart3, CloudSun, Clock3, ShieldCheck } from "lucide-react"
 
 import { PageHero } from "@/components/sections"

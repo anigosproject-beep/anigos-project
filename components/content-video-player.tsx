@@ -87,6 +87,13 @@ export function ContentVideoPlayer({
 
   const generatePoster = (video: HTMLVideoElement) => {
     if (poster || thumbnail || generatedPoster || !video.videoWidth) return
+    if (
+      video.currentSrc &&
+      new URL(video.currentSrc, window.location.href).origin !==
+        window.location.origin
+    ) {
+      return
+    }
 
     const canvas = document.createElement("canvas")
     const width = 960
@@ -121,10 +128,18 @@ export function ContentVideoPlayer({
 
   const seek = (value: number) => {
     const video = videoRef.current
-    if (!video || !Number.isFinite(video.duration)) return
+    if (
+      !video ||
+      !Number.isFinite(video.duration) ||
+      video.duration <= 0 ||
+      !Number.isFinite(value)
+    ) {
+      return
+    }
 
-    video.currentTime = value
-    setCurrentTime(value)
+    const nextTime = Math.max(0, Math.min(value, video.duration))
+    video.currentTime = nextTime
+    setCurrentTime(nextTime)
   }
 
   const enterFullscreen = () => {
@@ -168,10 +183,13 @@ export function ContentVideoPlayer({
         className="block aspect-video size-full object-cover"
         onLoadedMetadata={(event) => {
           setDuration(event.currentTarget.duration)
+          setCurrentTime(event.currentTarget.currentTime)
           generatePoster(event.currentTarget)
         }}
+        onDurationChange={(event) => setDuration(event.currentTarget.duration)}
         onLoadedData={(event) => generatePoster(event.currentTarget)}
         onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+        onSeeking={(event) => setCurrentTime(event.currentTarget.currentTime)}
         onPlay={() => setIsPlaying(true)}
         onPause={() => {
           setIsPlaying(false)
@@ -208,11 +226,13 @@ export function ContentVideoPlayer({
           type="range"
           min={0}
           max={duration || 0}
-          step={0.1}
+          step="any"
           value={Math.min(currentTime, duration || 0)}
-          onChange={(event) => seek(Number(event.target.value))}
+          onChange={(event) => seek(event.currentTarget.valueAsNumber)}
+          disabled={!Number.isFinite(duration) || duration <= 0}
           className="mb-3 h-1 w-full cursor-pointer accent-primary"
           aria-label={translate(locale, "videoPosition")}
+          aria-valuetext={`${formatTime(currentTime)} / ${formatTime(duration)}`}
         />
         <div className="flex items-center gap-3">
           <button

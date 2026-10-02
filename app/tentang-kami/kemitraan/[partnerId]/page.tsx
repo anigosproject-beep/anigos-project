@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import Link from "@/components/site-link"
 import * as React from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Maximize2 } from "lucide-react"

@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import Image from "next/image"
 import * as React from "react"
 import { useState } from "react"
@@ -135,6 +135,7 @@ export default function KenaliProdukPage() {
         title={{id: translate(locale, "productVideoTitle"), en: translate("en", "productVideoTitle")}}
         description={{id: translate(locale, "productVideoDescription"), en: translate("en", "productVideoDescription")}}
         videoTitle={{id: translate(locale, "productVideoTitleLabel"), en: translate("en", "productVideoTitleLabel")}}
+        mediaSlotId="product-introduction-video"
       />
 
       <MarineFuelShowcase variant="product" />

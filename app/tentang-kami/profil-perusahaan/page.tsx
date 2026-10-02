@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import {
   ArrowRight,
   CircleCheck,
@@ -106,6 +106,7 @@ export default function ProfilPerusahaanPage() {
         title={{id: "Energi yang bergerak bersama kebutuhan industri.", en: "Energy that moves with industry."}}
         description={{id: "Video singkat ini menjadi pengantar visual tentang cara PT. Anigos Jaya Perkasa membangun kepercayaan, menjaga standar, dan menghubungkan kebutuhan pelanggan dengan distribusi yang bertanggung jawab.", en: "This short video introduces how PT. Anigos Jaya Perkasa builds trust, maintains standards, and connects customer needs with responsible distribution."}}
         videoTitle={{id: "Video profil perusahaan PT. Anigos Jaya Perkasa", en: "PT. Anigos Jaya Perkasa company profile video"}}
+        mediaSlotId="company-profile-story-video"
       />
 
       <FeatureImageSection

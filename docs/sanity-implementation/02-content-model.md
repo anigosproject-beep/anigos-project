@@ -54,6 +54,15 @@ Field wajib:
 - Gambar
 - Isi artikel
 
+### Logo produk homepage
+
+Pada **Media Pendukung → Beranda → Produk & Layanan — Logo**, setiap slot logo
+menyediakan field localized `Nama produk / layanan`, `Keterangan produk /
+layanan`, dan gambar. Isi Bahasa Indonesia dan English; teks ditampilkan
+bersama logo pada showcase produk homepage. Editor **Home Hero** hanya
+mengatur slide hero; data showcase produk lama tetap dibaca sebagai fallback,
+tetapi tidak lagi diedit dari form Home Hero.
+
 ### Dokumen
 
 Pisahkan secara operasional:
@@ -94,6 +103,41 @@ Halaman → Segmen → Elemen media → Asset
 
 Operator tidak mengetik nama halaman atau segmen secara bebas.
 
+### Pengaturan visibilitas halaman
+
+Dokumen singleton `pageVisibilitySettings` adalah sumber status aktif/nonaktif
+untuk halaman publik. App membaca dokumen ini melalui satu fungsi server yang
+di-cache dengan tag `page-visibility`; layout, navigasi, tombol internal, dan
+sitemap menggunakan snapshot map yang sama. Header desktop/mobile dan footer
+memfilter tautan per halaman; grup footer tanpa tautan tidak dirender, dan
+sitemap mengecualikan route statis maupun detail artikel yang dinonaktifkan.
+Halaman tidak membuat query Sanity masing-masing. Jika Sanity sementara tidak
+tersedia sebelum snapshot pernah terbentuk, app mempertahankan pengalaman situs
+publik dengan default aktif.
+Timeout dicatat sebagai warning tanpa stack trace; kegagalan non-ketersediaan
+tetap dicatat sebagai error. Pengaturan ini menyembunyikan konten pemasaran, bukan
+mekanisme otorisasi atau perlindungan data privat.
+
+Untuk propagasi publish yang cepat, konfigurasi webhook Sanity perlu diarahkan ke
+`POST /api/sanity/page-visibility-webhook` pada domain app, dengan filter GROQ
+`_type == "pageVisibilitySettings" && _id == "pageVisibilitySettings"`,
+projection `{_id, _type}`, serta header
+`Authorization: Bearer <SANITY_PAGE_VISIBILITY_WEBHOOK_SECRET>`. Simpan nilai
+secret yang sama pada environment deployment app; jangan commit nilainya.
+Callback menandai cache sebagai stale dengan stale-while-revalidate, sehingga
+permintaan berikutnya tetap memakai snapshot terakhir yang baik sementara
+Sanity dibaca ulang di belakang. Browser memeriksa snapshot bersama tiap 30
+detik, mengirim ETag, dan tidak mengganti status terakhir jika handler sedang
+gagal. TTL lima menit menjadi rekonsiliasi jika callback gagal atau belum
+dikonfigurasi. Trade-off-nya: toggle dapat terlambat terlihat sampai satu siklus
+refresh, tetapi gangguan Sanity tidak mengubah semua halaman menjadi terblokir.
+Pola cache dan invalidasinya mengikuti dokumentasi resmi
+[Next.js `unstable_cache`](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)
+dan
+[Next.js `revalidateTag`](https://nextjs.org/docs/app/api-reference/functions/revalidateTag);
+webhook publish mengikuti
+[Sanity Webhooks](https://www.sanity.io/docs/webhooks).
+
 ### Produk, armada, dan kemitraan
 
 Domain Produk/Kemitraan kini memiliki model Studio kanonis yang terpisah dari
@@ -119,7 +163,7 @@ global media slot:
   Sanity dengan akses Editor yang valid.
 - Halaman `/tentang-kami/client` membaca client aktif melalui
   `/api/kemitraan/clients`. Dokumen `partner` lama yang ditandai `isClient ==
-  true` tetap dibaca sebagai kompatibilitas; dokumen mitra Home lainnya tidak
+true` tetap dibaca sebagai kompatibilitas; dokumen mitra Home lainnya tidak
   dianggap sebagai client.
 
 Model ini baru menjadi surface editorial. Query frontend dan migrasi data belum

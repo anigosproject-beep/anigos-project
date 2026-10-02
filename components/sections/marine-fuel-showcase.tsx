@@ -2,13 +2,15 @@
 
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { ArrowRight, Anchor, Clapperboard, Compass, Fuel } from "lucide-react"
+import { ArrowRight, Anchor, Compass, Fuel, Video } from "lucide-react"
 
+import { ContentVideoPlayer } from "@/components/content-video-player"
 import { useLocale } from "@/components/locale-provider"
 import { Heading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { MotionButtonLink } from "@/components/ui/button"
 import { translate } from "@/lib/i18n"
+import { maxMarineFuelVideoBytes } from "@/shared/sanity-content-contracts"
 
 export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "product"}) {
   const { locale } = useLocale()
@@ -16,6 +18,7 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
     variant: "home" | "product"
     backgroundImage?: string
     backgroundVideo?: string
+    oversizedVideo?: boolean
   } | null>(null)
   useEffect(() => {
     const controller = new AbortController()
@@ -32,6 +35,7 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
           variant: "home" | "product"
           backgroundImage?: string
           backgroundVideo?: string
+          oversizedVideo?: boolean
         }>
       })
       .then((data) => setMedia(data))
@@ -59,8 +63,8 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
     media?.variant === variant ? media.backgroundImage : undefined
   const backgroundVideo =
     media?.variant === variant ? media.backgroundVideo : undefined
-  const [failedVideoUrl, setFailedVideoUrl] = useState<string | null>(null)
-
+  const hasOversizedVideo =
+    media?.variant === variant && media.oversizedVideo === true
   return (
     <section
       id="marine-fuel"
@@ -75,25 +79,6 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
           sizes="100vw"
           className="object-cover object-center opacity-45"
         />
-        {backgroundVideo && backgroundVideo !== failedVideoUrl ? (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 size-full object-cover opacity-45"
-            onError={(event) => {
-              console.error("Marine Fuel background video failed to load", {
-                source: event.currentTarget.currentSrc,
-                errorCode: event.currentTarget.error?.code ?? null,
-              })
-              setFailedVideoUrl(backgroundVideo)
-            }}
-          >
-            <source src={backgroundVideo} />
-          </video>
-        ) : null}
       </div>
       <div
         aria-hidden="true"
@@ -150,22 +135,39 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
           </MotionButtonLink>
         </div>
 
-        <div className="flex justify-center">
-          <div
-            role="group"
-            aria-label={translate(locale, "marineFuelVideoPlaceholder")}
-            className="flex aspect-video w-full max-w-xl items-center justify-center overflow-hidden rounded-3xl border border-white/20 bg-slate-950/55 shadow-2xl backdrop-blur-sm"
-          >
-            <div className="flex flex-col items-center gap-3 text-center text-white/80">
-              <Clapperboard aria-hidden="true" className="size-10 text-sky-200" />
-              <Text className="text-sm text-white/80">
-                {translate(locale, "marineFuelVideoPlaceholder")}
-              </Text>
-              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs">
-                16:9
-              </span>
+        <div className="flex flex-col justify-center gap-2">
+          {backgroundVideo ? (
+            <ContentVideoPlayer
+              src={backgroundVideo}
+              title={translate(locale, "marineFuelVideoPlaceholder")}
+              loop
+              className="w-full max-w-xl border border-white/20 shadow-2xl"
+            />
+          ) : (
+            <div
+              role="img"
+              aria-label={translate(locale, "marineFuelVideoPending")}
+              className="flex aspect-video w-full max-w-xl flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-white/30 bg-white/5 px-6 text-center text-white/75 shadow-2xl backdrop-blur-sm"
+            >
+              <Video aria-hidden="true" className="size-9 text-sky-300" />
+              <div>
+                <p className="font-semibold text-white">
+                  {translate(locale, "marineFuelVideoPlaceholder")}
+                </p>
+                <p className="mt-1 text-sm">
+                  {translate(locale, "marineFuelVideoPending")}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
+          {hasOversizedVideo ? (
+            <p className="text-sm text-white/75" role="status">
+              {translate(locale, "marineFuelVideoTooLarge").replace(
+                "{size}",
+                `${Math.round(maxMarineFuelVideoBytes / 1024 / 1024)} MiB`
+              )}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

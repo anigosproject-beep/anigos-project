@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import Link from "@/components/site-link"
 import * as React from "react"
 import {ArrowRight, Images} from "lucide-react"
 

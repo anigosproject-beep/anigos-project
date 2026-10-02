@@ -11,20 +11,29 @@ type LocaleContextValue = {
 
 const LocaleContext = React.createContext<LocaleContextValue | null>(null)
 
-export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = React.useState<Locale>("id")
+export function LocaleProvider({
+  initialLocale,
+  children,
+}: {
+  initialLocale: Locale
+  children: React.ReactNode
+}) {
+  const [locale, setLocaleState] = React.useState<Locale>(initialLocale)
 
   const setLocale = React.useCallback((nextLocale: Locale) => {
     setLocaleState(nextLocale)
     window.localStorage.setItem("locale", nextLocale)
+    document.cookie = `locale=${nextLocale}; Path=/; Max-Age=31536000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`
     document.documentElement.lang = nextLocale
   }, [])
 
   React.useEffect(() => {
     const storedLocale = window.localStorage.getItem("locale")
-    const initialLocale: Locale = storedLocale === "en" ? "en" : "id"
-    queueMicrotask(() => setLocale(initialLocale))
-  }, [setLocale])
+    const storedPreference: Locale = storedLocale === "en" ? "en" : "id"
+    document.documentElement.lang = locale
+    if (storedPreference !== locale)
+      queueMicrotask(() => setLocale(storedPreference))
+  }, [locale, setLocale])
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>

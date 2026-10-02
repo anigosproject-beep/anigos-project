@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { usePathname } from "next/navigation"
 import { ChevronDown, Menu, Moon, Sun } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
@@ -9,11 +9,15 @@ import { useEffect, useRef, useState } from "react"
 
 import { HeaderLanguageSelect } from "@/components/header-language-select"
 import { HeaderMarketRibbon } from "@/components/header-market-ribbon"
-import { navigationItems, type NavigationItem } from "@/components/navigation-config"
+import {
+  getVisibleNavigationItems,
+  type NavigationItem,
+} from "@/components/navigation-config"
 import { useLocale } from "@/components/locale-provider"
 import { useTheme } from "@/components/theme-provider"
 import { useHeaderAppearance } from "@/components/header-appearance-provider"
 import { translate, type TranslationKey } from "@/lib/i18n"
+import { usePageVisibility } from "@/components/page-visibility-provider"
 import { MotionButtonLink, Button } from "@/components/ui/button"
 import {
   NavigationMenu,
@@ -39,6 +43,8 @@ import {
 
 function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
   const { locale } = useLocale()
+  const { visibility } = usePageVisibility()
+  const navigationItems = getVisibleNavigationItems(visibility)
   const navigationLabels: Record<string, TranslationKey> = {
     Beranda: "home",
     "Tentang Kami": "about",
@@ -209,6 +215,8 @@ export function Header() {
   const { locale, setLocale } = useLocale()
   const { theme, setTheme } = useTheme()
   const { forceSolid } = useHeaderAppearance()
+  const { visibility, isVisible: isPathVisible } = usePageVisibility()
+  const visibleNavigationItems = getVisibleNavigationItems(visibility)
   const pathname = usePathname()
   const prefersReducedMotion = useReducedMotion()
   const headerRef = useRef<HTMLElement>(null)
@@ -297,7 +305,7 @@ export function Header() {
       }
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-6 lg:px-8">
-        <Link
+        {visibility.home !== false ? <Link
           href="/"
           className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background"
         >
@@ -314,7 +322,23 @@ export function Header() {
             className="h-11 w-11 object-contain"
           />
           <span className="text-lg font-semibold tracking-tight">PT. Anigos Jaya Perkasa</span>
-        </Link>
+        </Link> : (
+          <div className="flex shrink-0 items-center gap-3">
+            <Image
+              src={
+                isSolid
+                  ? "/logo/petro%20anigos.svg"
+                  : "/logo/petro%20anigos%20white.svg"
+              }
+              alt="PT. Anigos Jaya Perkasa"
+              width={44}
+              height={44}
+              priority
+              className="h-11 w-11 object-contain"
+            />
+            <span className="text-lg font-semibold tracking-tight">PT. Anigos Jaya Perkasa</span>
+          </div>
+        )}
 
         <DesktopNavigation isSolid={isSolid} />
 
@@ -336,7 +360,7 @@ export function Header() {
               label={content.language}
               variant={isSolid ? "active" : "idle"}
             />
-            <MotionButtonLink
+            {isPathVisible("/hubungi-kami") && <MotionButtonLink
               href="/hubungi-kami"
               className={
                 isSolid
@@ -345,7 +369,7 @@ export function Header() {
               }
             >
               {content.contact}
-            </MotionButtonLink>
+            </MotionButtonLink>}
           </div>
         </div>
 
@@ -377,7 +401,7 @@ export function Header() {
               className="flex flex-col gap-2 overflow-y-auto px-6 pb-6"
               aria-label={translate(locale, "mobileNavigation")}
             >
-              {navigationItems.map((item) => (
+              {visibleNavigationItems.map((item) => (
                 <MobileNavigationItem
                   key={item.href}
                   item={item}
@@ -385,12 +409,12 @@ export function Header() {
                   onNavigate={() => undefined}
                 />
               ))}
-              <MotionButtonLink
+              {isPathVisible("/hubungi-kami") && <MotionButtonLink
                 href="/hubungi-kami"
                 className="mt-3 w-full"
               >
                 {content.contact}
-              </MotionButtonLink>
+              </MotionButtonLink>}
               <HeaderLanguageSelect
                 locale={locale}
                 setLocale={setLocale}

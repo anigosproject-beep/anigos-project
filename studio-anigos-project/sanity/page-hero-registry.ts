@@ -361,3 +361,16 @@ export const pageHeroMenus = [
 export function findPageHeroMenu(value: string | undefined) {
   return pageHeroMenus.find((menu) => menu.value === value)
 }
+
+export function findPageHeroPage(
+  menuValue: string | undefined,
+  pageValue: string | undefined
+) {
+  return findPageHeroMenu(menuValue)?.pages.find(
+    (page) => page.value === pageValue
+  )
+}
+
+export function pageHeroFieldName(pageValue: string) {
+  return `pageHero_${pageValue.replaceAll("-", "_")}`
+}

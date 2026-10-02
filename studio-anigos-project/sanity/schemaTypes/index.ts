@@ -15,6 +15,7 @@ import { siteSettings } from "./siteSettings"
 import { mediaAsset } from "./mediaAsset"
 import { teamDivision } from "./teamDivision"
 import { teamMember } from "./teamMember"
+import { pageVisibilitySettings } from "./pageVisibilitySettings"
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   mediaAsset,
@@ -32,4 +33,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
   teamDivision,
   teamMember,
+  pageVisibilitySettings,
 ]

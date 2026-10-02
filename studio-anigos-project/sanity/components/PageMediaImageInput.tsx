@@ -7,6 +7,11 @@ import {
   useFormValue,
 } from "sanity"
 
+import {
+  maxHomeHeroVideoBytes,
+  maxMarineFuelVideoBytes,
+} from "../../../shared/sanity-content-contracts"
+
 type Dimensions = { width: number; height: number }
 type AssetDimensions = Dimensions | null
 
@@ -156,6 +161,7 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
   const [loadedVideo, setLoadedVideo] = useState<{
     assetId: string
     url: string | null
+    size?: number
   } | null>(null)
   const [loadedDimensions, setLoadedDimensions] = useState<{
     assetId: string
@@ -164,16 +170,32 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
   const assetUrl = loadedVideo?.assetId === assetId ? loadedVideo.url : null
   const dimensions =
     loadedDimensions?.assetId === assetId ? loadedDimensions.dimensions : null
+  const isMarineFuelVideo = useFormValue([
+    ...props.path.slice(0, -1),
+    "slotId",
+  ])
+  const videoLimit =
+    typeof isMarineFuelVideo === "string" &&
+    isMarineFuelVideo.endsWith("-marine-fuel-video")
+      ? maxMarineFuelVideoBytes
+      : maxHomeHeroVideoBytes
 
   useEffect(() => {
     if (!assetId) return
 
     let isCurrent = true
     void client
-      .fetch<{ url?: string } | null>(`*[_id == $assetId][0]{url}`, { assetId })
+      .fetch<{ url?: string; size?: number } | null>(
+        `*[_id == $assetId][0]{url, size}`,
+        { assetId }
+      )
       .then((asset) => {
         if (isCurrent) {
-          setLoadedVideo({ assetId, url: asset?.url ?? null })
+          setLoadedVideo({
+            assetId,
+            url: asset?.url ?? null,
+            size: asset?.size,
+          })
         }
       })
       .catch((error: unknown) => {
@@ -211,6 +233,15 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
           }}
         />
       ) : null}
+      {      typeof loadedVideo?.size === "number" &&
+      loadedVideo.assetId === assetId &&
+      loadedVideo.size > videoLimit ? (
+        <p role="status" style={noticeStyle}>
+          File video {formatFileSize(loadedVideo.size)} melebihi rekomendasi{" "}
+          {formatFileSize(videoLimit)}. Pemutar memuat metadata dan memainkan
+          video hanya setelah pengguna menekan tombol putar.
+        </p>
+      ) : null}
       <RatioNotice
         dimensions={dimensions}
         expectedRatio={expectedRatio}
@@ -219,4 +250,8 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
       />
     </div>
   )
+}
+
+function formatFileSize(size: number) {
+  return `${(size / 1024 / 1024).toFixed(1)} MiB`
 }

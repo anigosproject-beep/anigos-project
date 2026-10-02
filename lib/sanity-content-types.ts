@@ -28,6 +28,8 @@ export type HomeContent = {
     section?: string
     slot?: string
     slotId?: string
+    name?: string
+    description?: string
     image?: { url?: string; alt?: string }
     video?: { url?: string }
   } | null>

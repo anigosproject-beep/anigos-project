@@ -25,17 +25,17 @@ operator sudah dapat dilacak.
 Pemahaman efektif terhadap **perilaku runtime aplikasi dan kesesuaiannya dengan
 skema Sanity** saat discovery ini adalah:
 
-| Area | Pemahaman | Dasar penilaian |
-|---|---:|---|
-| Artikel dan newsroom | 75% | Mapper/query Sanity tersedia, tetapi halaman newsroom dan detail masih memakai data lokal |
-| Dokumen kemitraan | 60% | Jalur API Sanity ada, tetapi masih ada mock partnership dan fallback PDF |
-| Dokumen publikasi | 75% | Halaman publikasi sudah membaca `publicationDocument`, dengan fallback lokal |
-| Dokumen legalitas | 40% | Schema tersedia, tetapi route legalitas belum membaca Sanity |
-| Home hero | 80% | Query dan komponen hero tersedia, tetapi type/provider belum sepenuhnya mewakili respons |
-| Page hero | 25% | Schema/slot tersedia, tetapi mayoritas route masih memakai asset lokal |
-| Struktur organisasi | 80% | Fetch, mapper, dan fallback tersedia; kategori schema baru belum sepenuhnya selaras |
-| Media slot | 70% | Query media tersedia, tetapi pemakaian slot belum konsisten di semua komponen |
-| Kontak dan alamat | 20% | Schema settings tersedia, tetapi footer masih hardcoded |
+| Area                 | Pemahaman | Dasar penilaian                                                                           |
+| -------------------- | --------: | ----------------------------------------------------------------------------------------- |
+| Artikel dan newsroom |       75% | Mapper/query Sanity tersedia, tetapi halaman newsroom dan detail masih memakai data lokal |
+| Dokumen kemitraan    |       60% | Jalur API Sanity ada, tetapi masih ada mock partnership dan fallback PDF                  |
+| Dokumen publikasi    |       75% | Halaman publikasi sudah membaca `publicationDocument`, dengan fallback lokal              |
+| Dokumen legalitas    |       40% | Schema tersedia, tetapi route legalitas belum membaca Sanity                              |
+| Home hero            |       80% | Query dan komponen hero tersedia, tetapi type/provider belum sepenuhnya mewakili respons  |
+| Page hero            |       25% | Schema/slot tersedia, tetapi mayoritas route masih memakai asset lokal                    |
+| Struktur organisasi  |       80% | Fetch, mapper, dan fallback tersedia; kategori schema baru belum sepenuhnya selaras       |
+| Media slot           |       70% | Query media tersedia, tetapi pemakaian slot belum konsisten di semua komponen             |
+| Kontak dan alamat    |       20% | Schema settings tersedia, tetapi footer masih hardcoded                                   |
 
 **Rata-rata discovery lintas area: 58%.**
 
@@ -121,7 +121,10 @@ Kondisi aplikasi:
 
 - Schema `homePage.heroSlides` mendukung posisi, status aktif, judul,
   deskripsi, gambar, video, poster, dan tipe media.
-- `HOME_QUERY` mengambil data hero aktif.
+- Status aktif tersimpan sebagai `isActive`; query `/api/home-hero` hanya
+  mengirimkan slide dengan `isActive != false`, sehingga dokumen lama yang
+  belum memiliki flag tetap tampil. Slide nonaktif disimpan di Studio tetapi
+  tidak ikut slider publik.
 - `HomeContent` belum mendeskripsikan seluruh field `heroSlides`, sehingga
   kontrak type/provider harus dibuktikan sebelum perubahan.
 
@@ -178,18 +181,19 @@ Kondisi aplikasi:
   Empat slot `home-product-logo-1` sampai `home-product-logo-4` mengisi logo
   pada segmen Produk & Layanan; ukuran wadah tetap dan gambar memakai `contain`.
 - Slot `home-marine-fuel-background` dan `home-marine-fuel-video` mengelola
-  media segmen Marine Fuel di Beranda. Slot
+  latar gambar dan video pemutar segmen Marine Fuel di Beranda. Slot
   `product-marine-fuel-background` dan `product-marine-fuel-video` mengelola
-  media segmen yang sama secara terpisah di Produk → Kenali Produk. Semua slot
-  tersedia melalui Media Pendukung → pilih halaman terkait.
+  keduanya secara terpisah di Produk → Kenali Produk. Semua slot tersedia
+  melalui Media Pendukung → pilih halaman terkait.
   Pintasan lama `Latar Marine Fuel` di navigasi Studio dihapus, tetapi dokumen
   `mediaAsset` lama tetap tersedia sebagai fallback hingga gambar baru diunggah.
 - Untuk dokumen singleton yang sudah ada sebelum slot baru ditambahkan, editor
   menyediakan tindakan satu kali untuk memulihkan slot media yang belum ada
   tanpa mengubah media yang sudah tersimpan.
 - API Home memprioritaskan slot pendukung yang memiliki gambar, lalu memakai
-  media legacy sebagai fallback. Logo `productShowcase.logoItems` tetap menjadi
-  fallback untuk logo.
+  media legacy sebagai fallback. Slot logo pada Media Pendukung dapat
+  menyimpan nama dan keterangan per bahasa; `productShowcase.logoItems` tetap
+  menjadi fallback untuk logo serta teks lama.
 - Query frontend lama juga memiliki media embedded pada showcase, sehingga
   `mediaAsset` tidak boleh langsung dianggap sebagai pengganti seluruh media
   embedded tanpa mapping per komponen.

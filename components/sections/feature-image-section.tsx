@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { ArrowRight } from "lucide-react"
 
 import { Eyebrow, Heading, Text } from "@/components/typography"

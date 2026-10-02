@@ -4,27 +4,27 @@ Website corporate Petro Anigos dengan Next.js dan Sanity CMS.
 
 ## Sanity CMS
 
-Clean Studio editorial berada di `studio-clean/` dan terhubung ke project
-`wm8u3z2o`, dataset `production`. Dataset tersebut masih berisi data mock, jadi
-gunakan clean Studio untuk memasukkan data real secara bertahap. Studio lama di
-`studio-anigos-project/` jangan dihapus sampai migrasi konten dan pengujian
-website selesai.
+Studio aktif berada di `studio-anigos-project/` dan terhubung hanya ke project
+`6zvti7ob`, dataset `production`. Project `wm8u3z2o` adalah project lama dan
+bukan target untuk app, Studio aktif, seed, atau deployment. Referensi ke
+project tersebut pada laporan bertanggal adalah catatan historis saja.
 
 ```bash
-cd studio-clean
-npm install
+cd studio-anigos-project
 npm run dev
 ```
 
-Build Studio sebelum deploy:
+Build Studio:
 
 ```bash
 npm run build
 ```
 
-Tambahkan origin localhost ke CORS Origins project Sanity jika Studio lokal
-menampilkan halaman koneksi project. Jangan menjalankan `npm run deploy` sebelum
-data mock dipetakan dan clean Studio disetujui untuk rollout.
+Studio aktif telah dideploy ke <https://petro-anigos.sanity.studio/> pada
+2 Oktober 2026, dan schema workspace `petro-anigos` terdaftar pada
+`6zvti7ob/production`. Perlu login Sanity untuk membuka Studio. Untuk redeploy,
+gunakan akun yang punya akses ke project aktif dan jangan gunakan `studio-clean/`
+atau project lama.
 
 ## Adding components
 
@@ -48,10 +48,15 @@ import { Button } from "@/components/ui/button";
 
 ## Sanity CMS
 
-Sanity Studio berada di `studio-anigos-project` dan terhubung ke:
+Sanity Studio aktif berada di `studio-anigos-project` dan terkunci ke:
 
-- Project ID: `wm8u3z2o`
+- Project ID: `6zvti7ob`
 - Dataset: `production`
+
+`wm8u3z2o` adalah project lama; jangan gunakan sebagai target untuk operasi
+Sanity saat ini. Nilai `SANITY_STUDIO_PROJECT_ID` atau `SANITY_STUDIO_DATASET`
+yang tidak cocok dengan target aktif akan membuat konfigurasi gagal dengan
+jelas.
 
 Jalankan Studio:
 
@@ -64,14 +69,17 @@ Untuk aplikasi Next.js, salin `.env.example` menjadi `.env.local` lalu isi
 `NEXT_PUBLIC_SITE_URL` dengan domain produksi. Isi `SANITY_PREVIEW_SECRET`
 dengan nilai acak panjang yang sama pada environment aplikasi Next.js dan
 environment Studio saat memakai tombol preview. Project ID dan dataset Sanity
-sudah memiliki fallback yang sesuai untuk development.
+ditetapkan tetap ke target aktif.
 
 Deploy Studio sebagai hosted Studio Sanity, bukan sebagai project Vercel kedua:
 
 ```bash
 cd studio-anigos-project
-npm run deploy
+npx sanity deploy --schema-required
 ```
+
+Jalankan perintah deploy hanya setelah akun CLI memiliki akses ke `6zvti7ob`
+dan App ID/hostname hosted Studio untuk project aktif sudah diverifikasi.
 
 Website Next.js tetap dideploy ke Vercel. Jika `SANITY_PREVIEW_SECRET` belum
 disetel di Studio, tombol preview tidak boleh dianggap sebagai preview draft;

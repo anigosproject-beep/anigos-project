@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "eslint --ignore-pattern studio-anigos-project/dist --ignore-pattern studio-anigos-project/.sanity --ignore-pattern studio-clean/dist --ignore-pattern studio-clean/node_modules",
     "check:content-contracts": "node scripts/check-content-contracts.mjs",
+    "check:page-visibility-routes": "node scripts/check-page-visibility-routes.mjs",
     "check:structure-impact": "node scripts/check-structure-impact.mjs --output docs/sanity-implementation/STRUCTURE-IMPACT-LATEST.json",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"

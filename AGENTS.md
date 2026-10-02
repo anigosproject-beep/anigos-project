@@ -7,6 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Sanity development
 
 For any change or review involving Sanity, use the project copy of Sanity's official `sanity-best-practices` skill at `.agents/skills/sanity-best-practices/SKILL.md` and read the relevant reference guide(s) before editing. The skill is maintained by Sanity in [sanity-io/agent-toolkit](https://github.com/sanity-io/agent-toolkit); do not replace it with generic Sanity advice.
+Also apply `.agents/skills/sanity-project-workflow/SKILL.md` for repository-specific source-of-truth, validation, and safe-operation guidance. It complements the official skill and records GitHub community feedback as qualified evidence, not as a substitute for current documentation.
 
 Project-specific guidance:
 - The standalone Studio and its active schema registry are under `studio-anigos-project/`; the Next.js app's Sanity clients, GROQ queries, and API routes are under `lib/` and `app/api/`.

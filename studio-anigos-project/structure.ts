@@ -44,6 +44,16 @@ export const structure: StructureResolver = (S) =>
             .views([S.view.form()])
         ),
       S.listItem()
+        .title("Pengaturan Halaman")
+        .id("page-visibility-settings")
+        .child(
+          S.document()
+            .schemaType("pageVisibilitySettings")
+            .documentId("pageVisibilitySettings")
+            .title("Pengaturan Halaman")
+            .views([S.view.form()])
+        ),
+      S.listItem()
         .title("Struktur Perusahaan")
         .id("company-structure")
         .child(

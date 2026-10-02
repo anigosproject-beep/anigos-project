@@ -2,6 +2,10 @@
 
 Tanggal: 21 September 2026
 
+> **Catatan status (2026-10-02):** URL hosted di bawah berasal dari deployment
+> project lama `wm8u3z2o`; catatan ini bersifat historis. Studio aktif ditargetkan
+> ke `6zvti7ob/production`.
+
 ## Masalah
 
 Hosted Studio gagal merender structure dengan error:

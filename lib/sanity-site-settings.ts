@@ -1,4 +1,12 @@
-import {getSanityClientForCurrentMode, sanityImageUrl} from "@/lib/sanity-client"
+import { unstable_cache } from "next/cache"
+import { draftMode } from "next/headers"
+
+import {
+  isSanityAvailabilityError,
+  sanityAvailabilityClient,
+  sanityAvailabilityDraftClient,
+  sanityImageUrl,
+} from "@/lib/sanity-client"
 
 export type SiteSettings = {
   companyName: string
@@ -74,9 +82,13 @@ export function resolveUiTheme(theme?: Partial<Record<UiThemeToken, string>>) {
   }
 }
 
-export async function getSanitySiteSettings(): Promise<SiteSettings | null> {
-  const client = await getSanityClientForCurrentMode()
-  const row = await client.fetch<{
+const siteSettingsQuery = `*[_type == "siteSettings"][0]{companyName, address, email, phone, whatsapp, mapsUrl, logo, uiTheme}`
+export const SITE_SETTINGS_CACHE_TAG = "site-settings"
+
+async function fetchSiteSettings(
+  client: typeof sanityAvailabilityClient
+): Promise<SiteSettings | null> {
+  let row: {
     companyName?: string
     address?: string
     email?: string
@@ -85,9 +97,15 @@ export async function getSanitySiteSettings(): Promise<SiteSettings | null> {
     mapsUrl?: string
     logo?: {asset?: {_ref?: string}}
     uiTheme?: Partial<Record<UiThemeToken, string>>
-  } | null>(
-    `*[_type == "siteSettings"][0]{companyName, address, email, phone, whatsapp, mapsUrl, logo, uiTheme}`,
-  )
+  } | null
+
+  try {
+    row = await client.fetch(siteSettingsQuery)
+  } catch (error: unknown) {
+    if (!isSanityAvailabilityError(error)) throw error
+    console.warn("Sanity site settings are temporarily unavailable; using defaults.")
+    return null
+  }
 
   if (!row) return null
 
@@ -103,4 +121,20 @@ export async function getSanitySiteSettings(): Promise<SiteSettings | null> {
     logo: sanityImageUrl(row.logo),
     uiTheme: row.uiTheme,
   }
+}
+
+const getPublishedSiteSettings = unstable_cache(
+  () => fetchSiteSettings(sanityAvailabilityClient),
+  ["published-site-settings"],
+  {
+    revalidate: 60,
+    tags: [SITE_SETTINGS_CACHE_TAG],
+  }
+)
+
+export async function getSanitySiteSettings(): Promise<SiteSettings | null> {
+  const {isEnabled} = await draftMode()
+  return isEnabled
+    ? fetchSiteSettings(sanityAvailabilityDraftClient)
+    : getPublishedSiteSettings()
 }

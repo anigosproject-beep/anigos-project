@@ -15,6 +15,10 @@ import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { useLocale } from "@/components/locale-provider"
 import { translate, type TranslationKey } from "@/lib/i18n"
+import {
+  maxHomeHeroSlides,
+  maxHomeHeroVideoBytes,
+} from "@/shared/sanity-content-contracts"
 
 type HeroSlide = {
   eyebrow?: string | LocalizedText
@@ -29,7 +33,19 @@ type HeroSlide = {
 }
 
 type LocalizedText = { id?: string; en?: string }
+
+function hasLocalizedText(value: unknown): value is LocalizedText {
+  if (typeof value !== "object" || value === null) return false
+  if (!("id" in value) || !("en" in value)) return false
+
+  return [value.id, value.en].some(
+    (text) => typeof text === "string" && text.trim().length > 0
+  )
+}
+
 type SanityHeroSlide = {
+  position?: number
+  mediaType?: "image" | "video"
   eyebrow?: LocalizedText
   progressLabel?: LocalizedText
   title?: LocalizedText
@@ -40,13 +56,21 @@ type SanityHeroSlide = {
     route?: string
     url?: string
   }
-  mediaType?: "image" | "video"
   image?: { url?: string }
   videoUrl?: string
+  videoSize?: number
 }
 
 const imageSlideDurationMs = 7000
-const maxHeroSlides = 4
+const videoPoster = "/images/hero/home-distribution.png"
+const fallbackHeroSlide: HeroSlide = {
+  eyebrow: "heroPrimaryEyebrow",
+  title: "heroPrimaryTitle",
+  description: "heroPrimaryDescription",
+  image: videoPoster,
+  action: "heroPrimaryAction",
+  href: "/produk/kenali-produk",
+}
 
 const heroContentVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -105,7 +129,7 @@ const reducedHeroItemVariants: Variants = {
 
 export function HomeHero() {
   const { locale } = useLocale()
-  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([])
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([fallbackHeroSlide])
   const [activeSlide, setActiveSlide] = useState(0)
   const [elapsed, setElapsed] = useState(0)
   const [videoDurations, setVideoDurations] = useState<Record<number, number>>(
@@ -126,7 +150,6 @@ export function HomeHero() {
     Boolean(slide?.video) &&
     !prefersReducedMotion &&
     !videoPlaybackBlocked[activeSlide]
-  const videoPoster = "/images/hero/home-distribution.png"
   const durationMs = videoIsPlaying
     ? (videoDurations[activeSlide] ?? 0)
     : (slide?.durationMs ?? imageSlideDurationMs)
@@ -145,25 +168,43 @@ export function HomeHero() {
         return response.json() as Promise<{ slides?: SanityHeroSlide[] }>
       })
       .then(({ slides }) => {
-        if (cancelled || !slides?.length) return
+        if (cancelled) return
+        if (!slides?.length) {
+          console.warn("Sanity Home Hero has no slides; using local fallback.")
+          setHeroSlides([fallbackHeroSlide])
+          return
+        }
         const mapped = slides
           .map((item): HeroSlide | null => {
             const image = item.image?.url
+            const shouldPlayVideo =
+              item.mediaType === "video" &&
+              Boolean(item.videoUrl) &&
+              typeof item.videoSize === "number" &&
+              item.videoSize <= maxHomeHeroVideoBytes
+            const hasUsableMedia =
+              item.mediaType === "image" ? Boolean(image) : shouldPlayVideo
             const href =
               item.cta?.kind === "external"
                 ? item.cta.url
                 : item.cta?.kind === "internal"
                   ? item.cta.route
                   : undefined
-            if (!image && !item.videoUrl) return null
-            if (!item.title) return null
+            if (!hasLocalizedText(item.title)) return null
+            if (!hasUsableMedia) {
+              console.warn(
+                `Home Hero slide ${String(item.position ?? "?")} has no media within the playback limit; using the local fallback image.`
+              )
+            }
             return {
               eyebrow: item.eyebrow,
               progressLabel: item.progressLabel,
               title: item.title,
-              description: item.description ?? {},
-              image: image ?? "",
-              video: item.mediaType === "video" ? item.videoUrl : undefined,
+              description: hasLocalizedText(item.description)
+                ? item.description
+                : {},
+              image: item.mediaType === "image" && image ? image : videoPoster,
+              video: shouldPlayVideo ? item.videoUrl : undefined,
               durationMs:
                 item.mediaType === "image" ? imageSlideDurationMs : undefined,
               href,
@@ -171,8 +212,14 @@ export function HomeHero() {
             }
           })
           .filter((item): item is HeroSlide => item !== null)
-        if (!mapped.length) return
-        setHeroSlides(mapped.slice(0, maxHeroSlides))
+        if (!mapped.length) {
+          console.warn(
+            "Sanity Home Hero has no usable slides; using local fallback."
+          )
+          setHeroSlides([fallbackHeroSlide])
+          return
+        }
+        setHeroSlides(mapped.slice(0, maxHomeHeroSlides))
         setVideoDurations({})
         setVideoPlaybackBlocked({})
         transitionLockRef.current = null
@@ -182,6 +229,7 @@ export function HomeHero() {
       .catch((error: unknown) => {
         if (!cancelled) {
           console.error("Failed to load Sanity home hero", error)
+          setHeroSlides([fallbackHeroSlide])
         }
       })
     return () => {
@@ -247,9 +295,12 @@ export function HomeHero() {
             index === activeSlide ? "opacity-100" : "opacity-0"
           )}
           style={{
-            ...(!item.video || (index === activeSlide && !videoIsPlaying)
+            ...((index === activeSlide ||
+              index === (activeSlide + 1) % heroSlides.length) &&
+            (!item.video || (index === activeSlide && !videoIsPlaying)) &&
+            (item.image || item.video)
               ? {
-                  backgroundImage: `url("${item.video ? videoPoster : item.image}")`,
+                  backgroundImage: `url("${item.image || videoPoster}")`,
                 }
               : {}),
           }}
@@ -300,13 +351,17 @@ export function HomeHero() {
               onEnded={advanceSlide}
               onError={(event) => {
                 const video = event.currentTarget
-                console.warn("Home Hero video unavailable; showing poster fallback.", {
-                  source: video.currentSrc,
-                  errorCode: video.error?.code ?? null,
-                  errorMessage: video.error?.message || "No browser error details",
-                  readyState: video.readyState,
-                  networkState: video.networkState,
-                })
+                console.warn(
+                  "Home Hero video unavailable; showing poster fallback.",
+                  {
+                    source: video.currentSrc,
+                    errorCode: video.error?.code ?? null,
+                    errorMessage:
+                      video.error?.message || "No browser error details",
+                    readyState: video.readyState,
+                    networkState: video.networkState,
+                  }
+                )
                 setVideoPlaybackBlocked((current) =>
                   current[index] ? current : { ...current, [index]: true }
                 )
@@ -339,64 +394,64 @@ export function HomeHero() {
       />
 
       <div className="relative mx-auto flex min-h-[100svh] w-full max-w-7xl flex-col justify-end px-4 pt-[calc(var(--site-header-height,9rem)+1rem)] pb-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeSlide}
-              className="w-full max-w-3xl"
-              variants={contentVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              {slide.eyebrow && (
-                <motion.div variants={itemVariants}>
-                  <Eyebrow className="!text-white/70">
-                    {text(slide.eyebrow, "heroPrimaryEyebrow")}
-                  </Eyebrow>
-                </motion.div>
-              )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSlide}
+            className="w-full max-w-3xl"
+            variants={contentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            {slide.eyebrow && (
               <motion.div variants={itemVariants}>
-                <Heading
-                  level={1}
-                  variant="display"
-                  className="mt-3 !text-3xl !leading-[1.05] sm:mt-5 sm:!text-6xl"
-                >
-                  {text(slide.title, "heroPrimaryTitle")}
-                </Heading>
+                <Eyebrow className="!text-white/70">
+                  {text(slide.eyebrow, "heroPrimaryEyebrow")}
+                </Eyebrow>
               </motion.div>
-              <motion.div variants={itemVariants}>
-                <Text
-                  variant="lead"
-                  className="mt-4 max-w-2xl !text-white/75 sm:mt-6"
-                >
-                  {text(slide.description, "heroPrimaryDescription")}
-                </Text>
-              </motion.div>
-              {slide.href && slide.action && (
-                <motion.div variants={itemVariants}>
-                  <MotionButtonLink
-                    href={slide.href}
-                    variant="overlay"
-                    className="mt-6 sm:mt-8"
-                  >
-                    {text(slide.action, "heroPrimaryAction")}
-                    <ArrowRight
-                      data-icon="inline-end"
-                      style={{
-                        transitionDuration: prefersReducedMotion
-                          ? "0ms"
-                          : "180ms",
-                        transitionTimingFunction: "ease-out",
-                      }}
-                    />
-                  </MotionButtonLink>
-                </motion.div>
-              )}
+            )}
+            <motion.div variants={itemVariants}>
+              <Heading
+                level={1}
+                variant="display"
+                className="mt-3 !text-3xl !leading-[1.05] sm:mt-5 sm:!text-6xl"
+              >
+                {text(slide.title, "heroPrimaryTitle")}
+              </Heading>
             </motion.div>
-          </AnimatePresence>
+            <motion.div variants={itemVariants}>
+              <Text
+                variant="lead"
+                className="mt-4 max-w-2xl !text-white/75 sm:mt-6"
+              >
+                {text(slide.description, "heroPrimaryDescription")}
+              </Text>
+            </motion.div>
+            {slide.href && slide.action && (
+              <motion.div variants={itemVariants}>
+                <MotionButtonLink
+                  href={slide.href}
+                  variant="overlay"
+                  className="mt-6 sm:mt-8"
+                >
+                  {text(slide.action, "heroPrimaryAction")}
+                  <ArrowRight
+                    data-icon="inline-end"
+                    style={{
+                      transitionDuration: prefersReducedMotion
+                        ? "0ms"
+                        : "180ms",
+                      transitionTimingFunction: "ease-out",
+                    }}
+                  />
+                </MotionButtonLink>
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
         <div className="mt-7 w-full max-w-3xl sm:mt-10">
           <div className="grid grid-cols-4 gap-1.5 sm:gap-2" role="tablist">
-            {Array.from({ length: maxHeroSlides }, (_, index) => {
+            {Array.from({ length: maxHomeHeroSlides }, (_, index) => {
               const item = heroSlides[index]
 
               if (!item) {
@@ -417,7 +472,7 @@ export function HomeHero() {
                   aria-label={`${translate(locale, "heroSlideLabel")} ${index + 1}: ${text(item.eyebrow ?? item.title, "heroPrimaryTitle")}`}
                   aria-selected={index === activeSlide}
                   data-active={index === activeSlide}
-                  className="group flex min-h-12 min-w-0 touch-manipulation flex-col text-left transition-opacity duration-300 data-[active=false]:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                  className="group flex min-h-12 min-w-0 touch-manipulation flex-col text-left transition-opacity duration-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:outline-none data-[active=false]:opacity-70"
                   onClick={() => {
                     transitionLockRef.current = null
                     selectSlide(index)
@@ -443,7 +498,7 @@ export function HomeHero() {
                     aria-label={`${translate(locale, "slideDurationLabel")} ${index + 1}`}
                     aria-valuetext={`${index + 1} dari ${heroSlides.length}`}
                   />
-                  <span className="mt-2 line-clamp-2 h-8 w-full break-words text-[10px] leading-4 text-white/60 sm:text-xs">
+                  <span className="mt-2 line-clamp-2 h-8 w-full text-[10px] leading-4 break-words text-white/60 sm:text-xs">
                     {item.progressLabel
                       ? text(item.progressLabel, "heroPrimaryTitle")
                       : String(index + 1).padStart(2, "0")}

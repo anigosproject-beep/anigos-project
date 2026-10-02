@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 
 import { PageHero } from "@/components/sections"
 import { SectionContainer, SectionShell } from "@/components/layout/section-shell"

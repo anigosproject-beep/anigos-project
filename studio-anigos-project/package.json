@@ -4,7 +4,12 @@
   "scripts": {
     "dev": "sanity dev",
     "build": "sanity build",
-    "start": "sanity start"
+    "start": "sanity start",
+    "check:media-slots": "node scripts/check-media-slots.mjs",
+    "repair:media-slots:dry-run": "node scripts/check-media-slots.mjs",
+    "repair:media-slots:apply": "node scripts/check-media-slots.mjs --apply",
+    "seed:marine-fuel:dry-run": "node scripts/seed-marine-fuel-slots.mjs",
+    "seed:marine-fuel:apply": "node scripts/seed-marine-fuel-slots.mjs --apply"
   },
   "dependencies": {
     "@sanity/client": "^8.6.1",

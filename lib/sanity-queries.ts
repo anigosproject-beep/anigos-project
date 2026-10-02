@@ -112,12 +112,6 @@ const partnership = groq`
 export const HOME_QUERY = groq`*[_type == "homePage"][0]{
   meta{${meta}},
   seo{${seo}},
-  heroSlides | order(position asc, _key asc){
-    position,
-    ${t("title")},
-    ${t("description")},
-    image{${image}},
-  },
   aspiration{
     ${t("badge")},
     ${t("title")},
@@ -170,6 +164,23 @@ export const HOME_QUERY = groq`*[_type == "homePage"][0]{
     ${t("description")},
     cards[]{${t("title")}, ${t("description")}, thumbnail{${image}}, link{${cta}}},
     link{${cta}}
+  }
+}`
+
+export const HOME_PAGE_DATA_QUERY = groq`{
+  "home": ${HOME_QUERY},
+  "legacyMediaSlots": *[_type == "mediaAsset" && page == "home" && isActive != false]{
+    page,
+    section,
+    slot,
+    "image": {"url": image.asset->url}
+  },
+  "supportingMediaSlots": *[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0].homeSlots[]{
+    slotId,
+    ${t("name")},
+    ${t("description")},
+    "image": image{"url": asset->url, "alt": alt},
+    "video": {"url": video.asset->url}
   }
 }`
 

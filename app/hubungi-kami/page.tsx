@@ -1,11 +1,9 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { useEffect, useState } from "react"
 import {
   ArrowRight,
-  Check,
-  Copy,
   Clock3,
   Mail,
   MapPin,
@@ -19,8 +17,6 @@ import { SectionContainer, SectionShell } from "@/components/layout/section-shel
 import { Heading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 import type { SiteSettings } from "@/lib/sanity-site-settings"
@@ -83,51 +79,40 @@ export default function ContactPage() {
       <SectionShell className="relative isolate overflow-hidden bg-muted/40 py-16 sm:py-20 lg:py-24">
         <SectionContainer className="relative z-10">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-            <Card className="rounded-3xl border-border/80 bg-background/90 shadow-sm">
-              <CardContent className="p-5 sm:p-7">
-                <ContactRow
-                  icon={Phone}
-                  label={translate(locale, "contactPhoneLabel")}
-                  detail={settings.phone}
-                  href={phoneHref}
-                  action={translate(locale, "contactCallAction")}
-                  phoneNumber={settings.phone}
-                  copyAction={translate(locale, "contactCopyAction")}
-                  copiedAction={translate(locale, "contactCopiedAction")}
-                  copyFailedAction={translate(locale, "contactCopyFailedAction")}
-                />
-                <Separator className="my-5" />
-                <ContactRow
-                  icon={Mail}
-                  label={translate(locale, "contactEmailLabel")}
-                  detail={settings.email}
-                  href="/hubungi-kami/email"
-                  action={translate(locale, "contactEmailAction")}
-                />
-                {whatsappNumber ? (
-                  <>
-                    <Separator className="my-5" />
-                    <ContactRow
-                      icon={MessageCircle}
-                      label={translate(locale, "contactWhatsappLabel")}
-                      detail={settings.whatsapp}
-                      href={`https://wa.me/${whatsappNumber}`}
-                      action={translate(locale, "contactWhatsappAction")}
-                      external
-                    />
-                  </>
-                ) : null}
-                <Separator className="my-5" />
-                <ContactRow
-                  icon={MapPin}
-                  label={translate(locale, "contactOfficeLabel")}
-                  detail={settings.address}
-                  href={mapHref}
-                  action={translate(locale, "contactMapAction")}
+            <div className="grid gap-4">
+              <ContactCard
+                icon={Phone}
+                label={translate(locale, "contactPhoneLabel")}
+                detail={settings.phone}
+                href={phoneHref}
+                action={translate(locale, "contactCallAction")}
+              />
+              <ContactCard
+                icon={Mail}
+                label={translate(locale, "contactEmailLabel")}
+                detail={settings.email}
+                href="/hubungi-kami/email"
+                action={translate(locale, "contactEmailAction")}
+              />
+              {whatsappNumber ? (
+                <ContactCard
+                  icon={MessageCircle}
+                  label={translate(locale, "contactWhatsappLabel")}
+                  detail={settings.whatsapp}
+                  href={`https://wa.me/${whatsappNumber}`}
+                  action={translate(locale, "contactWhatsappAction")}
                   external
                 />
-              </CardContent>
-            </Card>
+              ) : null}
+              <ContactCard
+                icon={MapPin}
+                label={translate(locale, "contactOfficeLabel")}
+                detail={settings.address}
+                href={mapHref}
+                action={translate(locale, "contactMapAction")}
+                external
+              />
+            </div>
 
             <div className="max-w-xl lg:pl-2">
               <Badge variant="secondary">
@@ -170,17 +155,13 @@ export default function ContactPage() {
   )
 }
 
-function ContactRow({
+function ContactCard({
   icon: Icon,
   label,
   detail,
   href,
   action,
   external = false,
-  phoneNumber,
-  copyAction,
-  copiedAction,
-  copyFailedAction,
 }: {
   icon: LucideIcon
   label: string
@@ -188,138 +169,32 @@ function ContactRow({
   href: string
   action: string
   external?: boolean
-  phoneNumber?: string
-  copyAction?: string
-  copiedAction?: string
-  copyFailedAction?: string
 }) {
-  const actionControl = phoneNumber && copyAction && copiedAction && copyFailedAction ? (
-    <PhoneAction
-      phoneNumber={phoneNumber}
-      href={href}
-      action={action}
-      copyAction={copyAction}
-      copiedAction={copiedAction}
-      copyFailedAction={copyFailedAction}
-    />
-  ) : (
+  return (
     <a
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
-      className={buttonVariants({
-        variant: "default",
-        size: "sm",
-        className: "w-fit shrink-0",
-      })}
+      className="group flex min-h-28 items-center gap-4 rounded-2xl border border-border/80 bg-background/90 p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-6"
     >
-      {action}
-    </a>
-  )
-
-  return (
-    <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-4">
-      <div className="flex min-w-0 items-start gap-3">
-        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Icon aria-hidden="true" className="size-4" />
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon aria-hidden="true" className="size-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium text-muted-foreground">
+          {label}
         </span>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-1 break-words text-base leading-6 font-semibold tracking-tight sm:text-lg">
-            {detail}
-          </p>
-        </div>
-      </div>
-      {actionControl}
-    </div>
-  )
-}
-
-function PhoneAction({
-  phoneNumber,
-  href,
-  action,
-  copyAction,
-  copiedAction,
-  copyFailedAction,
-}: {
-  phoneNumber: string
-  href: string
-  action: string
-  copyAction: string
-  copiedAction: string
-  copyFailedAction: string
-}) {
-  const [supportsHover, setSupportsHover] = useState(false)
-  const [isRevealed, setIsRevealed] = useState(false)
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle")
-
-  useEffect(() => {
-    const media = window.matchMedia("(hover: hover) and (pointer: fine)")
-    const update = () => setSupportsHover(media.matches)
-    update()
-    media.addEventListener("change", update)
-    return () => media.removeEventListener("change", update)
-  }, [])
-
-  useEffect(() => {
-    if (copyState === "idle") return
-    const timeout = window.setTimeout(() => setCopyState("idle"), 2200)
-    return () => window.clearTimeout(timeout)
-  }, [copyState])
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(phoneNumber)
-      setCopyState("copied")
-    } catch (error) {
-      console.error("Failed to copy company phone number", error)
-      setCopyState("failed")
-    }
-  }
-
-  const className = buttonVariants({
-    variant: "default",
-    size: "sm",
-    className: "w-fit shrink-0",
-  })
-
-  if (!supportsHover) {
-    return (
-      <a href={href} className={className}>
-        {action}
-      </a>
-    )
-  }
-
-  const accessibleLabel =
-    copyState === "copied"
-      ? copiedAction
-      : copyState === "failed"
-        ? copyFailedAction
-        : isRevealed
-          ? copyAction
-          : action
-
-  return (
-    <button
-      type="button"
-      className={className}
-      aria-label={accessibleLabel}
-      title={accessibleLabel}
-      onClick={() => void handleCopy()}
-      onMouseEnter={() => setIsRevealed(true)}
-      onMouseLeave={() => setIsRevealed(false)}
-      onFocus={() => setIsRevealed(true)}
-      onBlur={() => setIsRevealed(false)}
-      aria-live="polite"
-    >
-      {isRevealed ? (
-        <Copy aria-hidden="true" className="size-4" />
-      ) : copyState === "copied" ? (
-        <Check aria-hidden="true" className="size-4" />
-      ) : null}
-      {accessibleLabel}
-    </button>
+        <span className="mt-1 block break-words text-base leading-6 font-semibold tracking-tight sm:text-lg">
+          {detail}
+        </span>
+        <span className="mt-2 block text-sm font-medium text-primary">
+          {action}
+        </span>
+      </span>
+      <ArrowRight
+        aria-hidden="true"
+        className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary"
+      />
+    </a>
   )
 }

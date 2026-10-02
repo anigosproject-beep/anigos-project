@@ -6,7 +6,11 @@ import {
 } from "../components/PageMediaImageInput"
 import { PageMediaSelectionInput } from "../components/PageMediaSelectionInput"
 import { PageMediaSlotsInput } from "../components/PageMediaSlotsInput"
-import { pageMediaMenus } from "../page-media-registry"
+import {
+  pageMediaFieldNames,
+  pageMediaMenus,
+} from "../page-media-registry"
+import { maxMarineFuelVideoBytes } from "../../../shared/sanity-content-contracts"
 
 const selectionField = defineField({
   name: "selection",
@@ -101,7 +105,23 @@ const mediaSlot = defineArrayMember({
       type: "string",
       readOnly: true,
       description:
-        "Referensi media lokal saat ini. Media Sanity akan dapat dipilih setelah koneksi diaktifkan.",
+        "Referensi media cadangan saat ini. Unggah media pada slot terkait untuk menggantinya setelah dipublikasikan.",
+    }),
+    defineField({
+      name: "name",
+      title: "Nama produk / layanan",
+      type: "localizedHeroText",
+      hidden: ({ parent }) => !isHomeProductLogoSlot(parent),
+      description:
+        "Ditampilkan di samping logo pada segmen Produk & Layanan di beranda. Bisa diisi dalam Bahasa Indonesia dan English.",
+    }),
+    defineField({
+      name: "description",
+      title: "Keterangan produk / layanan",
+      type: "localizedHeroText",
+      hidden: ({ parent }) => !isHomeProductLogoSlot(parent),
+      description:
+        "Keterangan singkat yang ditampilkan bersama logo. Bisa diisi dalam Bahasa Indonesia dan English.",
     }),
     defineField({
       name: "flipTitle",
@@ -147,7 +167,7 @@ const mediaSlot = defineArrayMember({
       options: { accept: "video/*" },
       hidden: ({ parent }) => parent?.mediaType !== "video",
       description:
-        "Kosongkan untuk mempertahankan media sebelumnya. Unggah video baru untuk menggantinya. Frame pemutar tetap mengikuti rasio container halaman.",
+        `Unggah atau ganti file video untuk slot ini. Video Marine Fuel tampil di pemutar pada segmen; gambar latar dikelola terpisah pada slot gambar. MP4 (H.264) disarankan; ukuran hingga ${Math.round(maxMarineFuelVideoBytes / 1024 / 1024)} MiB direkomendasikan.`,
     }),
   ],
   preview: {
@@ -205,6 +225,17 @@ function isCoverageFlipcardSlot(parent: unknown): boolean {
   )
 }
 
+function isHomeProductLogoSlot(parent: unknown): boolean {
+  if (typeof parent !== "object" || parent === null || !("slotId" in parent)) {
+    return false
+  }
+
+  return (
+    typeof parent.slotId === "string" &&
+    /^home-product-logo-\d+$/.test(parent.slotId)
+  )
+}
+
 function getFlipcardLabel(slotId: unknown): string | undefined {
   if (typeof slotId !== "string") return undefined
   const match = /^coverage-work-flipcard-(\d+)$/.exec(slotId)
@@ -217,15 +248,6 @@ const pageDefinitions = pageMediaMenus.flatMap((menu) =>
     page,
   }))
 )
-
-const pageFieldNames = {
-  home: "homeSlots",
-  "company-profile": "companyProfileSlots",
-  aspirations: "aspirationsSlots",
-  partnership: "partnershipSlots",
-  "product-overview": "productsSlots",
-  coverage: "coverageSlots",
-} as const
 
 function isSelectedPage(
   document: unknown,
@@ -243,7 +265,7 @@ function isSelectedPage(
 }
 
 const mediaFields = pageDefinitions.map(({ menu, page }) => {
-  const fieldName = pageFieldNames[page.value]
+  const fieldName = pageMediaFieldNames[page.value]
 
   return defineField({
     name: fieldName,
@@ -262,15 +284,49 @@ const mediaFields = pageDefinitions.map(({ menu, page }) => {
         "copy",
       ],
     },
-    description: `Slot media halaman ini bersifat tetap (${page.slots.length} slot). Media dan teks yang diizinkan tetap dapat diedit; slot tidak dapat dihapus, ditambah, disalin, diduplikasi, atau dipindahkan.`,
+    validation: (rule) =>
+      rule.custom((value, context) => {
+        if (!isSelectedPage(context.document, menu, page.value)) return true
+
+        const currentSlots = Array.isArray(value) ? value : []
+        const currentSlotIds = currentSlots
+          .map((slot) =>
+            typeof slot === "object" && slot !== null && "slotId" in slot
+              ? slot.slotId
+              : undefined
+          )
+          .filter((slotId): slotId is string => typeof slotId === "string")
+        const expectedSlotIds = page.slots.map((slot) => slot.id)
+        const duplicates = currentSlotIds.filter(
+          (slotId, index) => currentSlotIds.indexOf(slotId) !== index
+        )
+        const unexpected = currentSlotIds.filter(
+          (slotId) => !expectedSlotIds.includes(slotId)
+        )
+        const missing = expectedSlotIds.filter(
+          (slotId) => !currentSlotIds.includes(slotId)
+        )
+
+        if (duplicates.length > 0) {
+          return `ID slot duplikat: ${[...new Set(duplicates)].join(", ")}.`
+        }
+        if (unexpected.length > 0) {
+          return `ID slot tidak terdaftar: ${[...new Set(unexpected)].join(", ")}.`
+        }
+        if (missing.length > 0) {
+          return `Slot wajib hilang: ${missing.join(", ")}. Pulihkan slot melalui panel slot yang hilang sebelum publish.`
+        }
+
+        return true
+      }),
+    description: `Halaman ini memiliki ${page.slots.length} slot media tetap. Slot lama yang belum tersimpan dapat dipulihkan dari panel di bawah; media dapat diedit dan dipublikasikan tanpa melengkapi slot halaman lain.`,
     hidden: ({ document }) => !isSelectedPage(document, menu, page.value),
-    validation: (rule) => rule.length(page.slots.length),
   })
 })
 
 const initialPageMedia = Object.fromEntries(
   pageDefinitions.map(({ page }) => [
-    pageFieldNames[page.value],
+    pageMediaFieldNames[page.value],
     page.slots.map((slot) => ({
       _key: slot.id,
       slotId: slot.id,

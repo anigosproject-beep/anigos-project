@@ -2,8 +2,15 @@ import { createClient } from "@sanity/client"
 import { NextResponse } from "next/server"
 
 import { translateText } from "@/lib/translation-handler"
+import { assertSanityTarget, sanityTarget } from "@/shared/sanity-target"
 
 export const runtime = "nodejs"
+
+assertSanityTarget(
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  process.env.NEXT_PUBLIC_SANITY_DATASET
+)
+const { projectId, dataset } = sanityTarget
 
 const maxBodyBytes = 8 * 1024
 const careerTextFields = [
@@ -79,9 +86,7 @@ export async function POST(request: Request) {
   }
 
   const token = process.env.SANITY_AUTH_TOKEN
-  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "6zvti7ob"
-  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production"
-  if (!token || !projectId || !dataset) {
+  if (!token) {
     console.error("Sanity translation webhook write configuration is incomplete.")
     return NextResponse.json(
       { error: "Webhook is not configured." },

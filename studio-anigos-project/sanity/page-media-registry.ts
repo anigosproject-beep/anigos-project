@@ -1,3 +1,5 @@
+import { marineFuelSlotsByVariant } from "../../shared/sanity-content-contracts"
+
 export const pageMediaMenus = [
   {
     value: "home",
@@ -20,26 +22,26 @@ export const pageMediaMenus = [
             currentSource: "/images/company/office.png (fallback lokal)",
           },
           {
-            id: "home-marine-fuel-background",
-            title: "Gambar fallback Marine Fuel",
+            id: marineFuelSlotsByVariant.home[0],
+            title: "Marine Fuel — Latar cadangan (gambar)",
             sectionName: "Marine Fuel",
             mediaType: "image",
             container: "Latar full-bleed; tinggi 100svh; crop responsif",
             fit: "cover",
             expectedRatio: "16:9 disarankan; crop responsif",
             currentSource:
-              "/images/distribution/fuel-distribution.png (fallback lokal)",
+              "Unggah gambar di slot ini untuk mengganti latar cadangan Marine Fuel.",
           },
           {
-            id: "home-marine-fuel-video",
-            title: "Video latar Marine Fuel",
+            id: marineFuelSlotsByVariant.home[1],
+            title: "Marine Fuel — Video",
             sectionName: "Marine Fuel",
             mediaType: "video",
-            container: "Latar full-bleed; tinggi 100svh; crop responsif",
+            container: "Pemutar video responsif 16:9",
             fit: "cover",
             expectedRatio: "16:9 disarankan",
             currentSource:
-              "Belum ada video; menggunakan gambar fallback Marine Fuel",
+              "Unggah video di slot ini untuk ditampilkan di pemutar Marine Fuel.",
           },
           ...Array.from({ length: 4 }, (_, index) => ({
             id: `home-product-logo-${index + 1}`,
@@ -67,13 +69,14 @@ export const pageMediaMenus = [
         slots: [
           {
             id: "company-profile-story-video",
-            title: "Video di Cerita perusahaan",
+            title: "Profil Perusahaan — Video cerita",
             sectionName: "Cerita perusahaan",
             mediaType: "video",
             container: "16:9 (aspect-video)",
             fit: "cover",
             expectedRatio: "16:9",
-            currentSource: "/video-hero/0914.mp4 (video lokal)",
+            currentSource:
+              "/video-hero/0914.mp4 (fallback lokal; diganti setelah upload dan publish)",
           },
           {
             id: "company-profile-journey-background",
@@ -137,36 +140,37 @@ export const pageMediaMenus = [
         path: "/produk/kenali-produk",
         slots: [
           {
-            id: "product-marine-fuel-background",
-            title: "Gambar fallback Marine Fuel",
+            id: marineFuelSlotsByVariant.product[0],
+            title: "Marine Fuel — Latar cadangan (gambar)",
             sectionName: "Marine Fuel",
             mediaType: "image",
             container: "Latar full-bleed; tinggi 100svh; crop responsif",
             fit: "cover",
             expectedRatio: "16:9 disarankan; crop responsif",
             currentSource:
-              "/images/distribution/fuel-distribution.png (fallback lokal)",
+              "Unggah gambar di slot ini untuk mengganti latar cadangan Marine Fuel.",
           },
           {
-            id: "product-marine-fuel-video",
-            title: "Video latar Marine Fuel",
+            id: marineFuelSlotsByVariant.product[1],
+            title: "Marine Fuel — Video",
             sectionName: "Marine Fuel",
             mediaType: "video",
-            container: "Latar full-bleed; tinggi 100svh; crop responsif",
+            container: "Pemutar video responsif 16:9",
             fit: "cover",
             expectedRatio: "16:9 disarankan",
             currentSource:
-              "Belum ada video; menggunakan gambar fallback Marine Fuel",
+              "Unggah video di slot ini untuk ditampilkan di pemutar Marine Fuel.",
           },
           {
             id: "product-introduction-video",
-            title: "Video di Mengenal produk",
+            title: "Kenali Produk — Video pengantar",
             sectionName: "Mengenal produk",
             mediaType: "video",
             container: "16:9 (aspect-video)",
             fit: "cover",
             expectedRatio: "16:9",
-            currentSource: "/video-hero/0914.mp4 (video lokal)",
+            currentSource:
+              "/video-hero/0914.mp4 (fallback lokal; diganti setelah upload dan publish)",
           },
         ],
       },
@@ -237,6 +241,15 @@ export type PageMediaMenu = (typeof pageMediaMenus)[number]
 export type PageMediaMenuValue = PageMediaMenu["value"]
 export type PageMediaPage = PageMediaMenu["pages"][number]
 export type PageMediaSlot = PageMediaPage["slots"][number]
+
+export const pageMediaFieldNames = {
+  home: "homeSlots",
+  "company-profile": "companyProfileSlots",
+  aspirations: "aspirationsSlots",
+  partnership: "partnershipSlots",
+  "product-overview": "productsSlots",
+  coverage: "coverageSlots",
+} as const
 
 export function findPageMediaMenu(value: string | undefined) {
   return pageMediaMenus.find((menu) => menu.value === value)

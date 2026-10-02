@@ -9,7 +9,7 @@ import {
   Sun,
   TrendingUp,
 } from "lucide-react"
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useLocale } from "@/components/locale-provider"

@@ -1,66 +1,83 @@
-import {readFile, readdir} from "node:fs/promises"
-import {resolve} from "node:path"
+import { readFile } from "node:fs/promises"
+import { resolve } from "node:path"
 
 const root = resolve(import.meta.dirname, "..")
 const read = (relativePath) => readFile(resolve(root, relativePath), "utf8")
 
-const routesSource = await read("studio-anigos-project/sanity/lib/page.ts")
-const mapping = await read("docs/content-page-mapping.md")
-const formContract = await read("lib/form-contract.ts")
-const formComponent = await read("components/career-application-form.tsx")
-const formRoute = await read("app/api/career-applications/route.ts")
-const singletonFiles = await readdir(
-  resolve(root, "studio-anigos-project/sanity/schemaTypes/documents/singletons"),
-  {withFileTypes: true},
+const [formContract, formComponent, formRoute, schemaIndex, structure] =
+  await Promise.all([
+    read("lib/form-contract.ts"),
+    read("components/career-application-form.tsx"),
+    read("app/api/career-applications/route.ts"),
+    read("studio-anigos-project/sanity/schemaTypes/index.ts"),
+    read("studio-anigos-project/structure.ts"),
+  ])
+
+const schemaImports = [
+  ...schemaIndex.matchAll(
+    /import\s+\{\s*(\w+)\s*\}\s+from\s+["']\.\/([^"']+)["']/g
+  ),
+].map(([, symbol, file]) => ({ symbol, file }))
+const registeredBlock = schemaIndex.match(
+  /export const schemaTypes(?::[^=]+)?=\s*\[([\s\S]*?)\]/
 )
-const singletonSource = (
-  await Promise.all(
-    singletonFiles
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".ts"))
-      .map((entry) =>
-        read(`studio-anigos-project/sanity/schemaTypes/documents/singletons/${entry.name}`),
-      ),
+if (!registeredBlock) throw new Error("Active schemaTypes registry was not found.")
+
+const registeredSymbols = new Set(
+  [...registeredBlock[1].matchAll(/\b[A-Za-z_$][\w$]*\b/g)].map(
+    ([symbol]) => symbol
   )
-).join("\n")
-
-const routeBlock = routesSource.match(/export const ROUTES = \{([\s\S]*?)\} as const/)
-if (!routeBlock) throw new Error("ROUTES registry was not found.")
-
-const routes = [...routeBlock[1].matchAll(/^\s*(\w+):\s*['"]([^'"]+)['"]/gm)].map(
-  ([, key, route]) => ({key, route}),
 )
-const mappedRoutes = [...mapping.matchAll(/^## \d+\. .*? — `([^`]+)`/gm)].map(([, route]) => route)
-const missingMappings = routes
-  .map(({route}) => route)
-  .filter((route) => !mappedRoutes.includes(route))
+const missingRegistrations = schemaImports
+  .map(({ symbol }) => symbol)
+  .filter((symbol) => !registeredSymbols.has(symbol))
 
-const singletonRouteKeys = [
-  ...singletonSource.matchAll(/route:\s*ROUTES\.(\w+)/g),
-].map(([, key]) => key)
-const missingSchemas = routes
-  .filter(({key}) => key !== "home" && !singletonRouteKeys.includes(key))
-  .map(({key}) => key)
+const schemaNames = new Set()
+for (const { symbol, file } of schemaImports) {
+  const source = await read(`studio-anigos-project/sanity/schemaTypes/${file}.ts`)
+  const declaration = new RegExp(
+    `export const ${symbol}\\s*=\\s*defineType\\(\\{\\s*name:\\s*["']([^"']+)["']`
+  ).exec(source)
 
-const fieldKeys = [...formContract.matchAll(/^\s*(\w+):\s*"([^"]+)"/gm)].map(
-  ([, key, value]) => ({key, value}),
+  if (declaration) schemaNames.add(declaration[1])
+}
+
+const singletonEntries = [
+  ...structure.matchAll(
+    /\.schemaType\(["']([^"']+)["']\)[\s\S]{0,160}?\.documentId\(["']([^"']+)["']\)/g
+  ),
+].map(([, schemaType, documentId]) => ({ schemaType, documentId }))
+const missingSingletonSchemas = singletonEntries.filter(
+  ({ schemaType }) => !schemaNames.has(schemaType)
 )
+
+const fieldKeys = [
+  ...formContract.matchAll(/^\s*(\w+):\s*["']([^"']+)["']/gm),
+].map(([, key, value]) => ({ key, value }))
 const missingFormReferences = fieldKeys.filter(
-  ({value}) => !formComponent.includes(`CAREER_APPLICATION_FIELDS.${value}`) &&
-    !formRoute.includes(`CAREER_APPLICATION_FIELDS.${value}`),
+  ({ value }) =>
+    !formComponent.includes(`CAREER_APPLICATION_FIELDS.${value}`) &&
+    !formRoute.includes(`CAREER_APPLICATION_FIELDS.${value}`)
 )
 
 const failures = []
-if (missingMappings.length) {
-  failures.push(`Routes missing from content mapping: ${missingMappings.join(", ")}`)
+if (missingRegistrations.length) {
+  failures.push(
+    `Schema imports missing from active schemaTypes registry: ${missingRegistrations.join(", ")}`
+  )
 }
-if (missingSchemas.length) {
-  failures.push(`Routes missing a singleton schema route: ${missingSchemas.join(", ")}`)
+if (missingSingletonSchemas.length) {
+  failures.push(
+    `Studio singleton points to an unregistered schema: ${missingSingletonSchemas
+      .map(({ schemaType, documentId }) => `${schemaType} (${documentId})`)
+      .join(", ")}`
+  )
 }
 if (missingFormReferences.length) {
   failures.push(
     `Form contract keys not referenced by UI/API: ${missingFormReferences
-      .map(({key}) => key)
-      .join(", ")}`,
+      .map(({ key }) => key)
+      .join(", ")}`
   )
 }
 
@@ -69,6 +86,6 @@ if (failures.length) {
   process.exitCode = 1
 } else {
   console.log(
-    `Content contracts OK: ${routes.length} routes, ${fieldKeys.length} form keys.`,
+    `Content contracts OK: ${schemaImports.length} active schema imports, ${singletonEntries.length} singleton entries, ${fieldKeys.length} form keys.`
   )
 }

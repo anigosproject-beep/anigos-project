@@ -7,6 +7,7 @@ type LocalizedText = {
 
 type HeroSlide = {
   _key: string
+  isActive?: boolean
   position?: number
   eyebrow?: LocalizedText
   title?: LocalizedText
@@ -54,7 +55,8 @@ export function HomeHeroSlidesInput(
                 {name ||
                   slide.title?.id ||
                   slide.title?.en ||
-                  "Slide tanpa nama"}
+                  "Slide tanpa nama"}{" "}
+                {slide.isActive === false ? "(Nonaktif)" : "(Aktif)"}
               </option>
             )
           })}

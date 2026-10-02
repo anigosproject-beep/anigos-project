@@ -1,9 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect } from "react"
 
 import { useHeaderAppearance } from "@/components/header-appearance-provider"
+import Link from "@/components/site-link"
 
 export default function NotFound() {
   const { setForceSolid } = useHeaderAppearance()

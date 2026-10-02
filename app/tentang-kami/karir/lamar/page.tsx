@@ -1,4 +1,3 @@
-import { careerOpenings } from "@/lib/careers-data"
 import { CareerApplicationShell } from "@/components/career-application-shell"
 import type { Metadata } from "next"
 
@@ -20,7 +19,7 @@ export default async function LamaranKarirPage({
 
   return (
     <main>
-      <CareerApplicationShell openings={careerOpenings} selectedOpening={posisi} />
+      <CareerApplicationShell selectedOpening={posisi} />
     </main>
   )
 }

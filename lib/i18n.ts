@@ -40,7 +40,8 @@ export const messages = {
     switchToLight: "Gunakan mode terang",
     switchToDark: "Gunakan mode gelap",
     navAboutDescription: "Mengenal identitas dan cara kami bekerja.",
-    navCompanyProfileDescription: "Identitas, visi, misi, dan nilai perusahaan.",
+    navCompanyProfileDescription:
+      "Identitas, visi, misi, dan nilai perusahaan.",
     navHopesDescription: "Arah kontribusi dan cita-cita perusahaan.",
     navStructureDescription: "Struktur dan jaringan operasional perusahaan.",
     navClientDescription: "Perusahaan yang telah menggunakan layanan kami.",
@@ -51,15 +52,23 @@ export const messages = {
     navOfferDescription: "Ajukan kebutuhan dan dapatkan penawaran.",
     navFleetDescription: "Kapabilitas armada dan distribusi kami.",
     navServicesDescription: "Layanan distribusi darat dan Marine Fuel.",
-    navArticlesDescription: "Berita, publikasi, dan landasan informasi Petro Anigos.",
+    navArticlesDescription:
+      "Berita, publikasi, dan landasan informasi Petro Anigos.",
     navNewsDescription: "Berita dan kabar terbaru dari Petro Anigos.",
-    navPublicationsDescription: "Dokumentasi kemitraan, distribusi, dan operasional.",
-    navPublicInformationDescription: "Pedoman hukum untuk artikel dan publikasi.",
-    navSustainableEnergyDescription: "Peran B40 Biosolar dalam mendukung energi berbasis nabati.",
-    navCsrDescription: "Kegiatan tanggung jawab sosial perusahaan yang terdokumentasi per tahun.",
-    navSafetyDescription: "Komitmen terhadap distribusi BBM yang aman dan profesional.",
-    navGovernanceDescription: "Transparansi, integritas, dan kemitraan yang bertanggung jawab.",
-    navAchievementsDescription: "Milestone dan perkembangan operasional perusahaan.",
+    navPublicationsDescription:
+      "Dokumentasi kemitraan, distribusi, dan operasional.",
+    navPublicInformationDescription:
+      "Pedoman hukum untuk artikel dan publikasi.",
+    navSustainableEnergyDescription:
+      "Peran B40 Biosolar dalam mendukung energi berbasis nabati.",
+    navCsrDescription:
+      "Kegiatan tanggung jawab sosial perusahaan yang terdokumentasi per tahun.",
+    navSafetyDescription:
+      "Komitmen terhadap distribusi BBM yang aman dan profesional.",
+    navGovernanceDescription:
+      "Transparansi, integritas, dan kemitraan yang bertanggung jawab.",
+    navAchievementsDescription:
+      "Milestone dan perkembangan operasional perusahaan.",
     weather: "Cuaca",
     weatherBmkg: "Cuaca BMKG",
     marketDemo: "IDX / Migas · demo",
@@ -315,7 +324,8 @@ export const messages = {
     fleetPageDescription:
       "Armada tangki BBM Petro Anigos tersedia dalam beberapa variasi kapasitas untuk mendukung kebutuhan distribusi mulai dari skala kecil hingga industri besar.",
     landServiceEyebrow: "Distribusi Darat",
-    landServiceTitle: "Jangkauan armada darat yang siap mendukung kebutuhan Anda.",
+    landServiceTitle:
+      "Jangkauan armada darat yang siap mendukung kebutuhan Anda.",
     landServiceDescription:
       "Armada tangki HSD tersedia dalam kapasitas 5.000 hingga 30.000 liter. Pengalaman distribusi kami mencakup Pulau Jawa, Sumatera, dan Kalimantan, didukung mitra transportir untuk menjangkau kebutuhan di berbagai wilayah Indonesia.",
     serviceFleetCapacity: "Pilihan kapasitas armada tangki HSD",
@@ -360,7 +370,8 @@ export const messages = {
       "Sampaikan volume, lokasi, jadwal, dan moda distribusi untuk dibahas bersama tim Petro Anigos.",
     submitRequirement: "Ajukan kebutuhan",
     productPageEyebrow: "Produk",
-    productPageTitle: "Solar industri untuk beragam kebutuhan, termasuk Marine Fuel.",
+    productPageTitle:
+      "Solar industri untuk beragam kebutuhan, termasuk Marine Fuel.",
     productPageDescription:
       "Kami menerima kebutuhan solar industri dari berbagai jenis dan spesifikasi, termasuk Solar/HSD dan Biosolar, serta kebutuhan Marine Fuel. Sampaikan jenis produk, volume, lokasi, dan jadwal pengiriman agar dapat kami diskusikan bersama.",
     homeProductsEyebrow: "Produk & Layanan Kami",
@@ -373,8 +384,7 @@ export const messages = {
       "Campuran biodiesel untuk manufaktur dan pembangkit.",
     homeProductBiosolarBadge: "Bahan bakar nabati",
     homeProductDexliteTitle: "Dexlite",
-    homeProductDexliteDescription:
-      "Solar untuk alat berat dan mesin industri.",
+    homeProductDexliteDescription: "Solar untuk alat berat dan mesin industri.",
     homeProductPerformanceBadge: "Performa tinggi",
     homeProductHsdTitle: "HSD / Pertamina Dex",
     homeProductHsdDescription:
@@ -395,14 +405,19 @@ export const messages = {
     marineFuelProductSupport: "Kebutuhan Marine Fuel",
     marineFuelFlexibleDistribution: "Dukungan distribusi laut",
     marineFuelCta: "Diskusikan Kebutuhan Marine Fuel",
-    marineFuelVideoPlaceholder: "Slot video Marine Fuel",
+    marineFuelVideoPlaceholder: "Video Marine Fuel",
+    marineFuelVideoPending:
+      "Video akan tampil di sini setelah diunggah ke Sanity.",
+    marineFuelVideoTooLarge:
+      "Ukuran video Marine Fuel melebihi rekomendasi {size}. Video tetap tersedia dan hanya dimuat saat diputar.",
     productMarineFuelTitle: "Marine Fuel untuk kebutuhan operasional maritim.",
     productMarineFuelDescription:
       "Kami menerima kebutuhan Marine Fuel untuk beragam kegiatan maritim. Sampaikan jenis produk, volume, lokasi, dan jadwal pengiriman agar dapat kami diskusikan sesuai kebutuhan operasional Anda.",
     productMarineFuelProductSupport: "Beragam kebutuhan Marine Fuel",
     productMarineFuelDistribution: "Rencana pasokan sesuai kebutuhan",
     productOverviewEyebrow: "Kenali Produk",
-    productOverviewTitle: "Pilihan solar industri untuk beragam kebutuhan operasional.",
+    productOverviewTitle:
+      "Pilihan solar industri untuk beragam kebutuhan operasional.",
     productOverviewDescription:
       "Kami menerima kebutuhan berbagai jenis solar industri, termasuk Solar/HSD dan Biosolar. Jenis produk, spesifikasi, volume, lokasi, serta jadwal pasokan dapat disampaikan untuk dibahas bersama tim kami.",
     fuelProductTitle: "Bahan Bakar Minyak",
@@ -444,7 +459,8 @@ export const messages = {
     deliverySettlementDescription:
       "Produk disiapkan, armada ditentukan, lalu pengiriman dan dokumen transaksi diselesaikan sesuai kesepakatan.",
     transportSchemeEyebrow: "Skema Transportasi",
-    transportSchemeTitle: "Pilih pendekatan distribusi sesuai wilayah dan kebutuhan.",
+    transportSchemeTitle:
+      "Pilih pendekatan distribusi sesuai wilayah dan kebutuhan.",
     transportSchemeDescription:
       "Moda transportasi dibahas saat verifikasi kebutuhan agar produk, volume, lokasi, dan jadwal dapat diselaraskan.",
     land: "Darat",
@@ -480,7 +496,8 @@ export const messages = {
     distributionDetailsDescription:
       "Wilayah, jadwal, volume, dan moda pengiriman diselaraskan sebelum penawaran disepakati.",
     productReadyToDiscuss: "Siap berdiskusi",
-    productCtaTitle: "Sampaikan kebutuhan BBM industri Anda kepada Petro Anigos.",
+    productCtaTitle:
+      "Sampaikan kebutuhan BBM industri Anda kepada Petro Anigos.",
     productCtaDescription:
       "Tim kami siap membahas produk, volume, lokasi, dan skema distribusi yang sesuai.",
     requestOffer: "Ajukan Penawaran",
@@ -495,7 +512,8 @@ export const messages = {
     offerFormNotice:
       "Informasi ini menjadi dasar peninjauan awal. Harga, minimum pemesanan, metode pembayaran, ketersediaan, dan ketentuan komersial akan dibahas serta dikonfirmasi secara terpisah.",
     fuelType: "Jenis produk BBM",
-    dieselFuelDescription: "Bahan bakar minyak jenis solar untuk kebutuhan industri",
+    dieselFuelDescription:
+      "Bahan bakar minyak jenis solar untuk kebutuhan industri",
     b40FuelDescription: "40% Biodiesel + 60% Solar/HSD",
     requiredVolume: "Estimasi volume kebutuhan (liter)",
     volumeRange: "1.000–30.000 L",
@@ -507,7 +525,8 @@ export const messages = {
     scheduled: "Satu kali / terjadwal",
     scheduledDescription: "Terdapat target tanggal penerimaan.",
     recurring: "Pasokan berkala",
-    recurringDescription: "Kebutuhan pasokan berulang untuk dibahas lebih lanjut.",
+    recurringDescription:
+      "Kebutuhan pasokan berulang untuk dibahas lebih lanjut.",
     asNeeded: "Jadwal fleksibel",
     asNeededDescription: "Jadwal pengiriman akan diselaraskan kemudian.",
     companyName: "Nama perusahaan",
@@ -588,15 +607,19 @@ export const messages = {
     interregionalMode: "Interregional",
     seaMode: "Sea",
     coverageWorkEyebrow: "Perencanaan pengiriman bisnis",
-    coverageWorkTitle: "Dari jangkauan nasional menjadi rencana pengiriman yang jelas.",
+    coverageWorkTitle:
+      "Dari jangkauan nasional menjadi rencana pengiriman yang jelas.",
     coverageWorkDescription:
       "Kami menyelaraskan titik bongkar, kebutuhan produk, volume, jadwal, dan moda distribusi sebelum mengonfirmasi detail pengiriman.",
     reviewLocation: "Petakan kebutuhan",
-    reviewLocationDescription: "Identifikasi lokasi pengiriman, titik bongkar, dan konteks operasional.",
+    reviewLocationDescription:
+      "Identifikasi lokasi pengiriman, titik bongkar, dan konteks operasional.",
     chooseMode: "Selaraskan moda distribusi",
-    chooseModeDescription: "Pilih koordinasi darat, trucking, laut, atau antarwilayah yang paling sesuai.",
+    chooseModeDescription:
+      "Pilih koordinasi darat, trucking, laut, atau antarwilayah yang paling sesuai.",
     confirmPlan: "Konfirmasi rencana pengiriman",
-    confirmPlanDescription: "Tinjau volume, jadwal, ketersediaan, dan kebutuhan pelaksanaan bersama.",
+    confirmPlanDescription:
+      "Tinjau volume, jadwal, ketersediaan, dan kebutuhan pelaksanaan bersama.",
     areaVerification: "Requirement verification",
     locationNotFoundTitle: "Kebutuhan Anda berada di luar area referensi?",
     locationNotFoundDescription:
@@ -604,7 +627,8 @@ export const messages = {
     coverageNotice:
       "Jangkauan nasional didukung melalui perencanaan yang terkoordinasi. Ketersediaan pengiriman dikonfirmasi berdasarkan kebutuhan aktual.",
     sustainabilityPageEyebrow: "Sustainability",
-    sustainabilityPageTitle: "Menjalankan usaha dengan tanggung jawab yang lebih luas.",
+    sustainabilityPageTitle:
+      "Menjalankan usaha dengan tanggung jawab yang lebih luas.",
     sustainabilityPageDescription:
       "Bagi Petro Anigos, keberlanjutan berangkat dari energi yang lebih bersih, keselamatan operasional, dan kontribusi terhadap masyarakat.",
     ourApproach: "Pendekatan Kami",
@@ -616,8 +640,10 @@ export const messages = {
     actionPrinciplesDescription:
       "Kami menjaga agar setiap keputusan tetap berangkat dari kebutuhan konsumen, kepatuhan, keselamatan, dan hubungan baik dengan mitra.",
     mainFocus: "Main focus",
-    consistentPracticeTitle: "Membangun kepercayaan melalui praktik yang konsisten.",
-    referenceSummary: "Ringkasan ini merangkum tema yang tersedia dalam referensi perusahaan.",
+    consistentPracticeTitle:
+      "Membangun kepercayaan melalui praktik yang konsisten.",
+    referenceSummary:
+      "Ringkasan ini merangkum tema yang tersedia dalam referensi perusahaan.",
     continueExploring: "Continue exploring",
     serveNeedsTitle: "Kenali bagaimana Petro Anigos melayani kebutuhan Anda.",
     transparencyNote:
@@ -636,18 +662,22 @@ export const messages = {
     sustainableEnergyDescription:
       "B40 Biosolar menjadi bagian dari portofolio Petro Anigos untuk mendukung kebutuhan industri sekaligus mengikuti program mandatori biodiesel pemerintah.",
     b40IntroEyebrow: "B40 Biosolar",
-    b40IntroTitle: "Komposisi yang mudah dipahami, standar yang tetap diperhatikan.",
+    b40IntroTitle:
+      "Komposisi yang mudah dipahami, standar yang tetap diperhatikan.",
     b40IntroDescription:
       "Produk B40 dijelaskan dalam company profile sebagai campuran 40% biodiesel dan 60% solar, dengan mutu dan spesifikasi yang mengacu pada Ditjen Migas RI.",
     biodiesel40Title: "40% biodiesel",
-    biodiesel40Description: "Bagian biodiesel dalam komposisi B40 yang mengikuti program pemerintah.",
+    biodiesel40Description:
+      "Bagian biodiesel dalam komposisi B40 yang mengikuti program pemerintah.",
     diesel60Title: "60% diesel",
-    diesel60Description: "Bagian bahan bakar minyak jenis solar dalam komposisi B40.",
+    diesel60Description:
+      "Bagian bahan bakar minyak jenis solar dalam komposisi B40.",
     specificationTitle: "Sesuai spesifikasi",
     specificationDescription:
       "Mutu produk mengacu pada standar Direktorat Jenderal Minyak dan Gas Bumi Republik Indonesia.",
     csrEyebrow: "Corporate Social Responsibility",
-    csrTitle: "CSR: Tumbuh bersama masyarakat melalui kontribusi yang bermakna.",
+    csrTitle:
+      "CSR: Tumbuh bersama masyarakat melalui kontribusi yang bermakna.",
     csrDescription:
       "Dokumentasi kegiatan CSR Petro Anigos dari tahun ke tahun, sebagai catatan kontribusi dan kebersamaan dengan masyarakat.",
     csrIntroTitle: "Kontribusi yang berangkat dari kepedulian.",
@@ -664,24 +694,30 @@ export const messages = {
       "Dokumentasi kegiatan tahunan akan ditampilkan di sini setelah ditambahkan melalui pengelolaan konten.",
     csrDateNotSet: "Tanggal kegiatan belum dicantumkan",
     partnershipGovernanceEyebrow: "Sustainability / Partnerships & Governance",
-    partnershipGovernanceTitle: "Hubungan baik yang dibangun dengan integritas.",
+    partnershipGovernanceTitle:
+      "Hubungan baik yang dibangun dengan integritas.",
     partnershipGovernanceDescription:
       "Petro Anigos menjaga hubungan dengan rekan usaha, konsumen, dan Pemerintah Republik Indonesia untuk menciptakan iklim bisnis yang sehat.",
     governanceIntroEyebrow: "Governance",
-    governanceIntroTitle: "Kemitraan yang bertumbuh dari kejelasan dan kepatuhan.",
+    governanceIntroTitle:
+      "Kemitraan yang bertumbuh dari kejelasan dan kepatuhan.",
     governanceIntroDescription:
       "Narasi ini menggunakan prinsip yang tercantum dalam company profile. Informasi struktur manajemen dan kebijakan tata kelola formal belum tersedia.",
     goodRelationships: "Good relationships",
-    goodRelationshipsDescription: "Menjaga hubungan dengan rekan usaha dan konsumen sebagai bagian dari cara perusahaan bekerja.",
+    goodRelationshipsDescription:
+      "Menjaga hubungan dengan rekan usaha dan konsumen sebagai bagian dari cara perusahaan bekerja.",
     compliance: "Compliance",
-    complianceDescription: "Menjalankan usaha dengan dasar legalitas dan izin niaga yang tercantum dalam referensi perusahaan.",
+    complianceDescription:
+      "Menjalankan usaha dengan dasar legalitas dan izin niaga yang tercantum dalam referensi perusahaan.",
     integrity: "Integrity",
-    integrityDescription: "Mendukung iklim bisnis yang sehat melalui transparansi dan profesionalisme.",
+    integrityDescription:
+      "Mendukung iklim bisnis yang sehat melalui transparansi dan profesionalisme.",
     governanceNote:
       "Struktur manajemen, kebijakan tata kelola, dan indikator kepatuhan tambahan masih memerlukan data resmi perusahaan.",
     viewPartnerships: "View partnerships",
     operationalSafetyEyebrow: "Keberlanjutan / Keselamatan Operasional",
-    operationalSafetyPageTitle: "Distribusi yang tepat waktu, aman, dan bertanggung jawab.",
+    operationalSafetyPageTitle:
+      "Distribusi yang tepat waktu, aman, dan bertanggung jawab.",
     operationalSafetyPageDescription:
       "Keselamatan kerja dan ketepatan waktu menjadi prioritas dalam operasional distribusi BBM Petro Anigos.",
     operationalPriorityEyebrow: "Prioritas Operasional",
@@ -689,11 +725,14 @@ export const messages = {
     operationalPriorityDescription:
       "Company profile menempatkan ketepatan waktu dan operasional bebas kecelakaan sebagai sasaran kerja. Detail sertifikasi K3 belum tersedia dalam referensi.",
     accidentFree: "Accident-free operations",
-    accidentFreeDescription: "Keselamatan menjadi pertimbangan utama dalam setiap operasional distribusi BBM.",
+    accidentFreeDescription:
+      "Keselamatan menjadi pertimbangan utama dalam setiap operasional distribusi BBM.",
     punctuality: "Punctuality",
-    punctualityDescription: "Koordinasi distribusi diarahkan untuk memenuhi kebutuhan konsumen sesuai jadwal.",
+    punctualityDescription:
+      "Koordinasi distribusi diarahkan untuk memenuhi kebutuhan konsumen sesuai jadwal.",
     routeCoordination: "Route coordination",
-    routeCoordinationDescription: "Armada dan jaringan mitra membantu mendukung pengiriman sesuai kebutuhan wilayah.",
+    routeCoordinationDescription:
+      "Armada dan jaringan mitra membantu mendukung pengiriman sesuai kebutuhan wilayah.",
     safetyNote:
       "Data sertifikasi K3, prosedur operasional terperinci, dan metrik keselamatan belum tersedia untuk dipublikasikan.",
     viewCoverage: "Lihat jangkauan",
@@ -701,7 +740,8 @@ export const messages = {
     dataPolicyTitle: "Sumber dan penggunaan informasi di website Petro Anigos.",
     dataPolicyDescription:
       "Halaman ini menjelaskan sumber, status, keterbatasan, dan etika penggunaan informasi cuaca serta pasar yang ditampilkan pada website.",
-    contextualDataTitle: "Data pendukung harus selalu hadir bersama konteksnya.",
+    contextualDataTitle:
+      "Data pendukung harus selalu hadir bersama konteksnya.",
     contextualDataDescription:
       "Petro Anigos membedakan data demo, prakiraan, data tertunda, dan data live. Nilai yang tampil tanpa sumber atau waktu pembaruan tidak boleh dipahami sebagai informasi real-time.",
     weatherInformation: "Informasi cuaca",
@@ -736,7 +776,8 @@ export const messages = {
     cookieTermsDescription:
       "Kami menggunakan cookies secara terbatas untuk mendukung fungsi dasar website dan menghormati pilihan pengunjung.",
     usageTransparency: "Usage transparency",
-    cookieContextTitle: "Cookies membantu website mengingat konteks yang diperlukan.",
+    cookieContextTitle:
+      "Cookies membantu website mengingat konteks yang diperlukan.",
     cookieContextDescription:
       "Cookies adalah file data kecil yang disimpan pada perangkat ketika mengunjungi website. Ketentuan ini menjelaskan jenis, tujuan, durasi, dan pilihan yang tersedia bagi pengguna.",
     essentialCookies: "Essential cookies",
@@ -781,36 +822,50 @@ export const messages = {
     meaningfulWorkDescription:
       "Di sini, pekerjaan administratif, komersial, dan operasional saling terhubung untuk memastikan kebutuhan pelanggan dilayani dengan aman dan tepat.",
     growingTogether: "Cara kami bertumbuh",
-    professionalHumanTitle: "Profesional dalam bekerja, manusiawi dalam berkolaborasi.",
+    professionalHumanTitle:
+      "Profesional dalam bekerja, manusiawi dalam berkolaborasi.",
     professionalHumanDescription:
       "Kami percaya kualitas layanan dimulai dari orang-orang yang diberi konteks, kepercayaan, dan ruang untuk mengambil tanggung jawab.",
     workExperience: "Pengalaman Bekerja",
     sharedStandardsTitle: "Hal-hal yang kami jaga bersama.",
     sharedStandardsDescription:
       "Keunggulan bekerja bukan hanya tentang fasilitas, tetapi juga tentang lingkungan yang membantu setiap orang menghasilkan pekerjaan terbaiknya.",
-    careerOpenings: "Available openings",
+    careerOpenings: "Lowongan tersedia",
     careerOpeningsLoading: "Memuat lowongan yang tersedia…",
-    noCareerOpenings: "Saat ini belum ada posisi yang tersedia.",
+    noCareerOpenings: "Saat ini belum ada posisi yang sedang dibuka.",
+    noCareerOpeningsDescription:
+      "Silakan periksa kembali halaman ini nanti. Posisi dan tautan lamaran akan tersedia setelah lowongan dibuka.",
+    careerOpeningsLoadError:
+      "Daftar lowongan belum dapat dimuat. Silakan coba lagi beberapa saat.",
+    careerOpeningUnavailable:
+      "Posisi ini sudah tidak tersedia. Silakan pilih lowongan aktif lainnya.",
+    careerMaxFilesError: "Lampirkan maksimal 5 file.",
     careerOpeningsTitle: "Temukan peran yang sesuai dengan langkahmu.",
     careerOpeningsDescription:
-      "Pilih posisi yang ingin kamu pelajari. Jika belum ada peran yang sesuai, kamu tetap dapat mengirimkan profil untuk dipertimbangkan pada kebutuhan berikutnya.",
+      "Pilih posisi aktif yang ingin kamu lamar. Informasi lowongan dan pilihan posisi pada formulir mengikuti data yang dipublikasikan di Sanity.",
     positionsAvailable: "posisi tersedia",
     viewAndApply: "Lihat posisi & lamar",
     purposeAtWork: "Bekerja dengan tujuan",
-    purposeAtWorkDescription: "Kontribusi setiap peran ikut menjaga distribusi energi yang mendukung aktivitas industri Indonesia.",
-    supportiveCulture: "Supportive culture",
-    supportiveCultureDescription: "Kami membangun komunikasi terbuka, kerja sama lintas fungsi, dan ruang untuk bertumbuh bersama.",
+    purposeAtWorkDescription:
+      "Kontribusi setiap peran ikut menjaga distribusi energi yang mendukung aktivitas industri Indonesia.",
+    supportiveCulture: "Budaya yang saling mendukung",
+    supportiveCultureDescription:
+      "Kami membangun komunikasi terbuka, kerja sama lintas fungsi, dan ruang untuk bertumbuh bersama.",
     fieldLearning: "Belajar dari lapangan",
-    fieldLearningDescription: "Kamu akan berhadapan dengan konteks nyata distribusi, pelanggan, mitra, dan operasional.",
+    fieldLearningDescription:
+      "Kamu akan berhadapan dengan konteks nyata distribusi, pelanggan, mitra, dan operasional.",
     safeWorkStandards: "Standar kerja yang aman",
-    safeWorkStandardsDescription: "Keselamatan, kepatuhan, dan integritas menjadi bagian dari cara kami mengambil keputusan.",
+    safeWorkStandardsDescription:
+      "Keselamatan, kepatuhan, dan integritas menjadi bagian dari cara kami mengambil keputusan.",
     crossRoleCollaboration: "Kolaborasi lintas peran",
-    crossRoleCollaborationDescription: "Ide yang baik dapat datang dari berbagai fungsi dan dibahas dengan perspektif yang beragam.",
+    crossRoleCollaborationDescription:
+      "Ide yang baik dapat datang dari berbagai fungsi dan dibahas dengan perspektif yang beragam.",
     roomToGrow: "Ruang untuk berkembang",
-    roomToGrowDescription: "Kami menghargai inisiatif, tanggung jawab, dan keinginan untuk meningkatkan kualitas kerja.",
-    operations: "Operations",
-    commercial: "Commercial",
-    fullTime: "Full-time",
+    roomToGrowDescription:
+      "Kami menghargai inisiatif, tanggung jawab, dan keinginan untuk meningkatkan kualitas kerja.",
+    operations: "Operasional",
+    commercial: "Komersial",
+    fullTime: "Penuh waktu",
     distributionOperationsStaff: "Staff Operasional Distribusi",
     distributionOperationsSummary:
       "Mendukung koordinasi jadwal, dokumen, dan komunikasi distribusi bersama pelanggan serta mitra transportasi.",
@@ -818,60 +873,73 @@ export const messages = {
     salesAccountSummary:
       "Membangun hubungan dengan calon pelanggan dan membantu menerjemahkan kebutuhan energi menjadi solusi layanan.",
     careersFormEyebrow: "Karir / Lamaran",
-    careersFormTitle: "Tell us about your next step.",
+    careersFormTitle: "Ceritakan langkah berikutnya.",
     careersFormDescription:
       "Lengkapi data singkat dan lampirkan CV terbaru. Tim kami akan meninjau profil yang masuk sesuai kebutuhan posisi.",
     applicationForm: "Form lamaran",
-    sendYourProfile: "Send your profile",
-    cvMaximum: "CV maximum 5 MB",
-    dataReadyForReview: "Data ready for review",
+    sendYourProfile: "Kirim profilmu",
+    cvMaximum: "CV maksimal 5 MB",
+    dataReadyForReview: "Data siap ditinjau",
     applicationThanks:
-      "Terima kasih. Form dan CV sudah tervalidasi di browser. Hubungkan handler pengiriman ke CMS atau email rekrutmen sebelum digunakan di produksi.",
+      "Terima kasih. Lamaran dan dokumen pendukung berhasil diterima untuk posisi yang dipilih. Tim kami akan meninjau profil Anda.",
     sendAnotherApplication: "Kirim lamaran lain",
-    fullName: "Full name",
-    fullNamePlaceholder: "Full name",
+    fullName: "Nama lengkap",
+    fullNamePlaceholder: "Nama lengkap",
     positionInterested: "Posisi yang diminati",
     choosePosition: "Pilih posisi",
-    shortMessage: "Short message",
-    shortMessagePlaceholder: "Ceritakan pengalaman atau alasan kamu tertarik...",
-    cvSupportingDocument: "CV / supporting document",
-    removeFile: "Remove",
-    validatedFile: "Validated file",
-    addFile: "Add file",
-    chooseFile: "Choose file",
-    supportedFileTypes: "PDF, DOC, or DOCX · maximum 5 MB per file",
+    shortMessage: "Pesan singkat",
+    shortMessagePlaceholder:
+      "Ceritakan pengalaman atau alasan kamu tertarik...",
+    cvSupportingDocument: "CV / dokumen pendukung",
+    removeFile: "Hapus",
+    validatedFile: "File tervalidasi",
+    addFile: "Tambah file",
+    chooseFile: "Pilih file",
+    supportedFileTypes: "PDF, DOC, atau DOCX · maksimal 5 MB per file",
     cvFormatError: "CV harus berupa PDF, DOC, atau DOCX.",
-    fileSizeError: "maximum file size is 5 MB.",
-    attachCvError: "Please attach at least one CV file first.",
+    fileSizeError: "ukuran file maksimal 5 MB.",
+    attachCvError: "Silakan lampirkan setidaknya satu file CV terlebih dahulu.",
     applicationFailed: "Lamaran gagal diproses.",
-    sending: "Sending...",
+    sending: "Mengirim...",
     sendApplication: "Kirim lamaran",
-    bekasiCoverageDescription: "Titik layanan untuk kebutuhan distribusi di kawasan Jabodetabek dan sekitarnya.",
-    palembangCoverageDescription: "Mendukung kebutuhan BBM industri dan distribusi di wilayah Sumatera Selatan.",
-    medanCoverageDescription: "Titik operasional untuk kebutuhan pelanggan di Sumatera Utara dan area sekitarnya.",
-    palangkaRayaCoverageDescription: "Mendukung koordinasi pengiriman BBM untuk kebutuhan operasional di Kalimantan Tengah.",
-    northSulawesiCoverageDescription: "Titik operasional yang melayani kebutuhan distribusi di wilayah Sulawesi Utara.",
-    southSulawesiCoverageDescription: "Titik operasional untuk mendukung kebutuhan pelanggan di Sulawesi Selatan.",
+    bekasiCoverageDescription:
+      "Titik layanan untuk kebutuhan distribusi di kawasan Jabodetabek dan sekitarnya.",
+    palembangCoverageDescription:
+      "Mendukung kebutuhan BBM industri dan distribusi di wilayah Sumatera Selatan.",
+    medanCoverageDescription:
+      "Titik operasional untuk kebutuhan pelanggan di Sumatera Utara dan area sekitarnya.",
+    palangkaRayaCoverageDescription:
+      "Mendukung koordinasi pengiriman BBM untuk kebutuhan operasional di Kalimantan Tengah.",
+    northSulawesiCoverageDescription:
+      "Titik operasional yang melayani kebutuhan distribusi di wilayah Sulawesi Utara.",
+    southSulawesiCoverageDescription:
+      "Titik operasional untuk mendukung kebutuhan pelanggan di Sulawesi Selatan.",
     offerPageEyebrow: "Produk / Penawaran",
     offerPageTitle: "Mulai dari kebutuhan, kami siapkan pembahasannya.",
     offerPageDescription:
       "Sampaikan kebutuhan BBM industri Anda agar tim Petro Anigos dapat membantu meninjau produk, volume, lokasi, jadwal, dan skema distribusi yang sesuai.",
     needsBasedOffer: "Penawaran berbasis kebutuhan",
     beforeSubmitting: "Sebelum mengajukan",
-    offerPreparationTitle: "Informasi sederhana membantu pembahasan lebih terarah.",
+    offerPreparationTitle:
+      "Informasi sederhana membantu pembahasan lebih terarah.",
     offerPreparationDescription:
       "Tidak perlu menyiapkan spesifikasi komersial yang rumit. Mulai dari informasi operasional yang sudah Anda ketahui.",
     prepareForOffer: "Yang perlu disiapkan",
     productTypePreparation: "Jenis produk",
-    productTypePreparationDescription: "Solar/HSD atau B40 Biosolar sesuai kebutuhan operasional.",
+    productTypePreparationDescription:
+      "Solar/HSD atau B40 Biosolar sesuai kebutuhan operasional.",
     volumePreparation: "Volume kebutuhan",
-    volumePreparationDescription: "Perkiraan volume per pengiriman atau kebutuhan berkala.",
+    volumePreparationDescription:
+      "Perkiraan volume per pengiriman atau kebutuhan berkala.",
     locationSchedulePreparation: "Lokasi dan jadwal",
-    locationSchedulePreparationDescription: "Wilayah titik bongkar serta rencana waktu penerimaan.",
+    locationSchedulePreparationDescription:
+      "Wilayah titik bongkar serta rencana waktu penerimaan.",
     distributionModePreparation: "Moda distribusi",
-    distributionModePreparationDescription: "Kebutuhan armada darat, transportasi laut, atau mitra transportir.",
+    distributionModePreparationDescription:
+      "Kebutuhan armada darat, transportasi laut, atau mitra transportir.",
     offerFlowEyebrow: "Alur Pembahasan",
-    offerFlowTitle: "Dari informasi awal menuju penawaran yang dibahas bersama.",
+    offerFlowTitle:
+      "Dari informasi awal menuju penawaran yang dibahas bersama.",
     offerFlowDescription:
       "Alur ini membantu menyamakan kebutuhan sebelum detail transaksi dan pengiriman disepakati.",
     offerStepOne: "Sampaikan kebutuhan",
@@ -884,7 +952,8 @@ export const messages = {
     offerStepThreeDescription:
       "Detail harga, minimum order, pembayaran, dan ketentuan transaksi dibahas sesuai kebutuhan.",
     discussionScopeEyebrow: "Ruang Lingkup Pembahasan",
-    discussionScopeTitle: "Detail komersial dan distribusi dikonfirmasi bersama.",
+    discussionScopeTitle:
+      "Detail komersial dan distribusi dikonfirmasi bersama.",
     discussionScopeDescription:
       "Informasi pada form adalah bahan awal pembahasan, bukan penetapan harga atau jaminan pengiriman.",
     offerScopeNoticeLabel: "Penawaran dikonfirmasi bersama",
@@ -986,7 +1055,8 @@ export const messages = {
     clientProductsColumn: "Layanan",
     clientEmpty: "Data klien akan ditampilkan setelah dipublikasikan.",
     clientLoading: "Memuat data klien...",
-    clientLoadError: "Data klien tidak dapat dimuat. Silakan coba kembali nanti.",
+    clientLoadError:
+      "Data klien tidak dapat dimuat. Silakan coba kembali nanti.",
     clientGalleryEyebrow: "Dokumentasi",
     clientGalleryTitle: "Galeri klien",
     clientGalleryDescription:
@@ -1020,8 +1090,7 @@ export const messages = {
     articleOperationsDescription:
       "Catatan tentang keandalan, keselamatan, dan koordinasi dalam mendukung kebutuhan konsumen.",
     articleInsightsCategory: "Wawasan",
-    articleInsightsTitle:
-      "Memilih mitra distribusi BBM untuk kebutuhan bisnis",
+    articleInsightsTitle: "Memilih mitra distribusi BBM untuk kebutuhan bisnis",
     articleInsightsDescription:
       "Hal-hal yang perlu diperhatikan saat menilai kualitas, legalitas, dan kesiapan layanan.",
     articleOffice: "Artikel",
@@ -1059,7 +1128,8 @@ export const messages = {
     articlePageDescription:
       "Temukan berita, publikasi, dan landasan informasi yang membantu memahami cara PT. Anigos Jaya Perkasa melayani kebutuhan energi industri.",
     articleEditorialNote: "Catatan editorial",
-    articleEditorialTitle: "Konten akan berkembang bersama perjalanan perusahaan.",
+    articleEditorialTitle:
+      "Konten akan berkembang bersama perjalanan perusahaan.",
     articleEditorialDescription:
       "Artikel dan publikasi yang belum memiliki sumber resmi akan ditambahkan secara bertahap melalui proses editorial terpisah.",
     articleOpenPage: "Buka halaman",
@@ -1166,8 +1236,7 @@ export const messages = {
     structureNoCommissioners: "Belum ada profil Komisaris yang dipublikasikan.",
     structureNoDirectors: "Belum ada profil Direksi yang dipublikasikan.",
     structureNoDivisions: "Belum ada divisi yang dipublikasikan.",
-    structureNoDivisionMembers:
-      "Belum ada anggota divisi yang dipublikasikan.",
+    structureNoDivisionMembers: "Belum ada anggota divisi yang dipublikasikan.",
     emailPlaceholder: "nama@contoh.com",
     paginationLabel: "Navigasi halaman",
     paginationPrevious: "Ke halaman sebelumnya",
@@ -1249,8 +1318,7 @@ export const messages = {
     csrActivityPhotos: "Foto kegiatan CSR",
     csrSectionEyebrow: "02 — Kegiatan CSR",
     csrDocumentsTitle: "Dokumen kegiatan.",
-    csrYearPhotosUnavailable:
-      "Belum ada dokumentasi foto untuk tahun ini.",
+    csrYearPhotosUnavailable: "Belum ada dokumentasi foto untuk tahun ini.",
     csrBackgroundTitle: "Latar Belakang Kegiatan",
     csrDocumentsEyebrow: "03 — Dokumen kegiatan",
     csrDocumentsDescription:
@@ -1261,8 +1329,10 @@ export const messages = {
       "Belum ada dokumen kegiatan yang tersedia untuk tahun ini.",
     csrGallerySectionEyebrow: "01 — Dokumentasi kegiatan",
     csrGalleryYearDescription: "Dokumentasi kegiatan CSR tahun {year}.",
-    hopesPatternAlt: "Pola visual harapan dan cita-cita PT. Anigos Jaya Perkasa",
-    partnershipTransportationAlt: "Ilustrasi kemitraan transportasi PT. Anigos Jaya Perkasa",
+    hopesPatternAlt:
+      "Pola visual harapan dan cita-cita PT. Anigos Jaya Perkasa",
+    partnershipTransportationAlt:
+      "Ilustrasi kemitraan transportasi PT. Anigos Jaya Perkasa",
     dataDetails: "Data",
     viewPartnerDetails: "Lihat data",
     previousPageShort: "Sebelumnya",
@@ -1329,7 +1399,8 @@ export const messages = {
     contactFormNext: "Lanjut",
     contactFormPrevious: "Kembali",
     contactFormRequiredError: "Bagian ini wajib diisi.",
-    contactFormEmailInvalid: "Masukkan email dengan format nama@domain.com yang valid.",
+    contactFormEmailInvalid:
+      "Masukkan email dengan format nama@domain.com yang valid.",
     contactFormPhoneDigitsError:
       "Gunakan 8–15 digit, maksimal 15 digit angka. Tanda +, spasi, tanda hubung, dan kurung diperbolehkan.",
     contactFormValidationSummary:
@@ -1360,13 +1431,17 @@ export const messages = {
     contactFormAttachments: "Lampiran",
     contactChooseAttachments: "Pilih lampiran",
     contactAddAttachments: "Tambah lampiran",
-    contactAttachmentLimits: "Maksimal 5 file, 5 MB per file · PDF, Word, Excel, JPG, PNG",
-    contactAttachmentTypeError: "Format file tidak didukung. Pilih PDF, Word, Excel, JPG, atau PNG.",
-    contactAttachmentSizeError: "Ukuran file harus lebih dari 0 dan maksimal 5 MB.",
+    contactAttachmentLimits:
+      "Maksimal 5 file, 5 MB per file · PDF, Word, Excel, JPG, PNG",
+    contactAttachmentTypeError:
+      "Format file tidak didukung. Pilih PDF, Word, Excel, JPG, atau PNG.",
+    contactAttachmentSizeError:
+      "Ukuran file harus lebih dari 0 dan maksimal 5 MB.",
     contactAttachmentCountError: "Maksimal 5 file dapat dipilih.",
     contactRemoveAttachment: "Hapus lampiran",
     contactFormAttachmentList: "File yang dipilih",
-    contactFormAttachmentReminder: "Silakan tambahkan file-file ini sebagai lampiran di aplikasi email Anda.",
+    contactFormAttachmentReminder:
+      "Silakan tambahkan file-file ini sebagai lampiran di aplikasi email Anda.",
     contactFormEmailSubject: "Permintaan kontak",
     contactFormRecipient: "Email tujuan",
     contactFormSubmit: "Kirim",
@@ -1393,8 +1468,7 @@ export const messages = {
     partnershipPortfolioPdfUnavailable: "Portofolio PDF belum tersedia.",
     partnershipOpenPortfolioPdf: "Buka PDF portofolio",
     partnershipDocumentationPdfTitle: "Dokumentasi kemitraan",
-    partnershipDocumentationPdfUnavailable:
-      "Dokumentasi PDF belum tersedia.",
+    partnershipDocumentationPdfUnavailable: "Dokumentasi PDF belum tersedia.",
     partnershipOpenDocumentationPdf: "Buka PDF dokumentasi",
     publicationImagePreview: "Pratinjau gambar",
     publicationDocumentPreview: "Pratinjau dokumen",
@@ -1438,25 +1512,34 @@ export const messages = {
     switchToLight: "Use light mode",
     switchToDark: "Use dark mode",
     navAboutDescription: "Learn about our identity and how we work.",
-    navCompanyProfileDescription: "Company identity, vision, mission, and values.",
+    navCompanyProfileDescription:
+      "Company identity, vision, mission, and values.",
     navHopesDescription: "Our contribution direction and aspirations.",
     navStructureDescription: "Company structure and operational network.",
     navClientDescription: "Companies that have used our services.",
     navLegalityDescription: "Company legality and licensing information.",
     navCareerDescription: "Join and grow with Petro Anigos.",
     navProductsDescription: "Fuel solutions for industrial needs.",
-    navProductsOverviewDescription: "Explore our fuel products and specifications.",
+    navProductsOverviewDescription:
+      "Explore our fuel products and specifications.",
     navOfferDescription: "Submit your needs and request an offer.",
     navFleetDescription: "Our fleet and distribution capabilities.",
     navServicesDescription: "Land distribution and Marine Fuel services.",
-    navArticlesDescription: "Petro Anigos news, publications, and public information.",
+    navArticlesDescription:
+      "Petro Anigos news, publications, and public information.",
     navNewsDescription: "The latest news from Petro Anigos.",
-    navPublicationsDescription: "Partnership, distribution, and operational documentation.",
-    navPublicInformationDescription: "Legal references for articles and publications.",
-    navSustainableEnergyDescription: "The role of B40 Biosolar in plant-based energy.",
-    navCsrDescription: "Annual records of the company's social responsibility activities.",
-    navSafetyDescription: "Our commitment to safe and professional fuel distribution.",
-    navGovernanceDescription: "Transparency, integrity, and responsible partnerships.",
+    navPublicationsDescription:
+      "Partnership, distribution, and operational documentation.",
+    navPublicInformationDescription:
+      "Legal references for articles and publications.",
+    navSustainableEnergyDescription:
+      "The role of B40 Biosolar in plant-based energy.",
+    navCsrDescription:
+      "Annual records of the company's social responsibility activities.",
+    navSafetyDescription:
+      "Our commitment to safe and professional fuel distribution.",
+    navGovernanceDescription:
+      "Transparency, integrity, and responsible partnerships.",
     navAchievementsDescription: "Operational milestones and developments.",
     weather: "Weather",
     weatherBmkg: "BMKG Weather",
@@ -1483,8 +1566,7 @@ export const messages = {
       "Petro Anigos products and services are designed to support operational needs across different scales.",
     heroProductAction: "Request an Offer",
     heroDistributionEyebrow: "Trusted Distribution",
-    heroDistributionTitle:
-      "Fleet support for safe and on-time distribution.",
+    heroDistributionTitle: "Fleet support for safe and on-time distribution.",
     heroDistributionDescription:
       "Supported by flexible fleet capacities and transport partners to reach distribution needs across regions.",
     heroDistributionAction: "View Fleet",
@@ -1515,8 +1597,7 @@ export const messages = {
     achievementsBadge: "Company Milestones",
     achievementsCardTitle:
       "A foundation growing with Indonesia's energy needs.",
-    achievementsTitle:
-      "Experienced, reaching further, and ready to serve.",
+    achievementsTitle: "Experienced, reaching further, and ready to serve.",
     achievementsDescription:
       "Since its establishment on July 18, 2019, PT. Anigos Jaya Perkasa has built a professional and trusted industrial fuel distribution foundation. This journey is reflected in an operational network spanning multiple regions and fleet capacities prepared for customers of different scales.",
     learnMoreAction: "Learn More",
@@ -1533,7 +1614,8 @@ export const messages = {
       "Tank capacities from 5,000 L to 30,000 L to support distribution needs.",
     aboutSectionLabel: "About Us",
     aspirationsPageTitle: "Company Aspirations & Goals",
-    aspirationsPageDescription: "Distribution Today, Contribution for the Nation",
+    aspirationsPageDescription:
+      "Distribution Today, Contribution for the Nation",
     aspirationsPageEyebrow: "Distribution Today, Contribution for the Nation",
     aspirationsPageIntroTitle: "Energy in motion, aspirations taking root.",
     aspirationsPageIntroDescription:
@@ -1654,8 +1736,7 @@ export const messages = {
     verificationNote:
       "The complete address and some details of the partner entity are unclear in the source document scan. This information must be verified before being published as final data.",
     howWePartnerEyebrow: "How We Partner",
-    howWePartnerTitle:
-      "Cooperation built on clarity and trust.",
+    howWePartnerTitle: "Cooperation built on clarity and trust.",
     howWePartnerDescription:
       "We welcome collaboration with companies or institutions exploring fuel distribution or transportation opportunities.",
     principleConnectedTitle: "Connected distribution",
@@ -1723,7 +1804,8 @@ export const messages = {
       "Choose a capacity to view the fleet visual and usage summary. These variations help verify requirements more accurately.",
     truckingFleet: "Trucking fleet",
     distributionIllustration: "Interregional distribution illustration",
-    partnershipIllustration: "Petro Anigos distribution partnership illustration",
+    partnershipIllustration:
+      "Petro Anigos distribution partnership illustration",
     liter: "liters",
     fleetCapacityTitle: "Choose a volume for your distribution needs.",
     fleetCapacityDescription:
@@ -1757,12 +1839,12 @@ export const messages = {
       "Share your volume, location, schedule, and distribution mode with the Petro Anigos team.",
     submitRequirement: "Submit your requirements",
     productPageEyebrow: "Products",
-    productPageTitle: "Industrial diesel for diverse needs, including Marine Fuel.",
+    productPageTitle:
+      "Industrial diesel for diverse needs, including Marine Fuel.",
     productPageDescription:
       "We welcome industrial diesel requirements across product types and specifications, including Solar/HSD and Biosolar, as well as Marine Fuel needs. Share the product type, volume, location, and delivery schedule so we can discuss a suitable supply plan.",
     homeProductsEyebrow: "Our Products & Services",
-    homeProductsTitle:
-      "Industrial Fuel Solutions for Every Operational Need",
+    homeProductsTitle: "Industrial Fuel Solutions for Every Operational Need",
     homeProductsDescription:
       "We supply quality industrial diesel through a nationwide distribution network, supported by integrated logistics and flexible B2B partnership schemes.",
     homeProductBiosolarTitle: "Industrial Biosolar (B35/B40)",
@@ -1792,14 +1874,19 @@ export const messages = {
     marineFuelProductSupport: "Marine Fuel requirements",
     marineFuelFlexibleDistribution: "Sea distribution support",
     marineFuelCta: "Discuss Marine Fuel Requirements",
-    marineFuelVideoPlaceholder: "Marine Fuel video slot",
+    marineFuelVideoPlaceholder: "Marine Fuel video",
+    marineFuelVideoPending:
+      "The video will appear here once it is uploaded to Sanity.",
+    marineFuelVideoTooLarge:
+      "The Marine Fuel video exceeds the recommended {size}. It remains available and loads only when played.",
     productMarineFuelTitle: "Marine Fuel for maritime operations.",
     productMarineFuelDescription:
       "We welcome Marine Fuel requirements for a range of maritime operations. Share the product type, volume, location, and delivery schedule so we can discuss a supply plan for your operational needs.",
     productMarineFuelProductSupport: "Diverse Marine Fuel requirements",
     productMarineFuelDistribution: "Supply planning around your needs",
     productOverviewEyebrow: "Explore Products",
-    productOverviewTitle: "Industrial diesel options for diverse operational needs.",
+    productOverviewTitle:
+      "Industrial diesel options for diverse operational needs.",
     productOverviewDescription:
       "We welcome a range of industrial diesel requirements, including Solar/HSD and Biosolar. Share the product type, specification, volume, location, and supply schedule with our team for discussion.",
     fuelProductTitle: "Fuel oil",
@@ -1841,7 +1928,8 @@ export const messages = {
     deliverySettlementDescription:
       "The product is prepared, the fleet is assigned, and delivery and transaction documents are completed as agreed.",
     transportSchemeEyebrow: "Transportation Scheme",
-    transportSchemeTitle: "Choose a distribution approach based on region and needs.",
+    transportSchemeTitle:
+      "Choose a distribution approach based on region and needs.",
     transportSchemeDescription:
       "Transportation modes are discussed during requirement verification so product, volume, location, and schedule can be aligned.",
     land: "Land",
@@ -1877,7 +1965,8 @@ export const messages = {
     distributionDetailsDescription:
       "Region, schedule, volume, and delivery mode are aligned before the offer is agreed.",
     productReadyToDiscuss: "Ready to discuss",
-    productCtaTitle: "Share your industrial fuel requirements with Petro Anigos.",
+    productCtaTitle:
+      "Share your industrial fuel requirements with Petro Anigos.",
     productCtaDescription:
       "Our team is ready to discuss the product, volume, location, and suitable distribution scheme.",
     requestOffer: "Request an offer",
@@ -1904,7 +1993,8 @@ export const messages = {
     scheduled: "One-time / scheduled",
     scheduledDescription: "A target receiving date is available.",
     recurring: "Recurring supply",
-    recurringDescription: "Recurring supply requirements for further discussion.",
+    recurringDescription:
+      "Recurring supply requirements for further discussion.",
     asNeeded: "Flexible schedule",
     asNeededDescription: "Delivery timing can be aligned at a later stage.",
     companyName: "Company name",
@@ -1943,7 +2033,8 @@ export const messages = {
     emailOpeningNote:
       "The button above opens your email application with a prepared request summary for your review before sending.",
     backToProducts: "Return to products",
-    directDiscussionTitle: "Would you like to discuss your supply requirements directly?",
+    directDiscussionTitle:
+      "Would you like to discuss your supply requirements directly?",
     emailPetroAnigos: "Contact the Petro Anigos team by email",
     offerEmailSubject: "Industrial Fuel Quotation Request",
     prospectiveCustomer: "Prospective customer",
@@ -1977,7 +2068,8 @@ export const messages = {
     coverageCardReturnHint: "Move away to return",
     regionLabel: "Kawasan",
     servedAreasEyebrow: "Operational reference areas",
-    servedAreasTitle: "Coordinated distribution support for business requirements.",
+    servedAreasTitle:
+      "Coordinated distribution support for business requirements.",
     servedAreasDescription:
       "The areas below illustrate operational references. Submit your requirements to confirm the most suitable service plan for your location anywhere in Indonesia.",
     landMode: "Darat",
@@ -1989,19 +2081,24 @@ export const messages = {
     coverageWorkDescription:
       "We align the unloading point, product requirements, volume, schedule, and distribution mode before confirming delivery details.",
     reviewLocation: "Map the requirement",
-    reviewLocationDescription: "Identify the delivery location, unloading point, and operating context.",
+    reviewLocationDescription:
+      "Identify the delivery location, unloading point, and operating context.",
     chooseMode: "Align the distribution mode",
-    chooseModeDescription: "Select the most suitable land, trucking, sea, or interregional coordination.",
+    chooseModeDescription:
+      "Select the most suitable land, trucking, sea, or interregional coordination.",
     confirmPlan: "Confirm the delivery plan",
-    confirmPlanDescription: "Review volume, schedule, availability, and execution requirements together.",
+    confirmPlanDescription:
+      "Review volume, schedule, availability, and execution requirements together.",
     areaVerification: "Verifikasi kebutuhan",
-    locationNotFoundTitle: "Do you have a requirement outside the listed areas?",
+    locationNotFoundTitle:
+      "Do you have a requirement outside the listed areas?",
     locationNotFoundDescription:
       "Share your delivery location, product volume, and required schedule. Our team will review the most suitable distribution options for your business anywhere in Indonesia.",
     coverageNotice:
       "National coverage is supported through coordinated planning. Delivery availability is confirmed against actual requirements.",
     sustainabilityPageEyebrow: "Keberlanjutan",
-    sustainabilityPageTitle: "Running the business with broader responsibility.",
+    sustainabilityPageTitle:
+      "Running the business with broader responsibility.",
     sustainabilityPageDescription:
       "For Petro Anigos, sustainability starts with cleaner energy, operational safety, and contribution to society.",
     ourApproach: "Our approach",
@@ -2014,7 +2111,8 @@ export const messages = {
       "We keep every decision grounded in customer needs, compliance, safety, and strong relationships with partners.",
     mainFocus: "Fokus Utama",
     consistentPracticeTitle: "Building trust through consistent practices.",
-    referenceSummary: "This summary reflects themes available in company references.",
+    referenceSummary:
+      "This summary reflects themes available in company references.",
     continueExploring: "Lanjutkan eksplorasi",
     serveNeedsTitle: "Learn how Petro Anigos serves your needs.",
     transparencyNote:
@@ -2029,7 +2127,8 @@ export const messages = {
     socialContributionDescription:
       "The company is committed to being a reliable partner and contributing to community welfare.",
     sustainableEnergyEyebrow: "Sustainability / Sustainable Energy",
-    sustainableEnergyTitle: "Understanding B40's role in the energy transition.",
+    sustainableEnergyTitle:
+      "Understanding B40's role in the energy transition.",
     sustainableEnergyDescription:
       "B40 Biosolar is part of Petro Anigos' portfolio, supporting industrial needs while following the government's mandatory biodiesel program.",
     b40IntroEyebrow: "B40 Biosolar",
@@ -2037,14 +2136,16 @@ export const messages = {
     b40IntroDescription:
       "The company profile describes B40 as a blend of 40% biodiesel and 60% diesel, with quality and specifications aligned with the Directorate General of Oil and Gas.",
     biodiesel40Title: "40% biodiesel",
-    biodiesel40Description: "The biodiesel portion of the B40 composition following the government program.",
+    biodiesel40Description:
+      "The biodiesel portion of the B40 composition following the government program.",
     diesel60Title: "60% solar",
     diesel60Description: "The diesel fuel portion of the B40 composition.",
     specificationTitle: "Aligned with specifications",
     specificationDescription:
       "Product quality refers to the standards of Indonesia's Directorate General of Oil and Gas.",
     csrEyebrow: "Tanggung Jawab Sosial Perusahaan",
-    csrTitle: "CSR: Growing together with communities through meaningful contribution.",
+    csrTitle:
+      "CSR: Growing together with communities through meaningful contribution.",
     csrDescription:
       "A year-by-year record of Petro Anigos CSR activities, documenting contribution and shared progress with communities.",
     csrIntroTitle: "Contribution rooted in care.",
@@ -2069,16 +2170,20 @@ export const messages = {
     governanceIntroDescription:
       "This narrative uses principles listed in the company profile. Formal management structure and governance policy information are not yet available.",
     goodRelationships: "Hubungan baik",
-    goodRelationshipsDescription: "Maintaining relationships with business partners and customers is part of how the company works.",
+    goodRelationshipsDescription:
+      "Maintaining relationships with business partners and customers is part of how the company works.",
     compliance: "Kepatuhan",
-    complianceDescription: "Operating on the legal basis and trading licenses listed in company references.",
+    complianceDescription:
+      "Operating on the legal basis and trading licenses listed in company references.",
     integrity: "Integritas",
-    integrityDescription: "Supporting a healthy business climate through transparency and professionalism.",
+    integrityDescription:
+      "Supporting a healthy business climate through transparency and professionalism.",
     governanceNote:
       "Management structure, governance policies, and additional compliance indicators still require official company data.",
     viewPartnerships: "Lihat kemitraan",
     operationalSafetyEyebrow: "Sustainability / Operational Safety",
-    operationalSafetyPageTitle: "Distribution that is punctual, safe, and responsible.",
+    operationalSafetyPageTitle:
+      "Distribution that is punctual, safe, and responsible.",
     operationalSafetyPageDescription:
       "Workplace safety and punctuality are priorities in Petro Anigos fuel distribution operations.",
     operationalPriorityEyebrow: "Operational priority",
@@ -2086,16 +2191,20 @@ export const messages = {
     operationalPriorityDescription:
       "The company profile places punctuality and accident-free operations among its work objectives. Detailed K3 certifications are not available in the references.",
     accidentFree: "Bebas dari kecelakaan kerja",
-    accidentFreeDescription: "Safety is a primary consideration in every fuel distribution operation.",
+    accidentFreeDescription:
+      "Safety is a primary consideration in every fuel distribution operation.",
     punctuality: "Ketepatan waktu",
-    punctualityDescription: "Distribution coordination is directed toward meeting customer needs on schedule.",
+    punctualityDescription:
+      "Distribution coordination is directed toward meeting customer needs on schedule.",
     routeCoordination: "Koordinasi rute",
-    routeCoordinationDescription: "Fleet and partner networks help support deliveries according to regional needs.",
+    routeCoordinationDescription:
+      "Fleet and partner networks help support deliveries according to regional needs.",
     safetyNote:
       "K3 certification data, detailed operating procedures, and safety metrics are not yet available for publication.",
     viewCoverage: "View coverage",
     dataPolicy: "Kebijakan Data",
-    dataPolicyTitle: "Sources and use of information on the Petro Anigos website.",
+    dataPolicyTitle:
+      "Sources and use of information on the Petro Anigos website.",
     dataPolicyDescription:
       "This page explains the sources, status, limitations, and ethical use of weather and market information displayed on the website.",
     contextualDataTitle: "Supporting data should always come with context.",
@@ -2185,28 +2294,41 @@ export const messages = {
     sharedStandardsTitle: "Things we protect together.",
     sharedStandardsDescription:
       "A good work experience is not only about facilities, but also an environment that helps everyone do their best work.",
-    careerOpenings: "Ketersediaan Lowongan",
+    careerOpenings: "Available openings",
     careerOpeningsLoading: "Loading available positions…",
     noCareerOpenings: "There are currently no open positions.",
+    noCareerOpeningsDescription:
+      "Please check this page again later. Position details and application links will appear when a role opens.",
+    careerOpeningsLoadError:
+      "The openings list is temporarily unavailable. Please try again shortly.",
+    careerOpeningUnavailable:
+      "This position is no longer available. Please select another active opening.",
+    careerMaxFilesError: "Attach no more than 5 files.",
     careerOpeningsTitle: "Find a role that fits your next step.",
     careerOpeningsDescription:
-      "Choose a position to learn more. If no role fits yet, you can still send your profile for future consideration.",
+      "Choose an active position to apply for. The opening details and form options follow the positions currently available in Sanity.",
     positionsAvailable: "positions available",
     viewAndApply: "View position & apply",
     purposeAtWork: "Work with purpose",
-    purposeAtWorkDescription: "Every role contributes to energy distribution supporting Indonesian industry.",
-    supportiveCulture: "Budaya yang saling mendukung",
-    supportiveCultureDescription: "We build open communication, cross-functional teamwork, and room to grow together.",
+    purposeAtWorkDescription:
+      "Every role contributes to energy distribution supporting Indonesian industry.",
+    supportiveCulture: "Supportive culture",
+    supportiveCultureDescription:
+      "We build open communication, cross-functional teamwork, and room to grow together.",
     fieldLearning: "Learn from the field",
-    fieldLearningDescription: "You will work with real distribution, customer, partner, and operational contexts.",
+    fieldLearningDescription:
+      "You will work with real distribution, customer, partner, and operational contexts.",
     safeWorkStandards: "Safe work standards",
-    safeWorkStandardsDescription: "Safety, compliance, and integrity are part of how we make decisions.",
+    safeWorkStandardsDescription:
+      "Safety, compliance, and integrity are part of how we make decisions.",
     crossRoleCollaboration: "Cross-role collaboration",
-    crossRoleCollaborationDescription: "Good ideas can come from any function and be discussed from diverse perspectives.",
+    crossRoleCollaborationDescription:
+      "Good ideas can come from any function and be discussed from diverse perspectives.",
     roomToGrow: "Room to grow",
-    roomToGrowDescription: "We value initiative, responsibility, and the desire to improve work quality.",
-    operations: "Operasional",
-    commercial: "Komersial",
+    roomToGrowDescription:
+      "We value initiative, responsibility, and the desire to improve work quality.",
+    operations: "Operations",
+    commercial: "Commercial",
     fullTime: "Full-time",
     distributionOperationsStaff: "Distribution Operations Staff",
     distributionOperationsSummary:
@@ -2215,58 +2337,70 @@ export const messages = {
     salesAccountSummary:
       "Build relationships with prospective customers and translate energy needs into service solutions.",
     careersFormEyebrow: "Careers / Application",
-    careersFormTitle: "Ceritakan langkah berikutnya.",
+    careersFormTitle: "Tell us about your next step.",
     careersFormDescription:
       "Complete the short form and attach your latest CV. Our team will review incoming profiles based on position needs.",
     applicationForm: "Application form",
-    sendYourProfile: "Kirim profilmu",
-    cvMaximum: "CV maksimal 5 MB",
-    dataReadyForReview: "Data siap ditinjau",
+    sendYourProfile: "Send your profile",
+    cvMaximum: "CV maximum 5 MB",
+    dataReadyForReview: "Data ready for review",
     applicationThanks:
-      "Thank you. The form and CV have been validated in the browser. Connect the submission handler to a CMS or recruitment email before production use.",
+      "Thank you. Your application and supporting documents have been received for the selected position. Our team will review your profile.",
     sendAnotherApplication: "Send another application",
-    fullName: "Nama lengkap",
-    fullNamePlaceholder: "Nama lengkap",
+    fullName: "Full name",
+    fullNamePlaceholder: "Full name",
     positionInterested: "Position of interest",
     choosePosition: "Choose a position",
-    shortMessage: "Pesan singkat",
-    shortMessagePlaceholder: "Tell us about your experience or why you are interested...",
-    cvSupportingDocument: "CV / dokumen pendukung",
-    removeFile: "Hapus",
-    validatedFile: "File tervalidasi",
-    addFile: "Tambah file",
-    chooseFile: "Pilih file",
-    supportedFileTypes: "PDF, DOC, atau DOCX · maksimal 5 MB per file",
+    shortMessage: "Short message",
+    shortMessagePlaceholder:
+      "Tell us about your experience or why you are interested...",
+    cvSupportingDocument: "CV / supporting document",
+    removeFile: "Remove",
+    validatedFile: "Validated file",
+    addFile: "Add file",
+    chooseFile: "Choose file",
+    supportedFileTypes: "PDF, DOC, or DOCX · maximum 5 MB per file",
     cvFormatError: "CV must be PDF, DOC, or DOCX.",
-    fileSizeError: "ukuran file maksimal 5 MB.",
-    attachCvError: "Silakan lampirkan setidaknya satu file CV terlebih dahulu.",
+    fileSizeError: "maximum file size is 5 MB.",
+    attachCvError: "Please attach at least one CV file first.",
     applicationFailed: "Application could not be processed.",
-    sending: "Mengirim...",
+    sending: "Sending...",
     sendApplication: "Send application",
-    bekasiCoverageDescription: "A service point supporting distribution needs in the Jabodetabek area and surrounding regions.",
-    palembangCoverageDescription: "Supporting industrial fuel and distribution needs in South Sumatra.",
-    medanCoverageDescription: "An operational point for customer needs in North Sumatra and surrounding areas.",
-    palangkaRayaCoverageDescription: "Supporting fuel delivery coordination for operational needs in Central Kalimantan.",
-    northSulawesiCoverageDescription: "An operational point serving distribution needs in North Sulawesi.",
-    southSulawesiCoverageDescription: "An operational point supporting customer needs in South Sulawesi.",
+    bekasiCoverageDescription:
+      "A service point supporting distribution needs in the Jabodetabek area and surrounding regions.",
+    palembangCoverageDescription:
+      "Supporting industrial fuel and distribution needs in South Sumatra.",
+    medanCoverageDescription:
+      "An operational point for customer needs in North Sumatra and surrounding areas.",
+    palangkaRayaCoverageDescription:
+      "Supporting fuel delivery coordination for operational needs in Central Kalimantan.",
+    northSulawesiCoverageDescription:
+      "An operational point serving distribution needs in North Sulawesi.",
+    southSulawesiCoverageDescription:
+      "An operational point supporting customer needs in South Sulawesi.",
     offerPageEyebrow: "Products / Offer",
     offerPageTitle: "Starting with your needs, we prepare the discussion.",
     offerPageDescription:
       "Share your industrial fuel requirements so the Petro Anigos team can review the suitable product, volume, location, schedule, and distribution scheme.",
     needsBasedOffer: "Needs-based offer",
     beforeSubmitting: "Before submitting",
-    offerPreparationTitle: "Simple information helps make the discussion more focused.",
+    offerPreparationTitle:
+      "Simple information helps make the discussion more focused.",
     offerPreparationDescription:
       "You do not need to prepare complex commercial specifications. Start with the operational information you already know.",
     prepareForOffer: "What to prepare",
     productTypePreparation: "Product type",
-    productTypePreparationDescription: "Diesel/HSD or B40 Biosolar based on your operational needs.",
+    productTypePreparationDescription:
+      "Diesel/HSD or B40 Biosolar based on your operational needs.",
     volumePreparation: "Required volume",
-    volumePreparationDescription: "Estimated volume per delivery or recurring requirements.",
+    volumePreparationDescription:
+      "Estimated volume per delivery or recurring requirements.",
     locationSchedulePreparation: "Location and schedule",
-    locationSchedulePreparationDescription: "Unloading point region and planned receiving time.",
+    locationSchedulePreparationDescription:
+      "Unloading point region and planned receiving time.",
     distributionModePreparation: "Distribution mode",
-    distributionModePreparationDescription: "Land fleet, sea transportation, or transport partner requirements.",
+    distributionModePreparationDescription:
+      "Land fleet, sea transportation, or transport partner requirements.",
     offerFlowEyebrow: "Discussion Flow",
     offerFlowTitle: "From initial information to an offer discussed together.",
     offerFlowDescription:
@@ -2281,7 +2415,8 @@ export const messages = {
     offerStepThreeDescription:
       "Pricing, minimum order, payment, and transaction terms are discussed according to your needs.",
     discussionScopeEyebrow: "Discussion Scope",
-    discussionScopeTitle: "Commercial and distribution details are confirmed together.",
+    discussionScopeTitle:
+      "Commercial and distribution details are confirmed together.",
     discussionScopeDescription:
       "Information in the form is an initial discussion basis, not a price determination or delivery guarantee.",
     offerScopeNoticeLabel: "Quotation details confirmed together",
@@ -2315,7 +2450,8 @@ export const messages = {
     productType: "Product type",
     productTypeValue: "Solar/HSD and B40 Biosolar",
     productCompositionValue: "40% Biodiesel + 60% Solar/HSD",
-    productQualityStandardValue: "Based on the specifications of Indonesia's Directorate General of Oil and Gas",
+    productQualityStandardValue:
+      "Based on the specifications of Indonesia's Directorate General of Oil and Gas",
     productTrademarkValue: "Petro Anigos",
     productServiceScaleValue: "Small, medium, large, and national scale",
     productVideoEyebrow: "Product introduction",
@@ -2340,8 +2476,7 @@ export const messages = {
     productPosition: "Product position",
     productSupport:
       "Supported by Petro Anigos distribution capabilities for customers requiring land and interregional services.",
-    partnershipTrustHeading:
-      "Companies that trust PT Anigos Jaya Perkasa",
+    partnershipTrustHeading: "Companies that trust PT Anigos Jaya Perkasa",
     partnershipSectionLabel: "Petro Anigos Partnerships",
     partnershipTitle: "Growing through trusted collaboration.",
     partnershipDescription:
@@ -2383,7 +2518,8 @@ export const messages = {
     clientProductsColumn: "Services",
     clientEmpty: "Client records will appear here once published.",
     clientLoading: "Loading client records...",
-    clientLoadError: "Client records could not be loaded. Please try again later.",
+    clientLoadError:
+      "Client records could not be loaded. Please try again later.",
     clientGalleryEyebrow: "Documentation",
     clientGalleryTitle: "Client gallery",
     clientGalleryDescription:
@@ -2412,8 +2548,7 @@ export const messages = {
     articleEnergyDescription:
       "Understanding B40 composition, the government's mandatory program, and its applicable quality standards.",
     articleOperationsCategory: "Operations",
-    articleOperationsTitle:
-      "Why punctuality matters in fuel distribution",
+    articleOperationsTitle: "Why punctuality matters in fuel distribution",
     articleOperationsDescription:
       "Notes on reliability, safety, and coordination in supporting customer needs.",
     articleInsightsCategory: "Insights",
@@ -2525,12 +2660,14 @@ export const messages = {
     partnershipOverviewEyebrow: "01 — Partnership Overview",
     partnershipUnavailable: "Unavailable",
     partnershipPortfolioMissing: "Partnership type is not available.",
-    partnershipOverviewMissing: "A brief company introduction is not available.",
+    partnershipOverviewMissing:
+      "A brief company introduction is not available.",
     partnershipBackgroundMissing: "Partnership background is not available.",
     partnershipBackgroundTitle: "Partnership background.",
     partnershipBackgroundSubtitle:
       "A detailed explanation of the rationale, scope, and direction of the partnership.",
-    partnershipClosingMissing: "Partnership closing statement is not available.",
+    partnershipClosingMissing:
+      "Partnership closing statement is not available.",
     partnershipNameFallback: "Partnership Details",
     partnershipLogoAltFallback: "partner company",
     partnershipGalleryAlt: "Partnership documentation for {name}.",
@@ -2546,8 +2683,7 @@ export const messages = {
     mobileNavigation: "Mobile navigation",
     galleryPhotoSelect: "Select photo",
     articlePublicInfoEyebrow: "Articles / Public Information Basis",
-    articlePublicInfoTitle:
-      "Information grounded in facts and clear sources.",
+    articlePublicInfoTitle: "Information grounded in facts and clear sources.",
     articlePublicInfoDescription:
       "This page explains PT. Anigos Jaya Perkasa's public information references based on the company profile and available company data.",
     companyStructureEyebrow: "About Us",
@@ -2613,8 +2749,10 @@ export const messages = {
     galleryUploadDatesUnavailable: "Upload dates unavailable",
     gallerySortMetadataNote:
       "Date and year sorting use Sanity asset upload timestamps. Photos without upload-date metadata are excluded.",
-    galleryLoadError: "The gallery could not be loaded. Please reload the page.",
-    galleryNoPhotosForSelection: "No photos with upload dates match this selection.",
+    galleryLoadError:
+      "The gallery could not be loaded. Please reload the page.",
+    galleryNoPhotosForSelection:
+      "No photos with upload dates match this selection.",
     galleryNoPhotosInCategory: "There are no photos in this category yet.",
     cookieTermsLink: "cookie terms",
     publicGalleryEyebrow: "Articles / Gallery",
@@ -2655,8 +2793,10 @@ export const messages = {
       "No activity documents are available for this year yet.",
     csrGallerySectionEyebrow: "01 — Activity documentation",
     csrGalleryYearDescription: "CSR activity documentation from {year}.",
-    hopesPatternAlt: "Aspirations and goals visual pattern for PT. Anigos Jaya Perkasa",
-    partnershipTransportationAlt: "PT. Anigos Jaya Perkasa transportation partnership illustration",
+    hopesPatternAlt:
+      "Aspirations and goals visual pattern for PT. Anigos Jaya Perkasa",
+    partnershipTransportationAlt:
+      "PT. Anigos Jaya Perkasa transportation partnership illustration",
     dataDetails: "Details",
     viewPartnerDetails: "View details",
     previousPageShort: "Previous",
@@ -2670,7 +2810,8 @@ export const messages = {
     reachCardInstruction: "Press to view details",
     reachAreasUnavailable: "Service areas will be updated through the CMS.",
     publicationComingSoon: "Coming soon",
-    partnershipContactUnavailable: "Contact email has not been added in the CMS",
+    partnershipContactUnavailable:
+      "Contact email has not been added in the CMS",
     publicInfoPrinciplesEyebrow: "Information Principles",
     publicInfoPrinciplesTitle:
       "Be transparent about what is known and what is not yet available.",
@@ -2723,7 +2864,8 @@ export const messages = {
     contactFormNext: "Next",
     contactFormPrevious: "Back",
     contactFormRequiredError: "This field is required.",
-    contactFormEmailInvalid: "Enter a valid email address in the format name@domain.com.",
+    contactFormEmailInvalid:
+      "Enter a valid email address in the format name@domain.com.",
     contactFormPhoneDigitsError:
       "Use 8–15 digits, with a maximum of 15 numeric digits. You may include +, spaces, hyphens, and parentheses.",
     contactFormValidationSummary:
@@ -2754,13 +2896,17 @@ export const messages = {
     contactFormAttachments: "Attachments",
     contactChooseAttachments: "Choose attachments",
     contactAddAttachments: "Add attachments",
-    contactAttachmentLimits: "Up to 5 files, 5 MB each · PDF, Word, Excel, JPG, PNG",
-    contactAttachmentTypeError: "Unsupported file type. Choose PDF, Word, Excel, JPG, or PNG.",
-    contactAttachmentSizeError: "File size must be greater than 0 and no more than 5 MB.",
+    contactAttachmentLimits:
+      "Up to 5 files, 5 MB each · PDF, Word, Excel, JPG, PNG",
+    contactAttachmentTypeError:
+      "Unsupported file type. Choose PDF, Word, Excel, JPG, or PNG.",
+    contactAttachmentSizeError:
+      "File size must be greater than 0 and no more than 5 MB.",
     contactAttachmentCountError: "You can select up to 5 files.",
     contactRemoveAttachment: "Remove attachment",
     contactFormAttachmentList: "Selected files",
-    contactFormAttachmentReminder: "Please add these files as attachments in your email app.",
+    contactFormAttachmentReminder:
+      "Please add these files as attachments in your email app.",
     contactFormEmailSubject: "Contact inquiry",
     contactFormRecipient: "To",
     contactFormSubmit: "Send",
@@ -2784,8 +2930,7 @@ export const messages = {
       "Portfolio and documentation information for this partner company.",
     additionalDetails: "Additional details",
     partnershipPortfolioPdfTitle: "Portfolio company profile",
-    partnershipPortfolioPdfUnavailable:
-      "Portfolio PDF is not available yet.",
+    partnershipPortfolioPdfUnavailable: "Portfolio PDF is not available yet.",
     partnershipOpenPortfolioPdf: "Open portfolio PDF",
     partnershipDocumentationPdfTitle: "Partnership documentation",
     partnershipDocumentationPdfUnavailable:
@@ -2808,10 +2953,7 @@ export function translate(locale: Locale, key: TranslationKey) {
   return messages[locale][key]
 }
 
-const weatherConditionTranslations: Record<
-  Locale,
-  Record<string, string>
-> = {
+const weatherConditionTranslations: Record<Locale, Record<string, string>> = {
   id: {
     cerah: "Cerah",
     "cerah berawan": "Cerah berawan",
@@ -2826,10 +2968,7 @@ const weatherConditionTranslations: Record<
   },
 }
 
-export function translateWeatherCondition(
-  locale: Locale,
-  condition: string
-) {
+export function translateWeatherCondition(locale: Locale, condition: string) {
   const normalizedCondition = condition.trim().toLocaleLowerCase("id-ID")
   return weatherConditionTranslations[locale][normalizedCondition] ?? condition
 }

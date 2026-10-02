@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next"
 
 import { getSanityNewsroom } from "@/lib/sanity-newsroom"
+import { getPageVisibilityMap } from "@/lib/page-visibility"
+import { isPagePathVisible } from "@/shared/page-visibility-registry"
 
 const siteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://petroanigos.com"
@@ -102,19 +104,26 @@ const publicRoutes = [
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { articles } = await getSanityNewsroom({ useDraftMode: false })
-  const routes = publicRoutes.map((route) => ({
-    url: `${siteUrl}${route.path}`,
-    priority: route.priority,
-    changeFrequency: route.changeFrequency,
-  }))
+  const [{ articles }, visibility] = await Promise.all([
+    getSanityNewsroom({ useDraftMode: false }),
+    getPageVisibilityMap(),
+  ])
+  const routes = publicRoutes
+    .filter((route) => isPagePathVisible(route.path, visibility))
+    .map((route) => ({
+      url: `${siteUrl}${route.path}`,
+      priority: route.priority,
+      changeFrequency: route.changeFrequency,
+    }))
 
-  const articleRoutes = articles.map((article) => ({
-    url: `${siteUrl}/artikel/${article.slug}`,
-    lastModified: new Date(`${article.date}T00:00:00`),
-    changeFrequency: "monthly" as const,
-    priority: article.featured ? 0.8 : 0.7,
-  }))
+  const articleRoutes = isPagePathVisible("/artikel/example-detail", visibility)
+    ? articles.map((article) => ({
+        url: `${siteUrl}/artikel/${article.slug}`,
+        lastModified: new Date(`${article.date}T00:00:00`),
+        changeFrequency: "monthly" as const,
+        priority: article.featured ? 0.8 : 0.7,
+      }))
+    : []
 
   return [...routes, ...articleRoutes]
 }

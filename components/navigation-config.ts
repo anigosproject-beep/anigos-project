@@ -1,4 +1,8 @@
-import type {TranslationKey} from "@/lib/i18n"
+import type { TranslationKey } from "@/lib/i18n"
+import {
+  isPagePathVisible,
+  type PageVisibilityMap,
+} from "@/shared/page-visibility-registry"
 
 export type NavigationItem = {
   label: string
@@ -118,3 +122,18 @@ export const navigationItems: NavigationItem[] = [
     ],
   },
 ]
+
+export function getVisibleNavigationItems(
+  visibility: PageVisibilityMap
+): NavigationItem[] {
+  return navigationItems.flatMap((item) => {
+    if (!item.children) {
+      return isPagePathVisible(item.href, visibility) ? [item] : []
+    }
+
+    const children = item.children.filter((child) =>
+      isPagePathVisible(child.href, visibility)
+    )
+    return children.length > 0 ? [{ ...item, children }] : []
+  })
+}

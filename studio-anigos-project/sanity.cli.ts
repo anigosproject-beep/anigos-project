@@ -1,7 +1,15 @@
 import { defineCliConfig } from "sanity/cli"
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID ?? "6zvti7ob"
-const dataset = process.env.SANITY_STUDIO_DATASET ?? "production"
+import {
+  assertSanityTarget,
+  sanityTarget,
+} from "../shared/sanity-target"
+
+assertSanityTarget(
+  process.env.SANITY_STUDIO_PROJECT_ID,
+  process.env.SANITY_STUDIO_DATASET
+)
+const { projectId, dataset } = sanityTarget
 
 export default defineCliConfig({
   api: {

@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { ArrowRight, BookOpen, FileText, Newspaper } from "lucide-react"
 
 import { PageHero } from "@/components/sections"

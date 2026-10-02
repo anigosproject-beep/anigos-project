@@ -1,6 +1,13 @@
-# Milestone: Studio Deployment
+# Milestone: Studio Deployment (catatan historis 2026-09-21)
 
 Tanggal: 21 September 2026
+
+> **Status terbaru (2026-10-02):** project `wm8u3z2o` dan deployment di bawah
+> adalah legacy. Studio aktif telah dideploy ke `6zvti7ob/production` dengan
+> App ID `b0aeni0iyzep8bldqhbp0qt2` pada
+> <https://petro-anigos.sanity.studio/>. Workspace `petro-anigos` terdaftar
+> melalui `sanity schema list`; URL meminta login Sanity untuk sesi tanpa
+> autentikasi. Jangan gunakan App ID/deployment historis di bawah.
 
 ## Hasil
 

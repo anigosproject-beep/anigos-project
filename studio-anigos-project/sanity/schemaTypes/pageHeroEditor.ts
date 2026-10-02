@@ -2,7 +2,11 @@ import { defineField, defineType } from "sanity"
 
 import { PageMediaImageInput } from "../components/PageMediaImageInput"
 import { PageHeroSelectionInput } from "../components/PageHeroSelectionInput"
-import { pageHeroMenus } from "../page-hero-registry"
+import { PageHeroSlotInput } from "../components/PageHeroSlotInput"
+import {
+  pageHeroFieldName,
+  pageHeroMenus,
+} from "../page-hero-registry"
 
 const selectionField = defineField({
   name: "selection",
@@ -25,10 +29,6 @@ const selectionField = defineField({
     }),
   ],
 })
-
-function pageHeroFieldName(pageValue: string) {
-  return `pageHero_${pageValue.replaceAll("-", "_")}`
-}
 
 function isSelectedPage(
   document: unknown,
@@ -53,6 +53,18 @@ const pageHeroFields = pageDefinitions.map(({ menu, page }) =>
     name: pageHeroFieldName(page.value),
     title: `${page.title} — Page Hero`,
     type: "object",
+    components: { input: PageHeroSlotInput },
+    validation: (rule) =>
+      rule.custom((value, context) => {
+        if (!isSelectedPage(context.document, menu.value, page.value)) {
+          return true
+        }
+        return value &&
+          typeof value === "object" &&
+          !Array.isArray(value)
+          ? true
+          : "Slot Page Hero hilang. Pulihkan metadata slot sebelum memublikasikan."
+      }),
     hidden: ({ document }) => !isSelectedPage(document, menu.value, page.value),
     fields: [
       defineField({

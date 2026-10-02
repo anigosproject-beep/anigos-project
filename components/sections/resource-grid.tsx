@@ -1,5 +1,5 @@
 import Image from "next/image"
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { ArrowUpRight } from "lucide-react"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"

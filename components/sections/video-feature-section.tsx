@@ -1,6 +1,7 @@
 "use client"
 
 import { PlayCircle } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { ContentVideoPlayer } from "@/components/content-video-player"
 import { Heading, Text } from "@/components/typography"
@@ -14,6 +15,7 @@ type VideoFeatureSectionProps = {
   title: LocalizedCopy
   description: LocalizedCopy
   videoTitle: LocalizedCopy
+  mediaSlotId?: string
   className?: string
 }
 
@@ -22,10 +24,47 @@ export function VideoFeatureSection({
   title,
   description,
   videoTitle,
+  mediaSlotId,
   className,
 }: VideoFeatureSectionProps) {
   const { locale } = useLocale()
+  const [loadedMedia, setLoadedMedia] = useState<{
+    slotId: string
+    videoUrl?: string
+  } | null>(null)
   const copy = (value: LocalizedCopy) => value[locale]
+  const videoSrc =
+    loadedMedia &&
+    loadedMedia.slotId === mediaSlotId &&
+    loadedMedia.videoUrl
+      ? loadedMedia.videoUrl
+      : "/video-hero/0914.mp4"
+
+  useEffect(() => {
+    if (!mediaSlotId) return
+
+    const controller = new AbortController()
+    void fetch(`/api/page-media?slotId=${encodeURIComponent(mediaSlotId)}`, {
+      signal: controller.signal,
+      cache: "no-store",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Supporting video request failed: ${response.status}`)
+        }
+        return response.json() as Promise<{
+          slotId: string
+          videoUrl?: string
+        }>
+      })
+      .then((result) => setLoadedMedia(result))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error(`Unable to load supporting video: ${mediaSlotId}`, error)
+      })
+
+    return () => controller.abort()
+  }, [mediaSlotId])
 
   return (
     <section className={`border-b border-border bg-muted/40 py-20 lg:py-28 ${className ?? ""}`}>
@@ -43,7 +82,7 @@ export function VideoFeatureSection({
           </Text>
         </div>
         <ContentVideoPlayer
-          src="/video-hero/0914.mp4"
+          src={videoSrc}
           title={copy(videoTitle)}
           className="w-full"
         />

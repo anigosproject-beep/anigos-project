@@ -1,8 +1,8 @@
-import { sanityClient } from "@/lib/sanity-client"
-import { translate, type Locale } from "@/lib/i18n"
-import { careerOpenings, type CareerOpening } from "@/lib/careers-data"
+import { sanityAvailabilityClient } from "@/lib/sanity-client"
+import type { Locale } from "@/lib/i18n"
+import type { CareerOpening } from "@/lib/careers-data"
 
-const CAREER_OPENINGS_QUERY = `*[_type == "careerOpening"] | order(order asc, _createdAt asc) {
+const CAREER_OPENINGS_QUERY = `*[_type == "careerOpening" && isActive == true] | order(order asc, _createdAt asc) {
   _id,
   "slug": slug.current,
   isActive,
@@ -31,63 +31,27 @@ type SanityCareerOpening = {
   responsibilities?: Array<LocalizedText | null>
 }
 
-const fallbackTranslationKeys: Record<
-  string,
-  {
-    title: "distributionOperationsStaff" | "salesAccountExecutive"
-    summary: "distributionOperationsSummary" | "salesAccountSummary"
-    department: "operations" | "commercial"
-  }
-> = {
-  "staff-operasional-distribusi": {
-    title: "distributionOperationsStaff",
-    summary: "distributionOperationsSummary",
-    department: "operations",
-  },
-  "sales-account-executive": {
-    title: "salesAccountExecutive",
-    summary: "salesAccountSummary",
-    department: "commercial",
-  },
-}
-
-function getFallbackOpenings(locale: Locale): CareerOpening[] {
-  return careerOpenings.map((opening) => {
-    const keys = fallbackTranslationKeys[opening.slug]
-    if (!keys) return opening
-
-    return {
-      ...opening,
-      title: translate(locale, keys.title),
-      department: translate(locale, keys.department),
-      location:
-        locale === "en" && opening.slug === "staff-operasional-distribusi"
-          ? "Jakarta / Hybrid"
-          : opening.location,
-      type: translate(locale, "fullTime"),
-      summary: translate(locale, keys.summary),
-    }
-  })
-}
-
 function localizedValue(value: LocalizedText | undefined, locale: Locale) {
   return value?.[locale] || value?.id || ""
 }
 
-export async function getCareerOpenings(locale: Locale): Promise<CareerOpening[]> {
-  const documents =
-    await sanityClient.fetch<SanityCareerOpening[]>(CAREER_OPENINGS_QUERY)
-
-  if (documents.length === 0) return getFallbackOpenings(locale)
+export async function getCareerOpenings(
+  locale: Locale
+): Promise<CareerOpening[]> {
+  const documents = await sanityAvailabilityClient.fetch<SanityCareerOpening[]>(
+    CAREER_OPENINGS_QUERY
+  )
 
   return documents
     .filter(
       (opening): opening is SanityCareerOpening & { slug: string } =>
-        opening.isActive !== false &&
+        opening.isActive === true &&
+        typeof opening._id === "string" &&
         typeof opening.slug === "string" &&
         opening.slug.length > 0
     )
     .map((opening) => ({
+      sanityId: opening._id,
       slug: opening.slug,
       title: localizedValue(opening.title, locale),
       department: localizedValue(opening.department, locale),
@@ -95,7 +59,17 @@ export async function getCareerOpenings(locale: Locale): Promise<CareerOpening[]
       type: localizedValue(opening.employmentType, locale),
       summary: localizedValue(opening.summary, locale),
       responsibilities: (opening.responsibilities ?? [])
-        .map((responsibility) => localizedValue(responsibility ?? undefined, locale))
+        .map((responsibility) =>
+          localizedValue(responsibility ?? undefined, locale)
+        )
         .filter(Boolean),
     }))
+}
+
+export async function getActiveCareerOpening(
+  slug: string,
+  locale: Locale
+): Promise<CareerOpening | undefined> {
+  const openings = await getCareerOpenings(locale)
+  return openings.find((opening) => opening.slug === slug)
 }

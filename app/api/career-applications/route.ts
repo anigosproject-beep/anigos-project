@@ -7,6 +7,8 @@ import {
   getFirebaseAdminFirestore,
   getFirebaseAdminStorage,
 } from "@/lib/firebase-admin"
+import { isSanityAvailabilityError } from "@/lib/sanity-client"
+import { getActiveCareerOpening } from "@/lib/sanity-careers"
 
 export const runtime = "nodejs"
 
@@ -44,24 +46,64 @@ export async function POST(request: Request) {
       (value) => typeof value === "string" && value.length > maxFieldLength
     )
   ) {
-    return NextResponse.json({ error: "Data lamaran tidak valid." }, { status: 400 })
+    return NextResponse.json(
+      { error: "Data lamaran tidak valid." },
+      { status: 400 }
+    )
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: "Format email tidak valid." }, { status: 400 })
+    return NextResponse.json(
+      { error: "Format email tidak valid." },
+      { status: 400 }
+    )
   }
 
   const uploadFiles = files.filter((file): file is File => file instanceof File)
   if (uploadFiles.length === 0 || uploadFiles.length > maxFiles) {
-    return NextResponse.json({ error: "Jumlah file lamaran tidak valid." }, { status: 400 })
+    return NextResponse.json(
+      { error: "Jumlah file lamaran tidak valid." },
+      { status: 400 }
+    )
   }
 
   if (
     uploadFiles.some(
-      (file) => !acceptedTypes.has(file.type) || file.size === 0 || file.size > maxFileSize
+      (file) =>
+        !acceptedTypes.has(file.type) ||
+        file.size === 0 ||
+        file.size > maxFileSize
     )
   ) {
-    return NextResponse.json({ error: "Format atau ukuran file tidak valid." }, { status: 400 })
+    return NextResponse.json(
+      { error: "Format atau ukuran file tidak valid." },
+      { status: 400 }
+    )
+  }
+
+  let activeOpening
+  try {
+    activeOpening = await getActiveCareerOpening(position.trim(), "id")
+  } catch (error) {
+    if (isSanityAvailabilityError(error)) {
+      console.warn(
+        "Unable to verify the selected career opening with Sanity.",
+        error
+      )
+    } else {
+      console.error("Failed to verify the selected career opening.", error)
+    }
+    return NextResponse.json(
+      { errorCode: "openings-unavailable" },
+      { status: 503 }
+    )
+  }
+
+  if (!activeOpening) {
+    return NextResponse.json(
+      { errorCode: "opening-unavailable" },
+      { status: 409 }
+    )
   }
 
   const applicationId = randomUUID()
@@ -94,21 +136,36 @@ export async function POST(request: Request) {
       })
     }
 
-    await getFirebaseAdminFirestore().collection("careerApplications").doc(applicationId).set({
-      fullName: fullName.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone.trim(),
-      position: position.trim(),
-      message: typeof message === "string" ? message.trim() : "",
-      files: uploadedFiles,
-      status: "received",
-      createdAt: FieldValue.serverTimestamp(),
-    })
+    await getFirebaseAdminFirestore()
+      .collection("careerApplications")
+      .doc(applicationId)
+      .set({
+        fullName: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        position: activeOpening.slug,
+        positionTitle: activeOpening.title,
+        sanityOpeningId: activeOpening.sanityId,
+        message: typeof message === "string" ? message.trim() : "",
+        files: uploadedFiles,
+        status: "received",
+        createdAt: FieldValue.serverTimestamp(),
+      })
 
     return NextResponse.json({ applicationId }, { status: 201 })
   } catch {
     const bucket = getFirebaseAdminStorage().bucket()
-    await Promise.all(uploadedPaths.map((path) => bucket.file(path).delete().catch(() => undefined)))
-    return NextResponse.json({ error: "Lamaran gagal diproses. Silakan coba lagi." }, { status: 500 })
+    await Promise.all(
+      uploadedPaths.map((path) =>
+        bucket
+          .file(path)
+          .delete()
+          .catch(() => undefined)
+      )
+    )
+    return NextResponse.json(
+      { error: "Lamaran gagal diproses. Silakan coba lagi." },
+      { status: 500 }
+    )
   }
 }

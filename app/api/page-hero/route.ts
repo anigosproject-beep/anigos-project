@@ -1,9 +1,7 @@
-import {NextRequest, NextResponse} from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
-import {
-  getSanityClientForCurrentMode,
-  sanityImageUrl,
-} from "@/lib/sanity-client"
+import { isSanityAvailabilityError, sanityImageUrl } from "@/lib/sanity-client"
+import { getSanityPageHeroDocument } from "@/lib/sanity-hero"
 
 type PageHeroContent = {
   image?: string
@@ -31,26 +29,56 @@ export async function GET(request: NextRequest) {
   const lang = request.nextUrl.searchParams.get("lang") === "en" ? "en" : "id"
   if (!page) {
     return NextResponse.json(
-      {error: "Page key wajib diisi."},
-      {status: 400, headers: {"Cache-Control": "no-store"}},
+      { error: "Page key wajib diisi." },
+      { status: 400, headers: { "Cache-Control": "no-store" } }
     )
   }
 
-  const client = await getSanityClientForCurrentMode()
-  const document = await client.fetch<Record<string, unknown> | null>(
-    `*[_id == "pageHeroEditor"][0]`,
-  )
+  if (page.length > 64 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(page)) {
+    return NextResponse.json(
+      { error: "Page key tidak valid." },
+      { status: 400, headers: { "Cache-Control": "no-store" } }
+    )
+  }
+
   const fieldName = `pageHero_${page.replaceAll("-", "_")}`
+  let document: Record<string, unknown> | null
+  try {
+    document = await getSanityPageHeroDocument()
+  } catch (error) {
+    if (isSanityAvailabilityError(error)) {
+      console.warn(
+        "Sanity Page Hero is unavailable; using the page fallback.",
+        error
+      )
+      return NextResponse.json(null, {
+        headers: {
+          "Cache-Control": "no-store",
+          "X-Content-Source": "fallback",
+        },
+      })
+    }
+
+    console.error("Failed to load Sanity Page Hero.", error)
+    return NextResponse.json(
+      { error: "Gagal memuat konten Page Hero." },
+      { status: 503, headers: { "Cache-Control": "no-store" } }
+    )
+  }
+
   const hero = document?.[fieldName]
 
   if (!isRecord(hero)) {
-    return NextResponse.json(null, {headers: {"Cache-Control": "no-store"}})
+    return NextResponse.json(null, { headers: { "Cache-Control": "no-store" } })
   }
 
   const image = isRecord(hero.image) ? hero.image : undefined
   const asset = image && isRecord(image.asset) ? image.asset : undefined
-  const assetRef = asset && typeof asset._ref === "string" ? asset._ref : undefined
-  const imageUrl = assetRef ? sanityImageUrl({asset: {_ref: assetRef}}) : undefined
+  const assetRef =
+    asset && typeof asset._ref === "string" ? asset._ref : undefined
+  const imageUrl = assetRef
+    ? sanityImageUrl({ asset: { _ref: assetRef } })
+    : undefined
   const content: PageHeroContent = {
     image: imageUrl,
     eyebrow: localizedValue(hero.pageName, lang),
@@ -58,5 +86,7 @@ export async function GET(request: NextRequest) {
     description: localizedValue(hero.subtitle, lang),
   }
 
-  return NextResponse.json(content, {headers: {"Cache-Control": "no-store"}})
+  return NextResponse.json(content, {
+    headers: { "Cache-Control": "no-store" },
+  })
 }

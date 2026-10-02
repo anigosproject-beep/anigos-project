@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import Link from "@/components/site-link"
 import { useEffect, useRef, useState, type FormEvent } from "react"
 import {
   ArrowLeft,

@@ -4,7 +4,14 @@ import { useRef, useState } from "react"
 import { FileText, Paperclip, Send, X } from "lucide-react"
 
 import type { CareerOpening } from "@/lib/careers-data"
-import { Attachment, AttachmentAction, AttachmentContent, AttachmentDescription, AttachmentMedia, AttachmentTitle } from "@/components/ui/attachment"
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentMedia,
+  AttachmentTitle,
+} from "@/components/ui/attachment"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,7 +23,12 @@ import { translate } from "@/lib/i18n"
 import { CAREER_APPLICATION_FIELDS } from "@/lib/form-contract"
 
 const maxFileSize = 5 * 1024 * 1024
-const acceptedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+const maxFiles = 5
+const acceptedTypes = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]
 
 export function CareerApplicationForm({
   openings,
@@ -35,7 +47,7 @@ export function CareerApplicationForm({
   const selectedPosition = openings.some((opening) => opening.slug === position)
     ? position
     : openings.some((opening) => opening.slug === selectedOpening)
-      ? selectedOpening ?? ""
+      ? (selectedOpening ?? "")
       : ""
 
   function selectFiles(nextFiles: FileList | null) {
@@ -47,13 +59,26 @@ export function CareerApplicationForm({
         setError(`${nextFile.name}: ${translate(locale, "cvFormatError")}`)
         return
       }
+      if (nextFile.size === 0) {
+        setError(`${nextFile.name}: ${translate(locale, "cvFormatError")}`)
+        return
+      }
       if (nextFile.size > maxFileSize) {
         setError(`${nextFile.name}: ${translate(locale, "fileSizeError")}`)
         return
       }
-      if (!files.some((file) => file.name === nextFile.name && file.size === nextFile.size)) {
+      if (
+        !files.some(
+          (file) => file.name === nextFile.name && file.size === nextFile.size
+        )
+      ) {
         validFiles.push(nextFile)
       }
+    }
+
+    if (files.length + validFiles.length > maxFiles) {
+      setError(translate(locale, "careerMaxFilesError"))
+      return
     }
 
     setError("")
@@ -63,7 +88,8 @@ export function CareerApplicationForm({
   function removeFile(fileToRemove: File) {
     setFiles((currentFiles) =>
       currentFiles.filter(
-        (file) => file.name !== fileToRemove.name || file.size !== fileToRemove.size
+        (file) =>
+          file.name !== fileToRemove.name || file.size !== fileToRemove.size
       )
     )
     if (fileInputRef.current) fileInputRef.current.value = ""
@@ -82,21 +108,36 @@ export function CareerApplicationForm({
     try {
       const formData = new FormData(event.currentTarget)
       formData.delete("cv")
-      files.forEach((file) => formData.append(CAREER_APPLICATION_FIELDS.files, file))
+      files.forEach((file) =>
+        formData.append(CAREER_APPLICATION_FIELDS.files, file)
+      )
 
       const response = await fetch("/api/career-applications", {
         method: "POST",
         body: formData,
       })
-      const payload = (await response.json()) as { error?: string }
+      const payload = (await response.json()) as {
+        error?: string
+        errorCode?: string
+      }
 
       if (!response.ok) {
+        if (payload.errorCode === "opening-unavailable") {
+          throw new Error(translate(locale, "careerOpeningUnavailable"))
+        }
+        if (payload.errorCode === "openings-unavailable") {
+          throw new Error(translate(locale, "careerOpeningsLoadError"))
+        }
         throw new Error(payload.error ?? translate(locale, "applicationFailed"))
       }
 
       setSubmitted(true)
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : translate(locale, "applicationFailed"))
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : translate(locale, "applicationFailed")
+      )
     } finally {
       setSubmitting(false)
     }
@@ -107,20 +148,33 @@ export function CareerApplicationForm({
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <Badge variant="secondary">{translate(locale, "applicationForm")}</Badge>
-            <CardTitle className="mt-4 text-2xl">{translate(locale, "sendYourProfile")}</CardTitle>
+            <Badge variant="secondary">
+              {translate(locale, "applicationForm")}
+            </Badge>
+            <CardTitle className="mt-4 text-2xl">
+              {translate(locale, "sendYourProfile")}
+            </CardTitle>
           </div>
-          <span className="text-xs text-muted-foreground">{translate(locale, "cvMaximum")}</span>
+          <span className="text-xs text-muted-foreground">
+            {translate(locale, "cvMaximum")}
+          </span>
         </div>
       </CardHeader>
       <CardContent>
         {submitted ? (
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6">
-            <h2 className="font-semibold">{translate(locale, "dataReadyForReview")}</h2>
+            <h2 className="font-semibold">
+              {translate(locale, "dataReadyForReview")}
+            </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               {translate(locale, "applicationThanks")}
             </p>
-            <Button type="button" variant="outline" className="mt-5" onClick={() => setSubmitted(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-5"
+              onClick={() => setSubmitted(false)}
+            >
               {translate(locale, "sendAnotherApplication")}
             </Button>
           </div>
@@ -128,55 +182,143 @@ export function CareerApplicationForm({
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="full-name">{translate(locale, "fullName")}</Label>
-                <Input id="full-name" name={CAREER_APPLICATION_FIELDS.fullName} required placeholder={translate(locale, "fullNamePlaceholder")} />
+                <Label htmlFor="full-name">
+                  {translate(locale, "fullName")}
+                </Label>
+                <Input
+                  id="full-name"
+                  name={CAREER_APPLICATION_FIELDS.fullName}
+                  required
+                  placeholder={translate(locale, "fullNamePlaceholder")}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name={CAREER_APPLICATION_FIELDS.email} type="email" required placeholder={translate(locale, "emailPlaceholder")} />
+                <Input
+                  id="email"
+                  name={CAREER_APPLICATION_FIELDS.email}
+                  type="email"
+                  required
+                  placeholder={translate(locale, "emailPlaceholder")}
+                />
               </div>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="phone">{translate(locale, "phoneNumber")}</Label>
-                <Input id="phone" name={CAREER_APPLICATION_FIELDS.phone} required placeholder="08..." />
+                <Label htmlFor="phone">
+                  {translate(locale, "phoneNumber")}
+                </Label>
+                <Input
+                  id="phone"
+                  name={CAREER_APPLICATION_FIELDS.phone}
+                  required
+                  placeholder="08..."
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="position">{translate(locale, "positionInterested")}</Label>
-                <select id="position" name={CAREER_APPLICATION_FIELDS.position} required value={selectedPosition} onChange={(event) => setPosition(event.target.value)} className="h-9 w-full rounded-3xl border border-transparent bg-input/50 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30">
-                  <option value="" disabled>{translate(locale, "choosePosition")}</option>
-                  {openings.map((opening) => <option key={opening.slug} value={opening.slug}>{opening.title}</option>)}
+                <Label htmlFor="position">
+                  {translate(locale, "positionInterested")}
+                </Label>
+                <select
+                  id="position"
+                  name={CAREER_APPLICATION_FIELDS.position}
+                  required
+                  value={selectedPosition}
+                  onChange={(event) => setPosition(event.target.value)}
+                  className="h-9 w-full rounded-3xl border border-transparent bg-input/50 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
+                >
+                  <option value="" disabled>
+                    {translate(locale, "choosePosition")}
+                  </option>
+                  {openings.map((opening) => (
+                    <option key={opening.slug} value={opening.slug}>
+                      {opening.title}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message">{translate(locale, "shortMessage")}</Label>
-              <Textarea id="message" name={CAREER_APPLICATION_FIELDS.message} placeholder={translate(locale, "shortMessagePlaceholder")} />
+              <Label htmlFor="message">
+                {translate(locale, "shortMessage")}
+              </Label>
+              <Textarea
+                id="message"
+                name={CAREER_APPLICATION_FIELDS.message}
+                placeholder={translate(locale, "shortMessagePlaceholder")}
+              />
             </div>
             <div className="space-y-3">
-              <Label htmlFor="cv">{translate(locale, "cvSupportingDocument")}</Label>
-              <input ref={fileInputRef} id="cv" name="cv" type="file" multiple accept=".pdf,.doc,.docx" className="sr-only" onChange={(event) => selectFiles(event.target.files)} />
+              <Label htmlFor="cv">
+                {translate(locale, "cvSupportingDocument")}
+              </Label>
+              <input
+                ref={fileInputRef}
+                id="cv"
+                name="cv"
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx"
+                className="sr-only"
+                onChange={(event) => selectFiles(event.target.files)}
+              />
               <div className="space-y-3">
                 {files.map((file) => (
-                  <Attachment key={`${file.name}-${file.size}`} className="w-full" state="done">
-                    <AttachmentMedia><FileText /></AttachmentMedia>
+                  <Attachment
+                    key={`${file.name}-${file.size}`}
+                    className="w-full"
+                    state="done"
+                  >
+                    <AttachmentMedia>
+                      <FileText />
+                    </AttachmentMedia>
                     <AttachmentContent>
                       <AttachmentTitle>{file.name}</AttachmentTitle>
-                      <AttachmentDescription>{(file.size / 1024 / 1024).toFixed(2)} MB · {translate(locale, "validatedFile")}</AttachmentDescription>
+                      <AttachmentDescription>
+                        {(file.size / 1024 / 1024).toFixed(2)} MB ·{" "}
+                        {translate(locale, "validatedFile")}
+                      </AttachmentDescription>
                     </AttachmentContent>
-                    <AttachmentAction type="button" aria-label={`${translate(locale, "removeFile")} ${file.name}`} onClick={() => removeFile(file)}><X /></AttachmentAction>
+                    <AttachmentAction
+                      type="button"
+                      aria-label={`${translate(locale, "removeFile")} ${file.name}`}
+                      onClick={() => removeFile(file)}
+                    >
+                      <X />
+                    </AttachmentAction>
                   </Attachment>
                 ))}
-                <button type="button" onClick={() => fileInputRef.current?.click()} className="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-background px-6 py-8 text-center transition-colors hover:border-primary/50 hover:bg-muted/30">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-background px-6 py-8 text-center transition-colors hover:border-primary/50 hover:bg-muted/30"
+                >
                   <Paperclip className="size-5 text-primary" />
-                  <span className="mt-3 text-sm font-medium">{files.length ? translate(locale, "addFile") : translate(locale, "chooseFile")}</span>
-                  <span className="mt-1 text-xs text-muted-foreground">{translate(locale, "supportedFileTypes")}</span>
+                  <span className="mt-3 text-sm font-medium">
+                    {files.length
+                      ? translate(locale, "addFile")
+                      : translate(locale, "chooseFile")}
+                  </span>
+                  <span className="mt-1 text-xs text-muted-foreground">
+                    {translate(locale, "supportedFileTypes")}
+                  </span>
                 </button>
               </div>
-              {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
+              {error ? (
+                <p role="alert" className="text-sm text-destructive">
+                  {error}
+                </p>
+              ) : null}
             </div>
-            <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
-              {submitting ? translate(locale, "sending") : translate(locale, "sendApplication")} <Send data-icon="inline-end" />
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full sm:w-auto"
+            >
+              {submitting
+                ? translate(locale, "sending")
+                : translate(locale, "sendApplication")}{" "}
+              <Send data-icon="inline-end" />
             </Button>
           </form>
         )}

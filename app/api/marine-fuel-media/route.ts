@@ -1,29 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSanityClientForCurrentMode } from "@/lib/sanity-client"
 
-const MARINE_FUEL_MEDIA_QUERY = `*[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0]{
-  "homeSlots": homeSlots[slotId in ["home-marine-fuel-background", "home-marine-fuel-video"]]{
-    slotId,
-    "image": image{"url": asset->url},
-    "video": {"url": video.asset->url}
-  },
-  "productSlots": productsSlots[slotId in ["product-marine-fuel-background", "product-marine-fuel-video"]]{
-    slotId,
-    "image": image{"url": asset->url},
-    "video": {"url": video.asset->url}
-  }
-}`
-
-type MarineFuelMediaSlot = {
-  slotId?: string
-  image?: { url?: string }
-  video?: { url?: string }
-}
-
-type MarineFuelMediaResult = {
-  homeSlots?: MarineFuelMediaSlot[] | null
-  productSlots?: MarineFuelMediaSlot[] | null
-}
+import {
+  getSanityMarineFuelMedia,
+} from "@/lib/sanity-marine-fuel"
+import { isSanityAvailabilityError } from "@/lib/sanity-client"
+import { maxMarineFuelVideoBytes } from "@/shared/sanity-content-contracts"
 
 export async function GET(request: NextRequest) {
   const variant = request.nextUrl.searchParams.get("variant")
@@ -35,23 +16,64 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const client = await getSanityClientForCurrentMode()
-  const media = await client.fetch<MarineFuelMediaResult | null>(
-    MARINE_FUEL_MEDIA_QUERY
-  )
-  const slots =
-    variant === "home" ? media?.homeSlots : media?.productSlots
-  const backgroundId = `${variant}-marine-fuel-background`
-  const videoId = `${variant}-marine-fuel-video`
+  try {
+    const media = await getSanityMarineFuelMedia()
+    const slots = variant === "home" ? media?.homeSlots : media?.productSlots
+    const backgroundId = `${variant}-marine-fuel-background`
+    const videoId = `${variant}-marine-fuel-video`
+    const videoSlot = slots?.find((slot) => slot.slotId === videoId)
+    const videoSize =
+      typeof videoSlot?.videoSize === "number" ? videoSlot.videoSize : undefined
+    const oversizedVideo =
+      videoSize !== undefined && videoSize > maxMarineFuelVideoBytes
 
-  return NextResponse.json(
-    {
-      variant,
-      backgroundImage: slots?.find((slot) => slot.slotId === backgroundId)?.image
-        ?.url,
-      backgroundVideo: slots?.find((slot) => slot.slotId === videoId)?.video
-        ?.url,
-    },
-    { headers: { "Cache-Control": "no-store" } }
-  )
+    return NextResponse.json(
+      {
+        variant,
+        backgroundImage: slots?.find((slot) => slot.slotId === backgroundId)
+          ?.imageUrl,
+        backgroundVideo: oversizedVideo ? undefined : videoSlot?.videoUrl,
+        oversizedVideo,
+        missingAssets:
+          !slots?.some(
+            (slot) =>
+              slot.slotId === backgroundId ||
+              (slot.slotId === videoId && slot.videoUrl)
+          ),
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store",
+          "X-Content-Source": media ? "sanity" : "fallback",
+        },
+      }
+    )
+  } catch (error) {
+    if (isSanityAvailabilityError(error)) {
+      console.warn(
+        "Sanity Marine Fuel media is unavailable; using local media.",
+        error
+      )
+      return NextResponse.json(
+        {
+          variant,
+          backgroundImage: null,
+          backgroundVideo: null,
+          missingAssets: true,
+        },
+        {
+          headers: {
+            "Cache-Control": "no-store",
+            "X-Content-Source": "fallback",
+          },
+        }
+      )
+    }
+
+    console.error("Failed to load Sanity Marine Fuel media.", error)
+    return NextResponse.json(
+      { error: "Gagal memuat media Marine Fuel." },
+      { status: 503, headers: { "Cache-Control": "no-store" } }
+    )
+  }
 }

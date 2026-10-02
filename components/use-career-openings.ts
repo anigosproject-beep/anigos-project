@@ -11,6 +11,7 @@ function isCareerOpening(value: unknown): value is CareerOpening {
   const opening = value as Record<string, unknown>
   return (
     typeof opening.slug === "string" &&
+    typeof opening.sanityId === "string" &&
     typeof opening.title === "string" &&
     typeof opening.department === "string" &&
     typeof opening.location === "string" &&
@@ -49,18 +50,17 @@ export function useCareerOpenings(locale: Locale) {
             ? payload.openings
             : null
 
-        if (!response.ok || !openings || !openings.every(isCareerOpening)) {
-          throw new Error("Lowongan karir tidak dapat dimuat.")
+        if (!response.ok) {
+          throw new Error("unavailable")
+        }
+        if (!openings || !openings.every(isCareerOpening)) {
+          throw new Error("unavailable")
         }
 
         setOpenings(openings)
-      } catch (loadError) {
+      } catch {
         if (controller.signal.aborted) return
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : "Lowongan karir tidak dapat dimuat."
-        )
+        setError("unavailable")
       } finally {
         if (!controller.signal.aborted) setIsLoading(false)
       }
