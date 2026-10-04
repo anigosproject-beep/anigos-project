@@ -29,10 +29,19 @@ Contoh query media:
 
 Jika asset Sanity kosong, gunakan fallback lokal atau tampilkan section tanpa gambar jika aman. Satu slot kosong tidak boleh mematikan seluruh halaman.
 
+## Galeri Artikel
+
+`GET /api/galeri?lang=id|en` mempertahankan sumber Galeri yang sudah ada dan
+menambahkan foto dari singleton `serviceGalleryEditor` serta dokumen terbit
+`galleryPhoto`. Foto Halaman Layanan masuk ke kategori Produk & Layanan.
+Foto editorial memakai kategori bawaan atau kategori baru yang direferensikan
+dari `galleryCategory`; kategori baru ditampilkan pada filter halaman Galeri
+dan halaman penelusuran kategori. Definisi enam kategori bawaan dibagikan
+antara schema Studio dan aplikasi melalui `shared/gallery-categories.ts`.
+
 ## Kriteria selesai
 
 - Production hanya membaca published.
 - Preview membaca draft.
 - Response memiliki type dan null guard.
 - Website tetap tampil saat satu slot belum diisi.
-

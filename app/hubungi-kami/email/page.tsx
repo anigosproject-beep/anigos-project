@@ -379,8 +379,8 @@ export default function ContactEmailPage() {
         ]}
       />
 
-      <section className="mt-6 grid h-[calc(100svh-1.5rem)] grid-rows-[minmax(11rem,0.3fr)_minmax(0,0.7fr)] overflow-hidden lg:grid-cols-2 lg:grid-rows-1">
-        <div className="relative min-h-0 overflow-y-auto bg-white">
+      <section className="mt-6 grid grid-cols-1 overflow-visible lg:h-[calc(100svh-1.5rem)] lg:grid-cols-2 lg:grid-rows-1 lg:overflow-hidden">
+        <div className="relative min-h-0 bg-white lg:overflow-y-auto">
           <div className="mx-auto w-full max-w-3xl px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
             <form
               ref={formRef}
@@ -563,7 +563,21 @@ export default function ContactEmailPage() {
                               locale,
                               "contactFormPositionPlaceholder"
                             )}
-                          />
+                          >
+                            {(value: string | null) =>
+                              value && isPositionChoice(value)
+                                ? translate(
+                                    locale,
+                                    value === otherPosition
+                                      ? "contactPositionOther"
+                                      : value
+                                  )
+                                : translate(
+                                    locale,
+                                    "contactFormPositionPlaceholder"
+                                  )
+                            }
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent className="rounded-2xl p-1.5">
                           {positionOptions.map((option) => (
@@ -772,7 +786,7 @@ export default function ContactEmailPage() {
           </div>
         </div>
 
-        <aside className="relative min-h-0 overflow-hidden bg-base-color text-base-color-foreground">
+        <aside className="relative min-h-[20rem] overflow-hidden bg-base-color text-base-color-foreground lg:min-h-0">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 opacity-100"

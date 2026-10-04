@@ -21,14 +21,13 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   filterAndSortGallery,
-  galleryCategories,
+  getGalleryCategories,
   getGalleryEntries,
   isGalleryCategoryFilter,
   type GalleryCategoryFilter,
   type GalleryDateOrder,
   type GalleryEntry,
   type GallerySortBy,
-  visibleGalleryCategories,
 } from "@/lib/gallery"
 import { mockActivePartners } from "@/lib/partnership-fallback"
 
@@ -208,6 +207,7 @@ export function PublicationGalleryPage() {
     content?.length
       ? content
       : getGalleryEntries(mockActivePartners)
+  const categories = getGalleryCategories(images)
   const activeImage = images[selectedIndex] ?? images[0]
 
   return (
@@ -351,7 +351,8 @@ export function PublicationGalleryPage() {
             <Tabs
               value={selectedCategory}
               onValueChange={(value) => {
-                if (isGalleryCategoryFilter(value)) setSelectedCategory(value)
+                if (isGalleryCategoryFilter(value, images))
+                  setSelectedCategory(value)
               }}
               className="mt-8"
             >
@@ -371,7 +372,7 @@ export function PublicationGalleryPage() {
                       {images.length}
                     </span>
                   </TabsTrigger>
-                  {visibleGalleryCategories.map((category) => {
+                  {categories.map((category) => {
                     const count = images.filter(
                       (image) => image.category === category.id
                     ).length
@@ -409,7 +410,7 @@ export function PublicationGalleryPage() {
                   locale={locale}
                 />
               </TabsContent>
-              {galleryCategories.map((category) => {
+              {categories.map((category) => {
                 if (images.every((image) => image.category !== category.id))
                   return null
 

@@ -21,6 +21,8 @@ const supportedDocumentTypes = new Set([
   "fleetOption",
   "jangkauanPage",
   "coverageArea",
+  "galleryPhoto",
+  "galleryCategory",
 ])
 
 const maxLocalizedFieldsPerDocument = 40

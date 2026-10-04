@@ -44,6 +44,25 @@ export const structure: StructureResolver = (S) =>
             .views([S.view.form()])
         ),
       S.listItem()
+        .title("Produk")
+        .id("products")
+        .child(
+          S.list()
+            .title("Produk")
+            .items([
+              S.listItem()
+                .title("Halaman Layanan")
+                .id("service-gallery-editor")
+                .child(
+                  S.document()
+                    .schemaType("serviceGalleryEditor")
+                    .documentId("serviceGalleryEditor")
+                    .title("Halaman Layanan")
+                    .views([S.view.form()])
+                ),
+            ])
+        ),
+      S.listItem()
         .title("Pengaturan Halaman")
         .id("page-visibility-settings")
         .child(
@@ -184,6 +203,33 @@ export const structure: StructureResolver = (S) =>
                   S.documentTypeList("newsroomCategory")
                     .title("Kategori dan Subkategori")
                     .defaultOrdering([{ field: "name", direction: "asc" }])
+                ),
+              S.listItem()
+                .title("Galeri")
+                .id("gallery")
+                .child(
+                  S.list()
+                    .title("Galeri")
+                    .items([
+                      S.documentTypeListItem("galleryPhoto")
+                        .title("Konten Galeri")
+                        .child(
+                          S.documentTypeList("galleryPhoto")
+                            .title("Konten Galeri")
+                            .defaultOrdering([
+                              { field: "_createdAt", direction: "desc" },
+                            ])
+                        ),
+                      S.documentTypeListItem("galleryCategory")
+                        .title("Kategori Galeri")
+                        .child(
+                          S.documentTypeList("galleryCategory")
+                            .title("Kategori Galeri")
+                            .defaultOrdering([
+                              { field: "title.id", direction: "asc" },
+                            ])
+                        ),
+                    ])
                 ),
             ])
         ),

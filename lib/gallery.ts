@@ -1,20 +1,22 @@
 import type { PartnershipItem } from "@/lib/partnership-fallback"
+import { galleryCategories } from "@/shared/gallery-categories"
 
-export type GalleryCategory =
-  | "partnership"
-  | "transport"
-  | "distribution"
-  | "leadership"
-  | "coverage"
-  | "services"
+export { galleryCategories } from "@/shared/gallery-categories"
+
+export type GalleryCategory = string
 export type GalleryCategoryFilter = "all" | GalleryCategory
 export type GallerySortBy = "none" | "date" | "year"
 export type GalleryDateOrder = "newest" | "oldest"
+type GalleryCategoryOption = {
+  id: GalleryCategory
+  label: { id: string; en: string }
+}
 
 export type GalleryEntry = {
   alt: string
   caption: string
   category: GalleryCategory
+  categoryLabel?: { id: string; en: string }
   fileName: string
   format: string
   partnerName: string
@@ -26,41 +28,36 @@ export type GalleryEntry = {
   uploadedAt?: string
 }
 
-export const galleryCategories: Array<{
-  id: GalleryCategory
-  label: { id: string; en: string }
-}> = [
-  { id: "partnership", label: { id: "Kemitraan", en: "Partnerships" } },
-  {
-    id: "transport",
-    label: { id: "Transportasi & Armada", en: "Transport & Fleet" },
-  },
-  {
-    id: "distribution",
-    label: { id: "Distribusi Energi", en: "Energy Distribution" },
-  },
-  {
-    id: "leadership",
-    label: { id: "Komisaris & Direksi", en: "Commissioners & Directors" },
-  },
-  {
-    id: "coverage",
-    label: { id: "Jangkauan Layanan", en: "Service Coverage" },
-  },
-  {
-    id: "services",
-    label: { id: "Produk & Layanan", en: "Products & Services" },
-  },
-]
+export function getGalleryCategories(images: GalleryEntry[]) {
+  const categories: GalleryCategoryOption[] = [...galleryCategories]
+  const seen = new Set(categories.map(({ id }) => id))
 
-export const visibleGalleryCategories = galleryCategories
+  for (const image of images) {
+    if (
+      !image.category.startsWith("custom-") ||
+      seen.has(image.category) ||
+      !image.categoryLabel
+    ) {
+      continue
+    }
+
+    categories.push({
+      id: image.category,
+      label: image.categoryLabel,
+    })
+    seen.add(image.category)
+  }
+
+  return categories
+}
 
 export function isGalleryCategoryFilter(
-  value: string
+  value: string,
+  images: GalleryEntry[] = []
 ): value is GalleryCategoryFilter {
   return (
     value === "all" ||
-    galleryCategories.some((category) => category.id === value)
+    getGalleryCategories(images).some((category) => category.id === value)
   )
 }
 

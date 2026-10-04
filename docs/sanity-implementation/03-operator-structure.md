@@ -33,6 +33,21 @@ Data Pendukung
 └── Divisi
 ```
 
+Menu Studio yang aktif juga mencakup:
+
+```text
+Produk
+└── Halaman Layanan
+Artikel
+└── Galeri
+    ├── Konten Galeri
+    └── Kategori Galeri
+```
+
+`Halaman Layanan` adalah editor foto saja. `Konten Galeri` berisi foto,
+kategori, judul, dan keterangan; kategori baru dapat dibuat dari pemilih
+referensi atau dikelola dari `Kategori Galeri`.
+
 ## Aturan
 
 - Gunakan label Bahasa Indonesia.

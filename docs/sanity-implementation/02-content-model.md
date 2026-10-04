@@ -103,6 +103,19 @@ Halaman → Segmen → Elemen media → Asset
 
 Operator tidak mengetik nama halaman atau segmen secara bebas.
 
+### Galeri layanan dan publikasi
+
+- **Produk → Halaman Layanan** membuka singleton `serviceGalleryEditor` yang
+  hanya berisi daftar foto tanpa judul atau
+  keterangan. Foto-foto tersebut otomatis ditambahkan ke kategori Produk &
+  Layanan pada Galeri Artikel.
+- **Artikel → Galeri → Konten Galeri** mengelola foto publikasi satu per
+  dokumen (`galleryPhoto`) dengan foto, kategori, judul, dan keterangan.
+- Pilihan kategori bawaan menggunakan daftar kategori yang sama dengan Galeri
+  publik (`shared/gallery-categories.ts`). Untuk kategori lain, operator dapat
+  memilih atau membuat dokumen `galleryCategory`; kategori tersebut kemudian
+  dapat dipakai kembali dan ditampilkan pada filter Galeri publik.
+
 ### Pengaturan visibilitas halaman
 
 Dokumen singleton `pageVisibilitySettings` adalah sumber status aktif/nonaktif

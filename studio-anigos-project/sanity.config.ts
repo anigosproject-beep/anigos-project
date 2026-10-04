@@ -1,9 +1,6 @@
 import { defineConfig } from "sanity"
 import { structureTool } from "sanity/structure"
-import {
-  assertSanityTarget,
-  sanityTarget,
-} from "../shared/sanity-target"
+import { assertSanityTarget, sanityTarget } from "../shared/sanity-target"
 import { schemaTypes } from "./sanity/schemaTypes"
 import { structure } from "./structure"
 
@@ -28,7 +25,9 @@ export default defineConfig({
         (context.schemaType === "pageHeroEditor" &&
           context.documentId === "pageHeroEditor") ||
         (context.schemaType === "pageMediaEditor" &&
-          context.documentId === "pageMediaEditor")
+          context.documentId === "pageMediaEditor") ||
+        (context.schemaType === "serviceGalleryEditor" &&
+          context.documentId === "serviceGalleryEditor")
       const protectedMediaAsset = context.schemaType === "mediaAsset"
 
       if (!protectedSingleton && !protectedMediaAsset) return previousActions

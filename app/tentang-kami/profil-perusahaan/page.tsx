@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import Link from "@/components/site-link"
 import {
   ArrowRight,
@@ -56,6 +57,32 @@ const legalHighlights = [
 
 export default function ProfilPerusahaanPage() {
   const { locale } = useLocale()
+  const [journeyImage, setJourneyImage] = React.useState(
+    "/images/company/office.png"
+  )
+
+  React.useEffect(() => {
+    const controller = new AbortController()
+
+    void fetch(
+      "/api/page-media?slotId=company-profile-journey-background",
+      { signal: controller.signal, cache: "no-store" }
+    )
+      .then((response) => {
+        if (!response.ok)
+          throw new Error(`Company journey image request failed: ${response.status}`)
+        return response.json() as Promise<{ imageUrl?: string }>
+      })
+      .then((media) => {
+        if (media.imageUrl) setJourneyImage(media.imageUrl)
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error("Failed to load company journey image", error)
+      })
+
+    return () => controller.abort()
+  }, [])
 
   return (
     <main>
@@ -114,7 +141,7 @@ export default function ProfilPerusahaanPage() {
         eyebrow={translate(locale, "companyJourneyEyebrow")}
         title={translate(locale, "companyJourneyTitle")}
         description={translate(locale, "companyJourneyDescription")}
-        image="/images/page-hero/tentang-kami.webp"
+        image={journeyImage}
         imagePosition="center"
       />
 

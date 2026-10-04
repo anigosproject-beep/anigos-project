@@ -1073,6 +1073,9 @@ export const messages = {
     clientGalleryTitle: "Galeri klien",
     clientGalleryDescription:
       "Pilih nama perusahaan untuk melihat dokumentasi layanan dan kegiatan bersama.",
+    clientGalleryAll: "Lihat semua",
+    clientGalleryShowFewerCategories: "Lihat lebih sedikit",
+    clientGalleryOtherCategories: "kategori lainnya",
     clientGalleryEmpty: "Belum ada foto untuk perusahaan ini.",
     clientGalleryNoClients: "Belum ada klien yang dipublikasikan.",
     clientProductUnavailable: "Belum dicantumkan",
@@ -2548,6 +2551,9 @@ export const messages = {
     clientGalleryTitle: "Client gallery",
     clientGalleryDescription:
       "Select a company to view service and activity documentation.",
+    clientGalleryAll: "View all",
+    clientGalleryShowFewerCategories: "View fewer",
+    clientGalleryOtherCategories: "more categories",
     clientGalleryEmpty: "There are no photos for this company yet.",
     clientGalleryNoClients: "There are no published clients yet.",
     clientProductUnavailable: "Not listed",

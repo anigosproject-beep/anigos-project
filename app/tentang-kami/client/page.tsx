@@ -3,8 +3,16 @@
 import Image from "next/image"
 import * as React from "react"
 
+import {
+  GalleryLightbox,
+  type GalleryImage,
+} from "@/components/commissioner-gallery"
 import { PageHero } from "@/components/sections"
 import { SectionHeading } from "@/components/typography"
+import {
+  Dialog,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -17,10 +25,14 @@ import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 import type { SanityClientPortfolioEntry } from "@/lib/sanity-content-types"
 
+const VISIBLE_CLIENT_CATEGORY_COUNT = 5
+
 function getClientGallery(client: SanityClientPortfolioEntry) {
-  return client.gallery?.filter(
-    (image): image is NonNullable<typeof image> => Boolean(image?.url)
-  ) ?? []
+  return (
+    client.gallery?.filter((image): image is NonNullable<typeof image> =>
+      Boolean(image?.url)
+    ) ?? []
+  )
 }
 
 export default function ClientPortfolioPage() {
@@ -33,6 +45,8 @@ export default function ClientPortfolioPage() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(
     null
   )
+  const [showAllClientCategories, setShowAllClientCategories] =
+    React.useState(false)
 
   React.useEffect(() => {
     const controller = new AbortController()
@@ -63,12 +77,31 @@ export default function ClientPortfolioPage() {
 
   const isLoading = loadedLocale !== locale
   const hasLoadError = loadErrorLocale === locale
-  const visibleClients =
-    loadedLocale === locale && !hasLoadError ? clients : []
-  const selectedClient =
-    visibleClients.find((client) => client._id === selectedClientId) ??
-    visibleClients[0]
-  const selectedGallery = selectedClient ? getClientGallery(selectedClient) : []
+  const visibleClients = loadedLocale === locale && !hasLoadError ? clients : []
+  const selectedClient = visibleClients.find(
+    (client) => client._id === selectedClientId
+  )
+  const allClientGallery = visibleClients.flatMap((client) =>
+    getClientGallery(client).map((photo, index) => ({
+      client,
+      photo,
+      key: `${client._id}-${photo._key ?? photo.url}-${index}`,
+    }))
+  )
+  const selectedGallery = selectedClient
+    ? allClientGallery.filter((item) => item.client._id === selectedClient._id)
+    : allClientGallery
+  const selectedTabId = selectedClient
+    ? `client-tab-${selectedClient._id}`
+    : "client-tab-all"
+  const galleryPanelId = selectedClient
+    ? `client-gallery-${selectedClient._id}`
+    : "client-gallery-all"
+  const visibleClientCategories = showAllClientCategories
+    ? visibleClients
+    : visibleClients.slice(0, VISIBLE_CLIENT_CATEGORY_COUNT)
+  const hiddenClientCategoryCount =
+    visibleClients.length - VISIBLE_CLIENT_CATEGORY_COUNT
 
   return (
     <main>
@@ -146,7 +179,10 @@ export default function ClientPortfolioPage() {
                     const products =
                       client.productsUsed
                         ?.map((product) => product?.name?.trim())
-                        .filter((name): name is string => Boolean(name)) ?? []
+                        .filter(
+                          (name): name is string =>
+                            Boolean(name) && name !== "-" && name !== "—"
+                        ) ?? []
 
                     return (
                       <TableRow key={client._id}>
@@ -174,14 +210,27 @@ export default function ClientPortfolioPage() {
                             translate(locale, "partnershipUnavailable")}
                         </TableCell>
                         <TableCell className="py-4 pr-4 text-sm text-muted-foreground sm:pr-5">
-                          {products.length
-                            ? products.join(", ")
-                            : translate(locale, "clientProductUnavailable")}
+                          {products.length ? (
+                            <ul className="flex flex-wrap gap-1.5">
+                              {products.map((product) => (
+                                <li
+                                  key={product}
+                                  className="rounded-full border border-border bg-muted/40 px-2.5 py-1 text-xs leading-4 text-foreground"
+                                >
+                                  {product}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            translate(locale, "clientProductUnavailable")
+                          )}
                         </TableCell>
                       </TableRow>
                     )
                   })}
-                  {!isLoading && !hasLoadError && visibleClients.length === 0 ? (
+                  {!isLoading &&
+                  !hasLoadError &&
+                  visibleClients.length === 0 ? (
                     <TableRow>
                       <TableCell
                         colSpan={3}
@@ -229,73 +278,152 @@ export default function ClientPortfolioPage() {
 
           {visibleClients.length > 0 ? (
             <>
-              <div
-                className="mt-8 flex flex-wrap gap-2"
-                role="tablist"
-                aria-label={translate(locale, "clientGalleryTitle")}
-              >
-                {visibleClients.map((client) => (
+              <div className="mt-8 flex flex-wrap items-center gap-2">
+                <div
+                  id="client-category-tabs"
+                  className="contents"
+                  role="tablist"
+                  aria-label={translate(locale, "clientGalleryTitle")}
+                >
                   <button
-                    key={client._id}
-                    id={`client-tab-${client._id}`}
+                    id="client-tab-all"
                     type="button"
                     role="tab"
-                    aria-selected={selectedClient?._id === client._id}
-                    aria-controls={`client-gallery-${client._id}`}
-                    onClick={() => setSelectedClientId(client._id)}
+                    aria-selected={!selectedClient}
+                    aria-controls="client-gallery-all"
+                    onClick={() => setSelectedClientId(null)}
                     className={
-                      selectedClient?._id === client._id
-                        ? "rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-                        : "rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      !selectedClient
+                        ? "min-h-11 w-fit max-w-full rounded-xl bg-primary px-4 py-2.5 text-left text-sm font-medium text-primary-foreground"
+                        : "min-h-11 w-fit max-w-full rounded-xl border border-border bg-background px-4 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground"
                     }
                   >
-                    {client.companyName}
+                    {translate(locale, "clientGalleryAll")}
                   </button>
-                ))}
+                  {visibleClientCategories.map((client) => (
+                    <button
+                      key={client._id}
+                      id={`client-tab-${client._id}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={selectedClient?._id === client._id}
+                      aria-controls={`client-gallery-${client._id}`}
+                      onClick={() => setSelectedClientId(client._id)}
+                      className={
+                        selectedClient?._id === client._id
+                          ? "min-h-11 w-fit max-w-full rounded-xl bg-primary px-4 py-2.5 text-left text-sm font-medium text-primary-foreground"
+                          : "min-h-11 w-fit max-w-full rounded-xl border border-border bg-background px-4 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground"
+                      }
+                    >
+                      {client.companyName}
+                    </button>
+                  ))}
+                </div>
+                {hiddenClientCategoryCount > 0 ? (
+                  <button
+                    type="button"
+                    aria-expanded={showAllClientCategories}
+                    aria-controls="client-category-tabs"
+                    onClick={() => {
+                      if (showAllClientCategories) {
+                        setShowAllClientCategories(false)
+                        setSelectedClientId(null)
+                      } else {
+                        setShowAllClientCategories(true)
+                      }
+                    }}
+                    className="min-h-11 w-fit max-w-full rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-left text-sm font-semibold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
+                  >
+                    {showAllClientCategories ? (
+                      translate(locale, "clientGalleryShowFewerCategories")
+                    ) : (
+                      <span>
+                        +{hiddenClientCategoryCount}{" "}
+                        {translate(locale, "clientGalleryOtherCategories")}
+                      </span>
+                    )}
+                  </button>
+                ) : null}
               </div>
 
-              {selectedClient ? (
-                <div
-                  id={`client-gallery-${selectedClient._id}`}
-                  className="mt-8"
-                  role="tabpanel"
-                  aria-labelledby={`client-tab-${selectedClient._id}`}
-                  tabIndex={0}
-                >
+              <div
+                id={galleryPanelId}
+                className="mt-8"
+                role="tabpanel"
+                aria-labelledby={selectedTabId}
+                aria-live="polite"
+                tabIndex={0}
+              >
                   {selectedGallery.length > 0 ? (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {selectedGallery.map((photo, index) => (
-                        <figure
-                          key={photo._key ?? `${photo.url}-${index}`}
-                          className="overflow-hidden rounded-2xl border border-border bg-background"
-                        >
-                          <div className="relative aspect-[4/3] bg-muted">
-                            <Image
-                              src={photo.url ?? ""}
-                              alt={
-                                photo.alt ||
-                                `${selectedClient.companyName} — dokumentasi client`
-                              }
-                              fill
-                              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                              className="object-cover"
-                            />
-                          </div>
-                          {photo.caption ? (
-                            <figcaption className="px-4 py-3 text-sm text-muted-foreground">
-                              {photo.caption}
-                            </figcaption>
-                          ) : null}
-                        </figure>
-                      ))}
+                      {selectedGallery.map(({ client, photo, key }) => {
+                        const alt =
+                          photo.alt ||
+                          `${client.companyName} — dokumentasi client`
+                        const src = photo.url ?? ""
+                        const fileName =
+                          src.split("/").pop()?.split("?")[0] || "image"
+                        const format =
+                          fileName.split(".").pop()?.toUpperCase() || "IMAGE"
+                        const previewImage: GalleryImage = {
+                          src,
+                          alt,
+                          caption: photo.caption || client.companyName || "",
+                          fileName,
+                          format,
+                          resolution:
+                            photo.width && photo.height
+                              ? `${photo.width} × ${photo.height} px`
+                              : "—",
+                        }
+
+                        return (
+                          <figure
+                            key={key}
+                            className="overflow-hidden rounded-2xl border border-border bg-background"
+                          >
+                            <Dialog>
+                              <DialogTrigger
+                                render={
+                                  <button
+                                    type="button"
+                                    className="group block w-full cursor-zoom-in text-left focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                                    aria-label={`${translate(locale, "publicationImagePreview")}: ${alt}`}
+                                  />
+                                }
+                              >
+                                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                                  <Image
+                                    src={src}
+                                    alt={alt}
+                                    fill
+                                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                                  />
+                                </div>
+                              </DialogTrigger>
+                              <GalleryLightbox image={previewImage} />
+                            </Dialog>
+                            {!selectedClient || photo.caption ? (
+                              <figcaption className="flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-3 text-sm text-muted-foreground">
+                                {!selectedClient ? (
+                                  <span className="font-medium text-foreground">
+                                    {client.companyName}
+                                  </span>
+                                ) : null}
+                                {photo.caption ? <span>{photo.caption}</span> : null}
+                              </figcaption>
+                            ) : null}
+                          </figure>
+                        )
+                      })}
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
                       {translate(locale, "clientGalleryEmpty")}
                     </div>
                   )}
-                </div>
-              ) : null}
+              </div>
             </>
           ) : (
             <div className="mt-8 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">

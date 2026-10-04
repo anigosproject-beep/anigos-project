@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select"
 import {
   filterAndSortGallery,
-  galleryCategories,
+  getGalleryCategories,
   getGalleryEntries,
   getGalleryYears,
   type GalleryCategoryFilter,
@@ -79,10 +79,11 @@ export function GalleryCategoryListingPage() {
     return () => controller.abort()
   }, [locale])
 
-  const images =
-    content?.length
-      ? content
-      : getGalleryEntries(mockActivePartners)
+  const fallbackImages = React.useMemo(
+    () => getGalleryEntries(mockActivePartners),
+    []
+  )
+  const images = content?.length ? content : fallbackImages
   const availableYears = getGalleryYears(images, selectedCategory)
   const filteredImages = filterAndSortGallery(
     images,
@@ -93,12 +94,16 @@ export function GalleryCategoryListingPage() {
   )
   const isLoading = loadedLocale !== locale
   const hasLoadError = loadErrorLocale === locale
-  const categoryOptions = React.useMemo(
+  const categories = React.useMemo(() => getGalleryCategories(images), [images])
+  const categoryOptions: Array<{ id: string; label: string }> = React.useMemo(
     () => [
-      translate(locale, "galleryAllCategories"),
-      ...galleryCategories.map((category) => category.label[locale]),
+      { id: "all", label: translate(locale, "galleryAllCategories") },
+      ...categories.map((category) => ({
+        id: category.id,
+        label: category.label[locale],
+      })),
     ],
-    [locale]
+    [categories, locale]
   )
   React.useEffect(() => {
     const input = categoryComboboxAnchor.current?.querySelector("input")
@@ -114,7 +119,7 @@ export function GalleryCategoryListingPage() {
 
     context.font = window.getComputedStyle(input).font
     const longestLabelWidth = Math.max(
-      ...categoryOptions.map((label) => context.measureText(label).width)
+      ...categoryOptions.map(({ label }) => context.measureText(label).width)
     )
     const desiredWidth = Math.max(320, Math.ceil(longestLabelWidth + 72))
     const updateWidth = () => {
@@ -133,9 +138,10 @@ export function GalleryCategoryListingPage() {
 
   const selectedCategoryLabel =
     selectedCategory === "all"
-      ? categoryOptions[0]
-      : galleryCategories.find((category) => category.id === selectedCategory)
-          ?.label[locale]
+      ? categoryOptions[0]?.label
+      : categories.find((category) => category.id === selectedCategory)?.label[
+          locale
+        ]
 
   return (
     <main>
@@ -182,15 +188,13 @@ export function GalleryCategoryListingPage() {
                 {translate(locale, "galleryChooseCategory")}
               </label>
               <Combobox
-                items={categoryOptions}
+                items={categoryOptions.map(({ label }) => label)}
                 value={selectedCategoryLabel}
                 onValueChange={(value) => {
                   if (value === null) return
-                  const selectedIndex = categoryOptions.indexOf(value)
-                  const nextCategory =
-                    selectedIndex === 0
-                      ? "all"
-                      : galleryCategories[selectedIndex - 1]?.id
+                  const nextCategory = categoryOptions.find(
+                    ({ label }) => label === value
+                  )?.id
                   if (!nextCategory) return
 
                   setSelectedCategory(nextCategory)

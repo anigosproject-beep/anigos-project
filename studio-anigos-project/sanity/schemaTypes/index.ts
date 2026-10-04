@@ -18,6 +18,9 @@ import { mediaAsset } from "./mediaAsset"
 import { teamDivision } from "./teamDivision"
 import { teamMember } from "./teamMember"
 import { pageVisibilitySettings } from "./pageVisibilitySettings"
+import { serviceGalleryEditor } from "./serviceGalleryEditor"
+import { galleryCategory } from "./galleryCategory"
+import { galleryPhoto } from "./galleryPhoto"
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   mediaAsset,
@@ -38,4 +41,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   teamDivision,
   teamMember,
   pageVisibilitySettings,
+  serviceGalleryEditor,
+  galleryCategory,
+  galleryPhoto,
 ]
