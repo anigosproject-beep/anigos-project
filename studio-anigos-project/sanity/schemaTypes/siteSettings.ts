@@ -16,7 +16,7 @@ export const siteSettings = defineType({
           name: "baseColor",
           title: "Warna dasar",
           type: "string",
-          initialValue: "#0f0f0f",
+          initialValue: "#2e3092",
           components: { input: ThemeColorInput },
           description:
             "Warna ini diterapkan sebagai warna dasar aplikasi dan warna utama tombol/aksen. Masukkan nilai HEX 6 digit.",

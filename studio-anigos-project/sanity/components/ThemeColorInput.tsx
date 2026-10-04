@@ -1,6 +1,6 @@
 import { PatchEvent, set, type StringInputProps } from "sanity"
 
-const fallbackColor = "#0f0f0f"
+const fallbackColor = "#2e3092"
 
 export function ThemeColorInput(props: StringInputProps) {
   const color =

@@ -64,7 +64,7 @@ export function resolveUiTheme(theme?: Partial<Record<UiThemeToken, string>>) {
       ? theme.baseColor
       : theme?.primary && /^#[0-9a-f]{6}$/i.test(theme.primary)
         ? theme.primary
-        : "#0f0f0f"
+        : "#2e3092"
   const baseColorForeground = readableForeground(
     baseColor,
     theme?.baseColorForeground ?? theme?.primaryForeground,
