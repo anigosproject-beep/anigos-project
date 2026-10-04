@@ -9,33 +9,37 @@ export async function translateText(request: TranslationRequest) {
     return request.text
   }
 
-  const endpoint = process.env.TRANSLATION_API_URL
-  const apiKey = process.env.TRANSLATION_API_KEY
-
-  if (!endpoint || !apiKey) {
-    throw new Error(
-      "Translation provider is not configured. Set TRANSLATION_API_URL and TRANSLATION_API_KEY."
-    )
+  const apiKey = process.env.DEEPL_API_KEY
+  if (!apiKey) {
+    throw new Error("DeepL is not configured. Set DEEPL_API_KEY.")
   }
+
+  const endpoint = process.env.DEEPL_API_URL ?? "https://api-free.deepl.com/v2/translate"
+  const body = new URLSearchParams({
+    auth_key: apiKey,
+    text: request.text,
+    source_lang: request.sourceLocale === "id" ? "ID" : "EN",
+    target_lang: request.targetLocale === "id" ? "ID" : "EN",
+  })
 
   const response = await fetch(endpoint, {
     method: "POST",
     signal: AbortSignal.timeout(10_000),
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(request),
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
   })
 
   if (!response.ok) {
-    throw new Error(`Translation provider returned ${response.status}.`)
+    throw new Error(`DeepL returned ${response.status}.`)
   }
 
-  const payload = (await response.json()) as { translatedText?: unknown }
-  if (typeof payload.translatedText !== "string") {
-    throw new Error("Translation provider returned an invalid response.")
+  const payload = (await response.json()) as {
+    translations?: Array<{ text?: unknown }>
+  }
+  const translatedText = payload.translations?.[0]?.text
+  if (typeof translatedText !== "string") {
+    throw new Error("DeepL returned an invalid response.")
   }
 
-  return payload.translatedText
+  return translatedText
 }

@@ -31,7 +31,9 @@ type WebhookPayload = {
 }
 
 export async function POST(request: Request) {
-  const secret = process.env.SANITY_TRANSLATION_WEBHOOK_SECRET
+  const secret =
+    process.env.SANITY_TRANSLATION_WEBHOOK_SECRET ??
+    process.env.SANITY_PREVIEW_SECRET
   if (!secret) {
     console.error("Sanity translation webhook secret is not configured.")
     return NextResponse.json(
