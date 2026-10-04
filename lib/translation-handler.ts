@@ -5,8 +5,28 @@ export type TranslationRequest = {
 }
 
 export async function translateText(request: TranslationRequest) {
-  if (request.sourceLocale === request.targetLocale) {
-    return request.text
+  const [translatedText] = await translateTexts([request])
+  return translatedText
+}
+
+export async function translateTexts(requests: TranslationRequest[]) {
+  if (requests.length === 0) return []
+
+  const sameLocale = requests.every(
+    (request) => request.sourceLocale === request.targetLocale
+  )
+  if (sameLocale) return requests.map((request) => request.text)
+
+  const sourceLocale = requests[0].sourceLocale
+  const targetLocale = requests[0].targetLocale
+  if (
+    requests.some(
+      (request) =>
+        request.sourceLocale !== sourceLocale ||
+        request.targetLocale !== targetLocale
+    )
+  ) {
+    throw new Error("A translation batch must use one locale pair.")
   }
 
   const apiKey = process.env.DEEPL_API_KEY
@@ -14,13 +34,14 @@ export async function translateText(request: TranslationRequest) {
     throw new Error("DeepL is not configured. Set DEEPL_API_KEY.")
   }
 
-  const endpoint = process.env.DEEPL_API_URL ?? "https://api-free.deepl.com/v2/translate"
+  const endpoint =
+    process.env.DEEPL_API_URL ?? "https://api-free.deepl.com/v2/translate"
   const body = new URLSearchParams({
     auth_key: apiKey,
-    text: request.text,
-    source_lang: request.sourceLocale === "id" ? "ID" : "EN",
-    target_lang: request.targetLocale === "id" ? "ID" : "EN",
+    source_lang: sourceLocale === "id" ? "ID" : "EN",
+    target_lang: targetLocale === "id" ? "ID" : "EN",
   })
+  for (const request of requests) body.append("text", request.text)
 
   const response = await fetch(endpoint, {
     method: "POST",
@@ -34,12 +55,16 @@ export async function translateText(request: TranslationRequest) {
   }
 
   const payload = (await response.json()) as {
-    translations?: Array<{ text?: unknown }>
+    translations?: Array<{ text?: string }>
   }
-  const translatedText = payload.translations?.[0]?.text
-  if (typeof translatedText !== "string") {
+  const translations = payload.translations?.map((translation) => translation.text)
+  if (
+    !translations ||
+    translations.length !== requests.length ||
+    translations.some((text) => typeof text !== "string")
+  ) {
     throw new Error("DeepL returned an invalid response.")
   }
 
-  return translatedText
+  return translations as string[]
 }

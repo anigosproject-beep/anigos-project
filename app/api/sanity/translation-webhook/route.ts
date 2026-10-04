@@ -1,7 +1,7 @@
 import { createClient } from "@sanity/client"
 import { NextResponse } from "next/server"
 
-import { translateText } from "@/lib/translation-handler"
+import { translateTexts } from "@/lib/translation-handler"
 
 export const runtime = "nodejs"
 
@@ -17,12 +17,12 @@ const careerTextFields = [
 type CareerTranslationDocument = {
   _id: string
   _type: "careerOpening"
-  title?: { id?: string }
-  department?: { id?: string }
-  location?: { id?: string }
-  employmentType?: { id?: string }
-  summary?: { id?: string }
-  responsibilities?: Array<{ _key: string; id?: string }>
+  title?: { id?: string; en?: string }
+  department?: { id?: string; en?: string }
+  location?: { id?: string; en?: string }
+  employmentType?: { id?: string; en?: string }
+  summary?: { id?: string; en?: string }
+  responsibilities?: Array<{ _key: string; id?: string; en?: string }>
 }
 
 type WebhookPayload = {
@@ -103,12 +103,12 @@ export async function POST(request: Request) {
     const document = await client.fetch<CareerTranslationDocument | null>(
       `*[_id == $id && _type == "careerOpening"][0]{
         _id, _type,
-        title { id },
-        department { id },
-        location { id },
-        employmentType { id },
-        summary { id },
-        responsibilities[] { _key, id }
+        title { id, en },
+        department { id, en },
+        location { id, en },
+        employmentType { id, en },
+        summary { id, en },
+        responsibilities[] { _key, id, en }
       }`,
       { id: payload._id }
     )
@@ -117,36 +117,43 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Document not found." }, { status: 404 })
     }
 
-    const updates: Record<string, string> = {}
-    for (const field of careerTextFields) {
-      const source = document[field]?.id?.trim()
-      if (source) {
-        updates[`${field}.en`] = await translateText({
-          text: source,
-          sourceLocale: "id",
-          targetLocale: "en",
-        })
-      }
-    }
+    const pendingTranslations = careerTextFields.flatMap((field) => {
+      const value = document[field]
+      const source = value?.id?.trim()
+      if (!source || value?.en?.trim()) return []
+      return [{ path: `${field}.en`, text: source }]
+    })
 
     for (const responsibility of document.responsibilities ?? []) {
       const source = responsibility.id?.trim()
-      if (source) {
-        const key = responsibility._key.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
-        updates[`responsibilities[_key=="${key}"].en`] = await translateText({
-          text: source,
-          sourceLocale: "id",
-          targetLocale: "en",
-        })
-      }
+      if (!source || responsibility.en?.trim()) continue
+      const key = responsibility._key.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+      pendingTranslations.push({
+        path: `responsibilities[_key=="${key}"].en`,
+        text: source,
+      })
     }
 
-    if (Object.keys(updates).length === 0) {
-      return NextResponse.json({ translatedFields: 0 })
+    if (pendingTranslations.length === 0) {
+      return NextResponse.json({ translatedFields: 0, cached: true })
     }
+
+    const translatedValues = await translateTexts(
+      pendingTranslations.map(({ text }) => ({
+        text,
+        sourceLocale: "id" as const,
+        targetLocale: "en" as const,
+      }))
+    )
+    const updates = Object.fromEntries(
+      pendingTranslations.map(({ path }, index) => [path, translatedValues[index]])
+    )
 
     await client.patch(document._id).set(updates).commit()
-    return NextResponse.json({ translatedFields: Object.keys(updates).length })
+    return NextResponse.json({
+      translatedFields: pendingTranslations.length,
+      cached: false,
+    })
   } catch (error) {
     console.error(
       "Sanity career translation failed.",
