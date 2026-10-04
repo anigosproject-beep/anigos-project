@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
             "uploadedAt": asset->_createdAt
           }
         }
-      }`),
+      }`, { lang }),
     ])
 
   const partners =
