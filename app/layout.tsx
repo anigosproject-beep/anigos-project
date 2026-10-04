@@ -28,10 +28,7 @@ import {
   createPageVisibilityMap,
   isPagePathVisible,
 } from "@/shared/page-visibility-registry"
-
-const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://petroanigos.com"
-).replace(/\/$/, "")
+import { siteUrl } from "@/lib/site-config"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -41,6 +38,10 @@ export const metadata: Metadata = {
   },
   description:
     "PT. Anigos Jaya Perkasa menyediakan solusi distribusi BBM industri yang aman, profesional, dan dapat diandalkan untuk kebutuhan bisnis di Indonesia.",
+  openGraph: {
+    siteName: "PT. Anigos Jaya Perkasa",
+    locale: "id_ID",
+  },
   robots: {
     index: true,
     follow: true,
@@ -136,6 +137,18 @@ export default async function RootLayout({
       )}
     >
       <body style={themeStyle}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "@id": `${siteUrl}/#organization`,
+              name: "PT. Anigos Jaya Perkasa",
+              url: siteUrl,
+            }).replace(/</g, "\\u003c"),
+          }}
+        />
         <ThemeProvider>
           <LocaleProvider initialLocale={initialLocale}>
             <TooltipProvider>

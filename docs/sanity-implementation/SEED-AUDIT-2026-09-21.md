@@ -13,8 +13,10 @@ status: validated
 Belum aman menjalankan seed domain Produk, Armada, dan Kemitraan secara
 otomatis. Seed slot media sudah memiliki identitas stabil dan aman untuk
 idempotent creation, tetapi seed domain canonical belum tersedia. File JSON
-Home yang ada merupakan artefak lama dan tidak boleh dijadikan sumber seed
-tanpa pemetaan ulang ke schema aktif.
+Home lama telah dipensiunkan dari root project pada 2026-10-02 karena tidak
+sesuai schema aktif. Default Studio kini menggunakan dua slide Home Hero dengan
+referensi asset production yang sudah diverifikasi; dokumen Home published
+tidak ditulis ulang.
 
 Tidak ada mutation Content Lake yang dilakukan dalam audit ini.
 
@@ -41,13 +43,13 @@ sehingga belum dapat diterapkan.
 
 ## Inventaris seed
 
-| Artefak | Status | Temuan |
-|---|---|---|
-| `studio-anigos-project/scripts/seed-media-slots.mjs` | Diperbaiki dan tervalidasi | Dry-run menjadi default; mutation hanya dengan `--apply`. Memakai stable ID, memeriksa dokumen existing, menolak conflict, dan dapat menulis laporan JSON. |
-| `scripts/seed-home-page.json` | Stale / tidak siap dipakai | Berisi bentuk Home lama dengan `meta`, `aspiration`, `about`, `achievements`, `resources`, `productShowcase`, dan `partnershipShowcase` yang tidak didefinisikan sebagai field pada schema `homePage` aktif. Hero juga memakai localized object dan CTA yang tidak cocok dengan schema aktif. |
-| `docs/sanity-reverence/workspace-analytics-integration/scripts/seed-home-page.json` | Duplikat stale | Isinya sama secara fungsional dan tidak terhubung ke npm script atau pipeline seed aktif. |
-| `studio-anigos-project/seed/domain-content.manifest.json` | Template menunggu approval | Manifest canonical sudah tersedia sebagai kontrak input, tetapi masih `approvalStatus: pending` dan tidak berisi data bisnis rekaan. |
-| `studio-anigos-project/scripts/seed-domain-content.mjs` | Dry-run tersedia, apply gated | Memvalidasi approval manifest, stable ID, field minimum, existing document, dan conflict sebelum mutation. |
+| Artefak                                                                             | Status                        | Temuan                                                                                                                                                                                            |
+| ----------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `studio-anigos-project/scripts/seed-media-slots.mjs`                                | Diperbaiki dan tervalidasi    | Dry-run menjadi default; mutation hanya dengan `--apply`. Memakai stable ID, memeriksa dokumen existing, menolak conflict, dan dapat menulis laporan JSON.                                        |
+| `scripts/seed-home-page.json`                                                       | Dipensiunkan (2026-10-02)     | File seed lama yang tidak sesuai schema aktif dihapus dari root agar tidak digunakan secara tidak sengaja. Tidak ada pipeline seed Home aktif; edit published Home Hero melalui singleton Studio. |
+| `docs/sanity-reverence/workspace-analytics-integration/scripts/seed-home-page.json` | Arsip stale, reference-only   | Salinan lama tetap berada di arsip dokumen; tidak terhubung ke pipeline dan tidak boleh dijalankan atau dipromosikan ke project aktif.                                                            |
+| `studio-anigos-project/seed/domain-content.manifest.json`                           | Template menunggu approval    | Manifest canonical sudah tersedia sebagai kontrak input, tetapi masih `approvalStatus: pending` dan tidak berisi data bisnis rekaan.                                                              |
+| `studio-anigos-project/scripts/seed-domain-content.mjs`                             | Dry-run tersedia, apply gated | Memvalidasi approval manifest, stable ID, field minimum, existing document, dan conflict sebelum mutation.                                                                                        |
 
 ## Validasi realtime
 
@@ -79,9 +81,9 @@ Apply sengaja ditolak sampai content owner mengisi dan menyetujui manifest.
 
 ## Risiko yang harus ditutup
 
-1. **Schema drift pada Home** — menjalankan `seed-home-page.json` dapat
-   menghasilkan payload yang tidak digunakan oleh query atau tidak sesuai
-   dengan field schema aktif.
+1. **Schema drift pada arsip Home** — salinan lama di `docs/sanity-reverence/`
+   tetap tidak sesuai schema dan tidak boleh dijalankan. Tidak ada seed Home
+   otomatis; perubahan published dilakukan melalui Studio.
 2. **Seed domain belum tersedia** — seed media sudah memiliki dry-run, tetapi
    Produk, Armada, dan Kemitraan masih menunggu input approved.
 3. **Belum ada approved source** — seed domain tanpa content-owner approval
@@ -97,11 +99,11 @@ Apply sengaja ditolak sampai content owner mengisi dan menyetujui manifest.
 
 ### Tahap 1 — Freeze dan klasifikasi seed
 
-- Tandai kedua `seed-home-page.json` sebagai legacy reference-only.
-- Jangan jalankan file tersebut.
+- Pensiunkan seed aktif lama yang memakai schema berbeda.
+- Pertahankan salinan arsip sebagai reference-only; jangan jalankan.
 - Bekukan schema canonical dan query yang menjadi kontrak seed.
-- Tetapkan keputusan apakah Home editorial akan diisi melalui Studio manual
-  atau dibuat seed baru yang mengikuti schema aktif.
+- Kelola Home editorial lewat singleton Studio; nilai awal memakai asset
+  production terverifikasi dan tidak menulis data pada deployment.
 
 **Gate:** tidak ada seed input yang memakai field yang tidak ada pada schema aktif.
 
@@ -146,7 +148,7 @@ terverifikasi; tidak ada placeholder atau mock partner.
   mengikuti keputusan approval yang eksplisit.
 
 **Gate:** dry-run domain menunjukkan seluruh item `ready`, conflict `0`,
-  missing asset `0`, dan mutation yang akan dilakukan dapat diaudit.
+missing asset `0`, dan mutation yang akan dilakukan dapat diaudit.
 
 ### Tahap 5 — Apply terkontrol dan validasi
 

@@ -3,6 +3,8 @@ import {
   sanityClient,
   sanityImageUrl,
 } from "@/lib/sanity-client"
+import { cookies } from "next/headers"
+import type { Locale } from "@/lib/i18n"
 import type { NewsroomArticle, NewsroomCategory } from "@/lib/newsroom-data"
 
 type SanityArticle = {
@@ -28,31 +30,49 @@ type SanityArticle = {
   }>
 }
 
+const localized = (field: string) => `select(
+  defined(${field}.id) => select(
+    defined(${field}[$lang]) && ${field}[$lang] != "" => ${field}[$lang],
+    ${field}.id
+  ),
+  ${field}
+)`
+
 const newsroomQuery = `{
-  "categories": *[_type == "newsroomCategory"] | order(name asc) {
+  "categories": *[_type == "newsroomCategory"] | order(name.id asc) {
     "slug": slug.current,
-    name,
-    description,
+    "name": ${localized("name")},
+    "description": ${localized("description")},
     "subcategories": coalesce(subcategories[] {
       "slug": slug.current,
-      name
+      "name": ${localized("name")}
     }, [])
   },
   "articles": *[
     _type in ["newsroomArticle", "article"] &&
     (_type != "article" || isPublished != false)
   ] | order(date desc, _createdAt desc) {
-    _id, title, "slug": slug.current, excerpt,
+    _id,
+    "title": ${localized("title")},
+    "slug": slug.current,
+    "excerpt": ${localized("excerpt")},
     "category": select(
-      defined(category->) => category->{"slug": slug.current, name},
+      defined(category->) => category->{
+        "slug": slug.current,
+        "name": ${localized("name")}
+      },
       defined(category) => {"slug": category, "name": category}
     ),
-    subcategory, date, readTime, image,
+    subcategory, date,
+    "readTime": ${localized("readTime")},
+    image,
     "video": video.asset->url, videoPoster, featured,
     content[]{
       _type,
-      text,
-      children[]{text}
+      "text": ${localized("text")},
+      children[]{
+        "text": ${localized("text")}
+      }
     }
   }
 }`
@@ -70,7 +90,13 @@ const getArticleParagraphs = (content: SanityArticle["content"]): string[] =>
     })
     .filter(Boolean)
 
-export async function getSanityNewsroom(options?: { useDraftMode?: boolean }) {
+export async function getSanityNewsroom(options?: {
+  useDraftMode?: boolean
+  locale?: Locale
+}) {
+  const locale =
+    options?.locale ??
+    ((await cookies()).get("locale")?.value === "en" ? "en" : "id")
   const client =
     options?.useDraftMode === false
       ? sanityClient
@@ -78,7 +104,7 @@ export async function getSanityNewsroom(options?: { useDraftMode?: boolean }) {
   const data = await client.fetch<{
     categories: NewsroomCategory[]
     articles: SanityArticle[]
-  }>(newsroomQuery)
+  }>(newsroomQuery, { lang: locale })
 
   const categories = data.categories
 
@@ -91,7 +117,7 @@ export async function getSanityNewsroom(options?: { useDraftMode?: boolean }) {
       category: article.category!.slug!,
       subcategory: article.subcategory ?? "",
       date: article.date,
-      readTime: article.readTime ?? "Baca",
+      readTime: article.readTime ?? (locale === "en" ? "Read" : "Baca"),
       image:
         sanityImageUrl(article.image) ??
         "/images/articles/article-operation.svg",
@@ -101,5 +127,5 @@ export async function getSanityNewsroom(options?: { useDraftMode?: boolean }) {
       content: getArticleParagraphs(article.content),
     }))
 
-  return { categories, articles }
+  return { categories, articles, locale }
 }

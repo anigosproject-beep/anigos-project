@@ -10,6 +10,8 @@ import {
 import {
   maxHomeHeroVideoBytes,
   maxMarineFuelVideoBytes,
+  recommendedHomeHeroVideoBytes,
+  recommendedMarineFuelVideoBytes,
 } from "../../../shared/sanity-content-contracts"
 
 type Dimensions = { width: number; height: number }
@@ -170,15 +172,22 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
   const assetUrl = loadedVideo?.assetId === assetId ? loadedVideo.url : null
   const dimensions =
     loadedDimensions?.assetId === assetId ? loadedDimensions.dimensions : null
-  const isMarineFuelVideo = useFormValue([
-    ...props.path.slice(0, -1),
-    "slotId",
-  ])
-  const videoLimit =
-    typeof isMarineFuelVideo === "string" &&
-    isMarineFuelVideo.endsWith("-marine-fuel-video")
-      ? maxMarineFuelVideoBytes
-      : maxHomeHeroVideoBytes
+  const slotId = useFormValue([...props.path.slice(0, -1), "slotId"])
+  const isMarineFuelVideo =
+    typeof slotId === "string" && slotId.endsWith("-marine-fuel-video")
+  const isHomeHeroVideo = props.path.some((segment) => segment === "heroSlides")
+  const videoLimit = isMarineFuelVideo
+    ? maxMarineFuelVideoBytes
+    : maxHomeHeroVideoBytes
+  const recommendedVideoSize = isMarineFuelVideo
+    ? recommendedMarineFuelVideoBytes
+    : recommendedHomeHeroVideoBytes
+  const exceedsRecommendedSize =
+    (isHomeHeroVideo || isMarineFuelVideo) &&
+    typeof loadedVideo?.size === "number" &&
+    loadedVideo.size > recommendedVideoSize
+  const exceedsPlaybackLimit =
+    typeof loadedVideo?.size === "number" && loadedVideo.size > videoLimit
 
   useEffect(() => {
     if (!assetId) return
@@ -233,13 +242,20 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
           }}
         />
       ) : null}
-      {      typeof loadedVideo?.size === "number" &&
-      loadedVideo.assetId === assetId &&
-      loadedVideo.size > videoLimit ? (
+      {loadedVideo?.assetId === assetId && exceedsPlaybackLimit ? (
         <p role="status" style={noticeStyle}>
-          File video {formatFileSize(loadedVideo.size)} melebihi rekomendasi{" "}
-          {formatFileSize(videoLimit)}. Pemutar memuat metadata dan memainkan
-          video hanya setelah pengguna menekan tombol putar.
+          File video {formatFileSize(loadedVideo.size)} melebihi batas pemutaran{" "}
+          {formatFileSize(videoLimit)}.{" "}
+          {isMarineFuelVideo
+            ? "Slot Marine Fuel tidak akan memuat video."
+            : "Home Hero akan menampilkan gambar fallback."}
+        </p>
+      ) : loadedVideo?.assetId === assetId && exceedsRecommendedSize ? (
+        <p role="status" style={noticeStyle}>
+          File video {formatFileSize(loadedVideo.size)} dapat diputar, tetapi
+          melebihi ukuran yang direkomendasikan{" "}
+          {formatFileSize(recommendedVideoSize)}. Kompres video agar pemutaran
+          awal lebih cepat.
         </p>
       ) : null}
       <RatioNotice

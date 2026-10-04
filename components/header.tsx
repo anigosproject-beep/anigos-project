@@ -16,7 +16,7 @@ import {
 import { useLocale } from "@/components/locale-provider"
 import { useTheme } from "@/components/theme-provider"
 import { useHeaderAppearance } from "@/components/header-appearance-provider"
-import { translate, type TranslationKey } from "@/lib/i18n"
+import { translate } from "@/lib/i18n"
 import { usePageVisibility } from "@/components/page-visibility-provider"
 import { MotionButtonLink, Button } from "@/components/ui/button"
 import {
@@ -45,33 +45,6 @@ function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
   const { locale } = useLocale()
   const { visibility } = usePageVisibility()
   const navigationItems = getVisibleNavigationItems(visibility)
-  const navigationLabels: Record<string, TranslationKey> = {
-    Beranda: "home",
-    "Tentang Kami": "about",
-    Produk: "products",
-    Jangkauan: "reach",
-    Artikel: "articles",
-    Keberlanjutan: "sustainability",
-  }
-  const childLabels: Record<string, TranslationKey> = {
-    "Profil Perusahaan": "companyProfile",
-    "Harapan & Cita-Cita": "hopes",
-    "Struktur Perusahaan": "structure",
-    Client: "clientNav",
-    Legalitas: "legality",
-    Karir: "career",
-    "Kenali Produk": "productsOverview",
-    Penawaran: "offer",
-    Layanan: "services",
-    "Anigos News": "news",
-    Publikasi: "publications",
-    "Landasan Informasi Publik": "publicInformation",
-    "Energi Berkelanjutan": "csr",
-    CSR: "csr",
-    "Keselamatan Operasional": "safety",
-    "Kemitraan & Tata Kelola": "governance",
-    "Pencapaian Perusahaan": "achievements",
-  }
 
   return (
     <NavigationMenu className="hidden md:flex">
@@ -83,11 +56,11 @@ function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
                 <NavigationMenuTrigger
                   className={
                     isSolid
-                      ? "text-foreground hover:bg-muted focus:bg-muted active:bg-muted hover:text-foreground data-popup-open:!bg-muted data-popup-open:!text-foreground data-open:!bg-muted data-open:!text-foreground"
-                      : "text-white hover:bg-white/10 focus:bg-white/10 active:bg-white/10 hover:text-white data-popup-open:!bg-white/10 data-popup-open:!text-white data-open:!bg-white/10 data-open:!text-white"
+                      ? "text-foreground hover:bg-muted hover:text-foreground focus:bg-muted active:bg-muted data-popup-open:!bg-muted data-popup-open:!text-foreground data-open:!bg-muted data-open:!text-foreground"
+                      : "text-white hover:bg-white/10 hover:text-white focus:bg-white/10 active:bg-white/10 data-popup-open:!bg-white/10 data-popup-open:!text-white data-open:!bg-white/10 data-open:!text-white"
                   }
                 >
-                  {translate(locale, navigationLabels[item.label] ?? "home")}
+                  {translate(locale, item.labelKey)}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid w-[420px] gap-1 p-2 text-foreground">
@@ -105,7 +78,7 @@ function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
                             className="flex-col items-start text-foreground hover:text-foreground focus:text-foreground"
                           >
                             <span className="font-medium">
-                              {translate(locale, childLabels[child.label] ?? "home")}
+                              {translate(locale, child.labelKey)}
                             </span>
                             {descriptionKey ? (
                               <span className="text-xs text-muted-foreground">
@@ -124,11 +97,11 @@ function DesktopNavigation({ isSolid }: { isSolid: boolean }) {
                 href={item.href}
                 className={
                   isSolid
-                    ? "text-foreground hover:bg-muted focus:bg-muted active:bg-muted hover:text-foreground data-[active=true]:bg-muted/50 data-[active=true]:focus:bg-muted data-[active=true]:text-foreground"
-                    : "text-white hover:bg-white/10 focus:bg-white/10 active:bg-white/10 hover:text-white data-[active=true]:bg-transparent data-[active=true]:focus:bg-white/10"
+                    ? "text-foreground hover:bg-muted hover:text-foreground focus:bg-muted active:bg-muted data-[active=true]:bg-muted/50 data-[active=true]:text-foreground data-[active=true]:focus:bg-muted"
+                    : "text-white hover:bg-white/10 hover:text-white focus:bg-white/10 active:bg-white/10 data-[active=true]:bg-transparent data-[active=true]:focus:bg-white/10"
                 }
               >
-                {translate(locale, navigationLabels[item.label] ?? "home")}
+                {translate(locale, item.labelKey)}
               </NavigationMenuLink>
             )}
           </NavigationMenuItem>
@@ -147,34 +120,6 @@ function MobileNavigationItem({
   onNavigate: () => void
   locale: "id" | "en"
 }) {
-  const navigationLabels: Record<string, TranslationKey> = {
-    Beranda: "home",
-    "Tentang Kami": "about",
-    Produk: "products",
-    Jangkauan: "reach",
-    Artikel: "articles",
-    Keberlanjutan: "sustainability",
-  }
-  const childLabels: Record<string, TranslationKey> = {
-    "Profil Perusahaan": "companyProfile",
-    "Harapan & Cita-Cita": "hopes",
-    "Struktur Perusahaan": "structure",
-    Client: "clientNav",
-    Legalitas: "legality",
-    Karir: "career",
-    "Kenali Produk": "productsOverview",
-    Penawaran: "offer",
-    Layanan: "services",
-    "Anigos News": "news",
-    Publikasi: "publications",
-    "Landasan Informasi Publik": "publicInformation",
-    "Energi Berkelanjutan": "csr",
-    CSR: "csr",
-    "Keselamatan Operasional": "safety",
-    "Kemitraan & Tata Kelola": "governance",
-    "Pencapaian Perusahaan": "achievements",
-  }
-
   if (!item.children) {
     return (
       <Link
@@ -182,7 +127,7 @@ function MobileNavigationItem({
         className="rounded-xl px-3 py-3 text-sm font-medium hover:bg-muted"
         onClick={onNavigate}
       >
-        {translate(locale, navigationLabels[item.label] ?? "home")}
+        {translate(locale, item.labelKey)}
       </Link>
     )
   }
@@ -190,7 +135,7 @@ function MobileNavigationItem({
   return (
     <Collapsible className="rounded-2xl border border-border">
       <CollapsibleTrigger className="group flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm font-semibold transition-colors hover:bg-muted">
-        {translate(locale, navigationLabels[item.label] ?? "home")}
+        {translate(locale, item.labelKey)}
         <ChevronDown className="size-4 text-muted-foreground transition-transform duration-200 group-data-panel-open:rotate-180" />
       </CollapsibleTrigger>
       <CollapsibleContent className="px-2 pb-2">
@@ -202,7 +147,7 @@ function MobileNavigationItem({
               className="rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               onClick={onNavigate}
             >
-              {translate(locale, childLabels[child.label] ?? "home")}
+              {translate(locale, child.labelKey)}
             </Link>
           ))}
         </div>
@@ -228,8 +173,7 @@ export function Header() {
     "/artikel/landasan-informasi-publik",
   ])
   const isArticleTemplate =
-    /^\/artikel\/[^/]+$/.test(pathname) &&
-    !newsroomLandingRoutes.has(pathname)
+    /^\/artikel\/[^/]+$/.test(pathname) && !newsroomLandingRoutes.has(pathname)
   const isCategoryGalleryPage = pathname === "/artikel/publikasi/kategori"
   const isSolid =
     isScrolled || forceSolid || isArticleTemplate || isCategoryGalleryPage
@@ -238,7 +182,10 @@ export function Header() {
     language: translate(locale, "language"),
     mobileMenu: translate(locale, "mobileMenu"),
     mobileDescription: translate(locale, "mobileDescription"),
-    theme: theme === "dark" ? translate(locale, "switchToLight") : translate(locale, "switchToDark"),
+    theme:
+      theme === "dark"
+        ? translate(locale, "switchToLight")
+        : translate(locale, "switchToDark"),
   }
 
   useEffect(() => {
@@ -305,24 +252,28 @@ export function Header() {
       }
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-6 lg:px-8">
-        {visibility.home !== false ? <Link
-          href="/"
-          className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background"
-        >
-          <Image
-            src={
-              isSolid
-                ? "/logo/petro%20anigos.svg"
-                : "/logo/petro%20anigos%20white.svg"
-            }
-            alt="PT. Anigos Jaya Perkasa"
-            width={44}
-            height={44}
-            priority
-            className="h-11 w-11 object-contain"
-          />
-          <span className="text-lg font-semibold tracking-tight">PT. Anigos Jaya Perkasa</span>
-        </Link> : (
+        {visibility.home !== false ? (
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-3 rounded-md focus-visible:ring-2 focus-visible:ring-background focus-visible:outline-none"
+          >
+            <Image
+              src={
+                isSolid
+                  ? "/logo/petro%20anigos.svg"
+                  : "/logo/petro%20anigos%20white.svg"
+              }
+              alt="PT. Anigos Jaya Perkasa"
+              width={44}
+              height={44}
+              priority
+              className="h-11 w-11 object-contain"
+            />
+            <span className="text-lg font-semibold tracking-tight">
+              PT. Anigos Jaya Perkasa
+            </span>
+          </Link>
+        ) : (
           <div className="flex shrink-0 items-center gap-3">
             <Image
               src={
@@ -336,7 +287,9 @@ export function Header() {
               priority
               className="h-11 w-11 object-contain"
             />
-            <span className="text-lg font-semibold tracking-tight">PT. Anigos Jaya Perkasa</span>
+            <span className="text-lg font-semibold tracking-tight">
+              PT. Anigos Jaya Perkasa
+            </span>
           </div>
         )}
 
@@ -347,7 +300,11 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className={isSolid ? "text-foreground hover:bg-muted" : "text-white hover:bg-white/10"}
+              className={
+                isSolid
+                  ? "text-foreground hover:bg-muted"
+                  : "text-white hover:bg-white/10"
+              }
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label={content.theme}
               title={content.theme}
@@ -360,16 +317,18 @@ export function Header() {
               label={content.language}
               variant={isSolid ? "active" : "idle"}
             />
-            {isPathVisible("/hubungi-kami") && <MotionButtonLink
-              href="/hubungi-kami"
-              className={
-                isSolid
-                  ? "bg-base-color text-base-color-foreground hover:bg-base-color/90 hover:text-base-color-foreground focus-visible:text-base-color-foreground"
-                  : "bg-white text-black hover:bg-white/90 hover:text-black focus-visible:bg-white focus-visible:text-black active:bg-white/80 active:text-black"
-              }
-            >
-              {content.contact}
-            </MotionButtonLink>}
+            {isPathVisible("/hubungi-kami") && (
+              <MotionButtonLink
+                href="/hubungi-kami"
+                className={
+                  isSolid
+                    ? "bg-base-color text-base-color-foreground hover:bg-base-color/90 hover:text-base-color-foreground focus-visible:text-base-color-foreground"
+                    : "bg-white text-black hover:bg-white/90 hover:text-black focus-visible:bg-white focus-visible:text-black active:bg-white/80 active:text-black"
+                }
+              >
+                {content.contact}
+              </MotionButtonLink>
+            )}
           </div>
         </div>
 
@@ -393,9 +352,7 @@ export function Header() {
           <SheetContent side="right" className="w-[min(22rem,90vw)]">
             <SheetHeader>
               <SheetTitle>{content.mobileMenu}</SheetTitle>
-              <SheetDescription>
-                {content.mobileDescription}
-              </SheetDescription>
+              <SheetDescription>{content.mobileDescription}</SheetDescription>
             </SheetHeader>
             <nav
               className="flex flex-col gap-2 overflow-y-auto px-6 pb-6"
@@ -409,12 +366,11 @@ export function Header() {
                   onNavigate={() => undefined}
                 />
               ))}
-              {isPathVisible("/hubungi-kami") && <MotionButtonLink
-                href="/hubungi-kami"
-                className="mt-3 w-full"
-              >
-                {content.contact}
-              </MotionButtonLink>}
+              {isPathVisible("/hubungi-kami") && (
+                <MotionButtonLink href="/hubungi-kami" className="mt-3 w-full">
+                  {content.contact}
+                </MotionButtonLink>
+              )}
               <HeaderLanguageSelect
                 locale={locale}
                 setLocale={setLocale}
@@ -426,7 +382,11 @@ export function Header() {
                 className="mt-2 w-full justify-center"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               >
-                {theme === "dark" ? <Sun data-icon="inline-start" /> : <Moon data-icon="inline-start" />}
+                {theme === "dark" ? (
+                  <Sun data-icon="inline-start" />
+                ) : (
+                  <Moon data-icon="inline-start" />
+                )}
                 {content.theme}
               </Button>
             </nav>

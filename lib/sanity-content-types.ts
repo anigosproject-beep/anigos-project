@@ -28,6 +28,9 @@ export type HomeContent = {
     section?: string
     slot?: string
     slotId?: string
+    linkedPagePath?: string
+    cardTitle?: string
+    cardDescription?: string
     name?: string
     description?: string
     image?: { url?: string; alt?: string }

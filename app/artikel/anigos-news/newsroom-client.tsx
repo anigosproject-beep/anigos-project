@@ -31,6 +31,8 @@ function NewsroomArticleRow({
   subcategoryLabel?: string
   compact?: boolean
 }) {
+  const { locale } = useLocale()
+
   return (
     <Link
       href={`/artikel/${article.slug}`}
@@ -101,7 +103,7 @@ function NewsroomArticleRow({
             compact ? "mt-1.5 text-[9px]" : "mt-3 text-[10px] sm:text-xs"
           }`}
         >
-          {formatArticleDate(article.date)} · {article.readTime}
+          {formatArticleDate(article.date, locale)} · {article.readTime}
         </p>
       </div>
     </Link>
@@ -208,7 +210,12 @@ function AnigosNewsContent({ articles, categories }: NewsroomClientProps) {
         description={translate(locale, "newsroomDescription")}
         image="/images/page-hero/tentang-kami.webp"
         pageKey="anigos-news"
-        breadcrumbs={[{ label: translate(locale, "articles"), href: "/artikel/anigos-news" }]}
+        breadcrumbs={[
+          {
+            label: translate(locale, "articles"),
+            href: "/artikel/anigos-news",
+          },
+        ]}
       />
 
       <section
@@ -280,7 +287,8 @@ function AnigosNewsContent({ articles, categories }: NewsroomClientProps) {
               title={translate(locale, "newsroomLatestTitle")}
             />
             <Text variant="small" className="hidden sm:block">
-              {filteredArticles.length} {translate(locale, "newsroomArticleCount")}
+              {filteredArticles.length}{" "}
+              {translate(locale, "newsroomArticleCount")}
             </Text>
           </div>
           {latestArticles.featuredArticle ||
@@ -312,7 +320,10 @@ function AnigosNewsContent({ articles, categories }: NewsroomClientProps) {
                         {latestArticles.featuredArticle.excerpt}
                       </Text>
                       <p className="mt-5 text-xs text-muted-foreground">
-                        {formatArticleDate(latestArticles.featuredArticle.date)}{" "}
+                        {formatArticleDate(
+                          latestArticles.featuredArticle.date,
+                          locale
+                        )}{" "}
                         · {latestArticles.featuredArticle.readTime}
                       </p>
                     </div>
@@ -364,7 +375,9 @@ function AnigosNewsContent({ articles, categories }: NewsroomClientProps) {
             </>
           ) : (
             <div className="mt-10 rounded-3xl border border-dashed border-border bg-background p-10 text-center">
-              <p className="font-medium">{translate(locale, "newsroomEmpty")}</p>
+              <p className="font-medium">
+                {translate(locale, "newsroomEmpty")}
+              </p>
               <Text variant="small" className="mt-2">
                 {translate(locale, "newsroomSearchHint")}
               </Text>
@@ -385,7 +398,8 @@ function AnigosNewsContent({ articles, categories }: NewsroomClientProps) {
               description={translate(locale, "newsroomCategoryDescription")}
             />
             <Text variant="small" className="shrink-0">
-              {categorySegments.length} {translate(locale, "newsroomActiveSegments")}
+              {categorySegments.length}{" "}
+              {translate(locale, "newsroomActiveSegments")}
             </Text>
           </div>
 
@@ -413,7 +427,8 @@ function AnigosNewsContent({ articles, categories }: NewsroomClientProps) {
                           </h2>
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          {category.articles.length} {translate(locale, "newsroomArticleCount")}
+                          {category.articles.length}{" "}
+                          {translate(locale, "newsroomArticleCount")}
                         </span>
                       </div>
 

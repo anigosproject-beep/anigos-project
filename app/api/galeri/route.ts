@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
   const [partnershipPage, team, coveragePage, fleetOptions, products, mediaSlots] =
     await Promise.all([
       getSanityPartnershipPage(lang),
-      getSanityTeam(),
+      getSanityTeam(lang),
       client.fetch<CoveragePageResponse | null>(JANGKAUAN_QUERY, { lang }),
       client.fetch<SanityFleetOption[]>(FLEET_OPTIONS_QUERY, { lang }),
       client.fetch<SanityProduct[]>(PRODUCT_QUERY, { lang }),
@@ -89,10 +89,10 @@ export async function GET(request: NextRequest) {
         coverageSlots[]{
           slotId,
           sectionName,
-          flipTitle,
+          "flipTitle": coalesce(flipTitle[$lang], flipTitle.id, flipTitle),
           "image": image{
             "url": asset->url,
-            "alt": alt,
+            "alt": coalesce(alt[$lang], alt.id, alt),
             "width": asset->metadata.dimensions.width,
             "height": asset->metadata.dimensions.height,
             "uploadedAt": asset->_createdAt
@@ -101,10 +101,10 @@ export async function GET(request: NextRequest) {
         productsSlots[]{
           slotId,
           sectionName,
-          flipTitle,
+          "flipTitle": coalesce(flipTitle[$lang], flipTitle.id, flipTitle),
           "image": image{
             "url": asset->url,
-            "alt": alt,
+            "alt": coalesce(alt[$lang], alt.id, alt),
             "width": asset->metadata.dimensions.width,
             "height": asset->metadata.dimensions.height,
             "uploadedAt": asset->_createdAt
@@ -127,12 +127,15 @@ export async function GET(request: NextRequest) {
       const profilePhoto = toGalleryEntry({
         image: {
           url: member.image,
-          alt: `Foto profil ${member.name}`,
+          alt: member.imageAlt || `Foto profil ${member.name}`,
           uploadedAt: member.imageUploadedAt,
         },
         category,
         sourceName: `${member.name} · ${member.role}`,
-        caption: `Foto profil ${member.name}`,
+        caption:
+          lang === "en"
+            ? `Profile photo of ${member.name}`
+            : `Foto profil ${member.name}`,
         storyBody: member.description,
       })
       if (profilePhoto) entries.push(profilePhoto)
@@ -157,11 +160,12 @@ export async function GET(request: NextRequest) {
   for (const area of coveragePage?.serviceAreas?.areas ?? []) {
     if (area.active === false) continue
     const location = [area.city, area.province].filter(Boolean).join(", ")
+    const fallbackAreaLabel = lang === "en" ? "Service area" : "Area layanan"
     const entry = toGalleryEntry({
       image: area.image,
       category: "coverage",
-      sourceName: location || "Jangkauan layanan",
-      caption: location || area.image?.alt || "Area layanan",
+      sourceName: location || fallbackAreaLabel,
+      caption: location || area.image?.alt || fallbackAreaLabel,
       storyBody: area.body ?? "",
     })
     if (entry) entries.push(entry)
@@ -171,8 +175,10 @@ export async function GET(request: NextRequest) {
     const entry = toGalleryEntry({
       image: slot.image,
       category: "coverage",
-      sourceName: "Halaman Jangkauan",
-      caption: slot.flipTitle || slot.sectionName || "Dokumentasi jangkauan",
+      sourceName: lang === "en" ? "Coverage page" : "Halaman Jangkauan",
+      caption:
+        slot.flipTitle ||
+        (lang === "en" ? "Coverage documentation" : "Dokumentasi jangkauan"),
     })
     if (entry) entries.push(entry)
   }
@@ -181,8 +187,13 @@ export async function GET(request: NextRequest) {
     const entry = toGalleryEntry({
       image: slot.image,
       category: "services",
-      sourceName: "Halaman Produk & Layanan",
-      caption: slot.flipTitle || slot.sectionName || "Dokumentasi layanan",
+      sourceName:
+        lang === "en" ? "Products & services page" : "Halaman Produk & Layanan",
+      caption:
+        slot.flipTitle ||
+        (lang === "en"
+          ? "Products & services documentation"
+          : slot.sectionName || "Dokumentasi layanan"),
     })
     if (entry) entries.push(entry)
   }

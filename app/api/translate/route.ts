@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 
-import { translateText, type TranslationRequest } from "@/lib/translation-handler"
+import {
+  translateText,
+  type TranslationRequest,
+} from "@/lib/translation-handler"
 
 const maxBodyBytes = 16 * 1024
 const maxTextLength = 5000
@@ -8,11 +11,17 @@ const maxTextLength = 5000
 export async function POST(request: Request) {
   const contentLength = Number(request.headers.get("content-length") ?? 0)
   if (contentLength > maxBodyBytes) {
-    return NextResponse.json({ error: "Translation request is too large." }, { status: 413 })
+    return NextResponse.json(
+      { error: "Translation request is too large." },
+      { status: 413 }
+    )
   }
 
   if (!request.headers.get("content-type")?.startsWith("application/json")) {
-    return NextResponse.json({ error: "Content-Type must be application/json." }, { status: 415 })
+    return NextResponse.json(
+      { error: "Content-Type must be application/json." },
+      { status: 415 }
+    )
   }
 
   let body: Partial<TranslationRequest>
@@ -29,14 +38,28 @@ export async function POST(request: Request) {
     (body.sourceLocale !== "id" && body.sourceLocale !== "en") ||
     (body.targetLocale !== "id" && body.targetLocale !== "en")
   ) {
-    return NextResponse.json({ error: "Invalid translation request." }, { status: 400 })
+    return NextResponse.json(
+      { error: "Invalid translation request." },
+      { status: 400 }
+    )
   }
 
   try {
-    const translatedText = await translateText(body as TranslationRequest)
+    const translationRequest: TranslationRequest = {
+      text: body.text,
+      sourceLocale: body.sourceLocale,
+      targetLocale: body.targetLocale,
+    }
+    const translatedText = await translateText(translationRequest)
     return NextResponse.json({ translatedText })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Translation failed."
-    return NextResponse.json({ error: message }, { status: 502 })
+    console.error(
+      "Translation request failed.",
+      error instanceof Error ? error.message : "Unknown error"
+    )
+    return NextResponse.json(
+      { error: "Translation is temporarily unavailable." },
+      { status: 502 }
+    )
   }
 }

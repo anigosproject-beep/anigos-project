@@ -12,7 +12,11 @@ import { MotionButtonLink } from "@/components/ui/button"
 import { translate } from "@/lib/i18n"
 import { maxMarineFuelVideoBytes } from "@/shared/sanity-content-contracts"
 
-export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "product"}) {
+export function MarineFuelShowcase({
+  variant = "home",
+}: {
+  variant?: "home" | "product"
+}) {
   const { locale } = useLocale()
   const [media, setMedia] = useState<{
     variant: "home" | "product"
@@ -29,7 +33,9 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`Marine Fuel media request failed: ${response.status}`)
+          throw new Error(
+            `Marine Fuel media request failed: ${response.status}`
+          )
         }
         return response.json() as Promise<{
           variant: "home" | "product"
@@ -46,19 +52,20 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
 
     return () => controller.abort()
   }, [variant])
-  const copyKeys = variant === "product"
-    ? {
-        title: "productMarineFuelTitle",
-        description: "productMarineFuelDescription",
-        productSupport: "productMarineFuelProductSupport",
-        distribution: "productMarineFuelDistribution",
-      } as const
-    : {
-        title: "marineFuelTitle",
-        description: "marineFuelDescription",
-        productSupport: "marineFuelProductSupport",
-        distribution: "marineFuelFlexibleDistribution",
-      } as const
+  const copyKeys =
+    variant === "product"
+      ? ({
+          title: "productMarineFuelTitle",
+          description: "productMarineFuelDescription",
+          productSupport: "productMarineFuelProductSupport",
+          distribution: "productMarineFuelDistribution",
+        } as const)
+      : ({
+          title: "marineFuelTitle",
+          description: "marineFuelDescription",
+          productSupport: "marineFuelProductSupport",
+          distribution: "marineFuelFlexibleDistribution",
+        } as const)
   const backgroundImage =
     media?.variant === variant ? media.backgroundImage : undefined
   const backgroundVideo =
@@ -71,7 +78,10 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
       className="relative isolate min-h-[100svh] overflow-hidden border-b border-border bg-slate-950 text-white lg:h-[100svh] lg:max-h-[100svh]"
       aria-labelledby="marine-fuel-title"
     >
-      <div aria-hidden="true" className="absolute inset-0 -z-20 overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-20 overflow-hidden"
+      >
         <Image
           src={backgroundImage ?? "/images/distribution/fuel-distribution.png"}
           alt=""
@@ -139,7 +149,9 @@ export function MarineFuelShowcase({ variant = "home" }: {variant?: "home" | "pr
           {backgroundVideo ? (
             <ContentVideoPlayer
               src={backgroundVideo}
+              poster={backgroundImage}
               title={translate(locale, "marineFuelVideoPlaceholder")}
+              deferUntilVisible
               loop
               className="w-full max-w-xl border border-white/20 shadow-2xl"
             />

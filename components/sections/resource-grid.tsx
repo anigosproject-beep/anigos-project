@@ -6,7 +6,10 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "cn"
 import { Reveal } from "@/components/motion"
-import { SectionContainer, SectionShell } from "@/components/layout/section-shell"
+import {
+  SectionContainer,
+  SectionShell,
+} from "@/components/layout/section-shell"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 import { useHomeContent } from "@/components/home-content-provider"
@@ -39,44 +42,74 @@ export function ResourceGrid() {
   const { locale } = useLocale()
   const home = useHomeContent()
   const publicationMedia = home?.mediaSlots?.find(
-    (media) => media?.page === "home" && media.section === "publikasi" && media.slot === "thumbnail",
+    (media) =>
+      media?.page === "home" &&
+      media.section === "publikasi" &&
+      media.slot === "thumbnail"
   )?.image?.url
   const sustainabilityMedia = {
     energi: home?.mediaSlots?.find(
-      (media) => media?.page === "home" && media.section === "keberlanjutan" && media.slot === "image-energi",
+      (media) =>
+        media?.page === "home" &&
+        media.section === "keberlanjutan" &&
+        media.slot === "image-energi"
     )?.image?.url,
     keselamatan: home?.mediaSlots?.find(
-      (media) => media?.page === "home" && media.section === "keberlanjutan" && media.slot === "image-keselamatan",
+      (media) =>
+        media?.page === "home" &&
+        media.section === "keberlanjutan" &&
+        media.slot === "image-keselamatan"
     )?.image?.url,
   }
   const configuredCards = home?.resources?.cards?.filter(
-    (card): card is NonNullable<typeof card> => Boolean(card?.title && card.link?.href),
+    (card): card is NonNullable<typeof card> =>
+      Boolean(card?.title && card.link?.href)
   )
+  const getShortcutMedia = (index: number) =>
+    home?.mediaSlots?.find(
+      (media) => media?.slotId === `home-resource-card-${index + 1}`
+    )
   const cards = configuredCards?.length
-    ? configuredCards.map((card, index) => ({
-        title: card.title ?? "",
-        description: card.description ?? "",
-        href: card.link?.href ?? "#",
-        image:
-          card.thumbnail?.url ??
-          (index === 0 ? sustainabilityMedia.energi : undefined) ??
-          (index === 1 ? sustainabilityMedia.keselamatan : undefined) ??
-          (index === 2 ? publicationMedia : undefined) ??
-          resources[index % resources.length].image,
-        alt: card.title ?? "Resource PT. Anigos Jaya Perkasa",
-      }))
-    : resources.map((resource, index) => ({
-        title: translate(locale, resource.title),
-        description: translate(locale, resource.description),
-        href: resource.href,
-        image:
-          index === 0
-            ? sustainabilityMedia.energi ?? resource.image
-            : index === 1
-              ? sustainabilityMedia.keselamatan ?? resource.image
-              : publicationMedia ?? resource.image,
-        alt: resource.alt,
-      }))
+    ? configuredCards.map((card, index) => {
+        const shortcut = getShortcutMedia(index)
+        return {
+          title: shortcut?.cardTitle ?? card.title ?? "",
+          description: shortcut?.cardDescription ?? card.description ?? "",
+          href: shortcut?.linkedPagePath ?? card.link?.href ?? "#",
+          image:
+            shortcut?.image?.url ??
+            card.thumbnail?.url ??
+            (index === 0
+              ? sustainabilityMedia.energi
+              : index === 1
+                ? sustainabilityMedia.keselamatan
+                : publicationMedia) ??
+            resources[index % resources.length].image,
+          alt:
+            shortcut?.image?.alt ??
+            card.title ??
+            resources[index % resources.length].alt,
+        }
+      })
+    : resources.map((resource, index) => {
+        const shortcut = getShortcutMedia(index)
+        return {
+          title: shortcut?.cardTitle ?? translate(locale, resource.title),
+          description:
+            shortcut?.cardDescription ??
+            translate(locale, resource.description),
+          href: shortcut?.linkedPagePath ?? resource.href,
+          image:
+            shortcut?.image?.url ??
+            (index === 0
+              ? sustainabilityMedia.energi
+              : index === 1
+                ? sustainabilityMedia.keselamatan
+                : publicationMedia) ??
+            resource.image,
+          alt: shortcut?.image?.alt ?? resource.alt,
+        }
+      })
 
   return (
     <SectionShell className="bg-background py-24 lg:py-32">
@@ -95,7 +128,11 @@ export function ResourceGrid() {
             </div>
           ) : null}
           {cards.map((resource, index) => (
-            <Reveal key={resource.href} className="group" delay={index * 0.06}>
+            <Reveal
+              key={`${index}-${resource.href}`}
+              className="group"
+              delay={index * 0.06}
+            >
               <AspectRatio
                 ratio={1.35}
                 className="overflow-hidden rounded-4xl bg-muted"
@@ -110,22 +147,22 @@ export function ResourceGrid() {
               </AspectRatio>
               <Link
                 href={resource.href}
-                className="mt-4 block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="mt-4 block rounded-4xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >
                 <Card className="h-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
                   <CardHeader className="gap-3">
                     <CardTitle className="flex items-center justify-between gap-4 text-xl">
-                      {resource.title}
+                      <span className="line-clamp-2">{resource.title}</span>
                       <ArrowUpRight
                         className={cn(
                           "size-5 shrink-0 text-muted-foreground transition-transform",
-                          "group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
+                          "group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
                         )}
                       />
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm leading-6 text-muted-foreground">
+                    <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
                       {resource.description}
                     </p>
                   </CardContent>

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import {
-  getSanityMarineFuelMedia,
-} from "@/lib/sanity-marine-fuel"
+import { getSanityMarineFuelMedia } from "@/lib/sanity-marine-fuel"
 import { isSanityAvailabilityError } from "@/lib/sanity-client"
 import { maxMarineFuelVideoBytes } from "@/shared/sanity-content-contracts"
 
@@ -34,12 +32,11 @@ export async function GET(request: NextRequest) {
           ?.imageUrl,
         backgroundVideo: oversizedVideo ? undefined : videoSlot?.videoUrl,
         oversizedVideo,
-        missingAssets:
-          !slots?.some(
-            (slot) =>
-              slot.slotId === backgroundId ||
-              (slot.slotId === videoId && slot.videoUrl)
-          ),
+        missingAssets: !slots?.some(
+          (slot) =>
+            slot.slotId === backgroundId ||
+            (slot.slotId === videoId && slot.videoUrl)
+        ),
       },
       {
         headers: {

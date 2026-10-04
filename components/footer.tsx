@@ -8,7 +8,7 @@ import { getVisibleNavigationItems } from "@/components/navigation-config"
 import { MotionButtonLink } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useLocale } from "@/components/locale-provider"
-import { translate } from "@/lib/i18n"
+import { translate, type TranslationKey } from "@/lib/i18n"
 import type { SiteSettings } from "@/lib/sanity-site-settings"
 import { usePageVisibility } from "@/components/page-visibility-provider"
 
@@ -46,28 +46,37 @@ export function Footer() {
       })
     return () => controller.abort()
   }, [])
-  const companyLinks = navigationItems.find(
-    (item) => item.label === "Tentang Kami"
+  const companyLinks = navigationItems.find((item) => item.labelKey === "about")
+  const productLinks = navigationItems.find(
+    (item) => item.labelKey === "products"
   )
-  const productLinks = navigationItems.find((item) => item.label === "Produk")
   const standaloneLinks = navigationItems.filter(
-    (item) => !item.children && item.label !== "Beranda"
+    (item) => !item.children && item.labelKey !== "home"
   )
+  const footerLinks = (items: typeof navigationItems): FooterLink[] =>
+    items.map(({ href, labelKey }) => ({ href, labelKey }))
   const informationLinks = [
-    ...standaloneLinks,
+    ...footerLinks(standaloneLinks),
     ...(visibility.dataPolicy
-      ? [{ label: "Kebijakan Data", href: "/kebijakan-data" }]
+      ? [{ labelKey: "dataPolicy" as const, href: "/kebijakan-data" }]
       : []),
     ...(visibility.cookieTerms
-      ? [{ label: "Ketentuan Cookies", href: "/ketentuan-cookies" }]
+      ? [{ labelKey: "cookieTerms" as const, href: "/ketentuan-cookies" }]
       : []),
   ]
   const footerGroups = [
     {
       title: translate(locale, "footerCompany"),
-      items: companyLinks?.children,
+      items: companyLinks?.children
+        ? footerLinks(companyLinks.children)
+        : undefined,
     },
-    { title: translate(locale, "products"), items: productLinks?.children },
+    {
+      title: translate(locale, "products"),
+      items: productLinks?.children
+        ? footerLinks(productLinks.children)
+        : undefined,
+    },
     { title: translate(locale, "footerInformation"), items: informationLinks },
   ].filter((group) => group.items?.length)
   const footerGridColumns: Record<number, string> = {
@@ -129,6 +138,7 @@ export function Footer() {
               key={group.title}
               title={group.title}
               items={group.items}
+              locale={locale}
             />
           ))}
         </div>
@@ -165,9 +175,11 @@ export function Footer() {
 function FooterLinkGroup({
   title,
   items,
+  locale,
 }: {
   title: string
-  items?: { label: string; href: string }[]
+  items?: FooterLink[]
+  locale: "id" | "en"
 }) {
   if (!items?.length) return null
 
@@ -181,10 +193,15 @@ function FooterLinkGroup({
             href={item.href}
             className="hover:text-foreground"
           >
-            {item.label}
+            {translate(locale, item.labelKey)}
           </Link>
         ))}
       </nav>
     </div>
   )
+}
+
+type FooterLink = {
+  labelKey: TranslationKey
+  href: string
 }

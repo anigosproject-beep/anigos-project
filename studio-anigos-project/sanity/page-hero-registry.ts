@@ -350,6 +350,25 @@ export const pageHeroMenus = [
         },
         currentSource: "/images/page-hero/tentang-kami.webp",
       },
+      {
+        value: "keselamatan-operasional",
+        title: "Keselamatan Operasional",
+        path: "/keberlanjutan/keselamatan-operasional",
+        pageKey: "keselamatan-operasional",
+        pageName: {
+          id: "Keberlanjutan / Keselamatan Operasional",
+          en: "Sustainability / Operational Safety",
+        },
+        heading: {
+          id: "Distribusi yang tepat waktu, aman, dan bertanggung jawab.",
+          en: "Distribution that is punctual, safe, and responsible.",
+        },
+        subtitle: {
+          id: "Keselamatan kerja dan ketepatan waktu menjadi prioritas dalam operasional distribusi BBM Petro Anigos.",
+          en: "Workplace safety and punctuality are priorities in Petro Anigos fuel distribution operations.",
+        },
+        currentSource: "/images/page-hero/tentang-kami.webp",
+      },
     ],
   },
 ] as const satisfies ReadonlyArray<{

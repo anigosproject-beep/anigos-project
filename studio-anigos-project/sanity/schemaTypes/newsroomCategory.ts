@@ -8,22 +8,33 @@ export const newsroomCategory = defineType({
     defineField({
       name: "name",
       title: "Nama kategori",
-      type: "string",
-      validation: (rule) => rule.required().max(60),
+      type: "localizedHeroText",
+      validation: (rule) =>
+        rule.custom((value) => {
+          const id = (value as { id?: unknown } | undefined)?.id
+          return typeof id === "string" && id.trim()
+            ? id.length <= 60 || "Nama kategori maksimal 60 karakter."
+            : "Nama kategori Bahasa Indonesia wajib diisi."
+        }),
     }),
     defineField({
       name: "slug",
       title: "Slug kategori",
       type: "slug",
-      options: { source: "name", maxLength: 72 },
+      options: { source: "name.id", maxLength: 72 },
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "description",
       title: "Deskripsi kategori",
-      type: "text",
-      rows: 3,
-      validation: (rule) => rule.required().max(240),
+      type: "localizedArticleText",
+      validation: (rule) =>
+        rule.custom((value) => {
+          const id = (value as { id?: unknown } | undefined)?.id
+          return typeof id === "string" && id.trim()
+            ? id.length <= 240 || "Deskripsi maksimal 240 karakter."
+            : "Deskripsi Bahasa Indonesia wajib diisi."
+        }),
     }),
     defineField({
       name: "subcategories",
@@ -38,19 +49,26 @@ export const newsroomCategory = defineType({
             defineField({
               name: "name",
               title: "Nama subkategori",
-              type: "string",
-              validation: (rule) => rule.required().max(60),
+              type: "localizedHeroText",
+              validation: (rule) =>
+                rule.custom((value) => {
+                  const id = (value as { id?: unknown } | undefined)?.id
+                  return typeof id === "string" && id.trim()
+                    ? id.length <= 60 ||
+                        "Nama subkategori maksimal 60 karakter."
+                    : "Nama subkategori Bahasa Indonesia wajib diisi."
+                }),
             }),
             defineField({
               name: "slug",
               title: "Slug subkategori",
               type: "slug",
-              options: { source: "name", maxLength: 72 },
+              options: { source: "name.id", maxLength: 72 },
               validation: (rule) => rule.required(),
             }),
           ],
           preview: {
-            select: { title: "name", subtitle: "slug.current" },
+            select: { title: "name.id", subtitle: "slug.current" },
           },
         }),
       ],
@@ -59,7 +77,7 @@ export const newsroomCategory = defineType({
   ],
   preview: {
     select: {
-      title: "name",
+      title: "name.id",
       subtitle: "slug.current",
     },
     prepare: ({ title, subtitle }) => ({

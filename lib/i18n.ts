@@ -88,6 +88,7 @@ export const messages = {
     heroLabel: "Hero utama Petro Anigos",
     heroSlideLabel: "Tampilkan slide",
     slideDurationLabel: "Durasi slide",
+    heroVideoSeek: "Geser video",
     heroProductEyebrow: "Produk Berkualitas",
     heroProductTitle: "Solusi energi yang sesuai dengan kebutuhan bisnis Anda.",
     heroProductDescription:
@@ -409,7 +410,7 @@ export const messages = {
     marineFuelVideoPending:
       "Video akan tampil di sini setelah diunggah ke Sanity.",
     marineFuelVideoTooLarge:
-      "Ukuran video Marine Fuel melebihi rekomendasi {size}. Video tetap tersedia dan hanya dimuat saat diputar.",
+      "Ukuran video Marine Fuel melebihi batas pemutaran {size}. Video tidak dapat ditampilkan.",
     productMarineFuelTitle: "Marine Fuel untuk kebutuhan operasional maritim.",
     productMarineFuelDescription:
       "Kami menerima kebutuhan Marine Fuel untuk beragam kegiatan maritim. Sampaikan jenis produk, volume, lokasi, dan jadwal pengiriman agar dapat kami diskusikan sesuai kebutuhan operasional Anda.",
@@ -736,7 +737,7 @@ export const messages = {
     safetyNote:
       "Data sertifikasi K3, prosedur operasional terperinci, dan metrik keselamatan belum tersedia untuk dipublikasikan.",
     viewCoverage: "Lihat jangkauan",
-    dataPolicy: "Data Policy",
+    dataPolicy: "Kebijakan Data",
     dataPolicyTitle: "Sumber dan penggunaan informasi di website Petro Anigos.",
     dataPolicyDescription:
       "Halaman ini menjelaskan sumber, status, keterbatasan, dan etika penggunaan informasi cuaca serta pasar yang ditampilkan pada website.",
@@ -879,6 +880,17 @@ export const messages = {
     applicationForm: "Form lamaran",
     sendYourProfile: "Kirim profilmu",
     cvMaximum: "CV maksimal 5 MB",
+    googleSignInPrompt: "Isi nama dan email lebih cepat dengan Google",
+    googleSignedInAs: "Terhubung dengan Google",
+    googleSignIn: "Lanjutkan dengan Google",
+    googleSigningIn: "Menghubungkan...",
+    googleSignOut: "Keluar dari Google",
+    googleSignInOptional:
+      "Opsional. Anda tetap dapat mengirim lamaran tanpa masuk.",
+    googleSignInFailed: "Gagal masuk dengan Google. Silakan coba lagi.",
+    googleSignOutFailed: "Gagal keluar dari Google. Silakan coba lagi.",
+    googleIdentityMismatch:
+      "Email harus sama dengan email akun Google yang digunakan.",
     dataReadyForReview: "Data siap ditinjau",
     applicationThanks:
       "Terima kasih. Lamaran dan dokumen pendukung berhasil diterima untuk posisi yang dipilih. Tim kami akan meninjau profil Anda.",
@@ -1560,6 +1572,7 @@ export const messages = {
     heroLabel: "Petro Anigos main hero",
     heroSlideLabel: "Show slide",
     slideDurationLabel: "Slide duration",
+    heroVideoSeek: "Seek video",
     heroProductEyebrow: "Quality Products",
     heroProductTitle: "Energy solutions tailored to your business needs.",
     heroProductDescription:
@@ -1878,7 +1891,7 @@ export const messages = {
     marineFuelVideoPending:
       "The video will appear here once it is uploaded to Sanity.",
     marineFuelVideoTooLarge:
-      "The Marine Fuel video exceeds the recommended {size}. It remains available and loads only when played.",
+      "The Marine Fuel video exceeds the {size} playback limit and cannot be displayed.",
     productMarineFuelTitle: "Marine Fuel for maritime operations.",
     productMarineFuelDescription:
       "We welcome Marine Fuel requirements for a range of maritime operations. Share the product type, volume, location, and delivery schedule so we can discuss a supply plan for your operational needs.",
@@ -2202,7 +2215,7 @@ export const messages = {
     safetyNote:
       "K3 certification data, detailed operating procedures, and safety metrics are not yet available for publication.",
     viewCoverage: "View coverage",
-    dataPolicy: "Kebijakan Data",
+    dataPolicy: "Data Policy",
     dataPolicyTitle:
       "Sources and use of information on the Petro Anigos website.",
     dataPolicyDescription:
@@ -2343,6 +2356,17 @@ export const messages = {
     applicationForm: "Application form",
     sendYourProfile: "Send your profile",
     cvMaximum: "CV maximum 5 MB",
+    googleSignInPrompt: "Fill in your name and email faster with Google",
+    googleSignedInAs: "Connected with Google",
+    googleSignIn: "Continue with Google",
+    googleSigningIn: "Connecting...",
+    googleSignOut: "Sign out from Google",
+    googleSignInOptional:
+      "Optional. You can still submit your application without signing in.",
+    googleSignInFailed: "Google sign-in failed. Please try again.",
+    googleSignOutFailed: "Google sign-out failed. Please try again.",
+    googleIdentityMismatch:
+      "Use the same email address as the Google account you signed in with.",
     dataReadyForReview: "Data ready for review",
     applicationThanks:
       "Thank you. Your application and supporting documents have been received for the selected position. Our team will review your profile.",

@@ -9,7 +9,11 @@
     "repair:media-slots:dry-run": "node scripts/check-media-slots.mjs",
     "repair:media-slots:apply": "node scripts/check-media-slots.mjs --apply",
     "seed:marine-fuel:dry-run": "node scripts/seed-marine-fuel-slots.mjs",
-    "seed:marine-fuel:apply": "node scripts/seed-marine-fuel-slots.mjs --apply"
+    "seed:marine-fuel:apply": "node scripts/seed-marine-fuel-slots.mjs --apply",
+    "migrate:newsroom-locales:dry-run": "node scripts/migrate-newsroom-locales.mjs",
+    "migrate:newsroom-locales:apply": "node scripts/migrate-newsroom-locales.mjs --apply",
+    "migrate:media-locales:dry-run": "node scripts/migrate-media-locales.mjs",
+    "migrate:media-locales:apply": "node scripts/migrate-media-locales.mjs --apply"
   },
   "dependencies": {
     "@sanity/client": "^8.6.1",

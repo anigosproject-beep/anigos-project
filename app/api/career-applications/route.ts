@@ -4,6 +4,7 @@ import { CAREER_APPLICATION_FIELDS } from "@/lib/form-contract"
 import { FieldValue } from "firebase-admin/firestore"
 
 import {
+  getFirebaseAdminAuth,
   getFirebaseAdminFirestore,
   getFirebaseAdminStorage,
 } from "@/lib/firebase-admin"
@@ -19,6 +20,12 @@ const acceptedTypes = new Set([
   "application/pdf",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+])
+const invalidTokenCodes = new Set([
+  "auth/id-token-expired",
+  "auth/id-token-revoked",
+  "auth/invalid-id-token",
+  "auth/argument-error",
 ])
 
 function isString(value: FormDataEntryValue | null): value is string {
@@ -57,6 +64,69 @@ export async function POST(request: Request) {
       { error: "Format email tidak valid." },
       { status: 400 }
     )
+  }
+
+  const authorization = request.headers.get("authorization")
+  let authenticatedUid: string | undefined
+  if (authorization) {
+    const match = /^Bearer ([^\s]+)$/.exec(authorization)
+    if (!match) {
+      return NextResponse.json(
+        { error: "Token Google tidak valid." },
+        { status: 401 }
+      )
+    }
+
+    let auth
+    try {
+      auth = getFirebaseAdminAuth()
+    } catch (error) {
+      console.error("Firebase Admin Auth is unavailable.", error)
+      return NextResponse.json(
+        { error: "Layanan autentikasi tidak tersedia." },
+        { status: 503 }
+      )
+    }
+
+    try {
+      const decodedToken = await auth.verifyIdToken(match[1], true)
+      if (
+        decodedToken.firebase.sign_in_provider !== "google.com" ||
+        decodedToken.email_verified !== true ||
+        !decodedToken.email
+      ) {
+        return NextResponse.json(
+          { error: "Gunakan akun Google terverifikasi untuk melanjutkan." },
+          { status: 403 }
+        )
+      }
+      if (decodedToken.email.toLowerCase() !== email.trim().toLowerCase()) {
+        return NextResponse.json(
+          { errorCode: "google-identity-mismatch" },
+          { status: 403 }
+        )
+      }
+      authenticatedUid = decodedToken.uid
+    } catch (error) {
+      const code =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+          ? error.code
+          : undefined
+      if (code && invalidTokenCodes.has(code)) {
+        return NextResponse.json(
+          { error: "Sesi Google tidak berlaku. Silakan masuk kembali." },
+          { status: 401 }
+        )
+      }
+      console.error("Firebase ID token verification failed.", error)
+      return NextResponse.json(
+        { error: "Layanan autentikasi tidak tersedia." },
+        { status: 503 }
+      )
+    }
   }
 
   const uploadFiles = files.filter((file): file is File => file instanceof File)
@@ -142,6 +212,7 @@ export async function POST(request: Request) {
       .set({
         fullName: fullName.trim(),
         email: email.trim().toLowerCase(),
+        ...(authenticatedUid ? { authenticatedUid } : {}),
         phone: phone.trim(),
         position: activeOpening.slug,
         positionTitle: activeOpening.title,

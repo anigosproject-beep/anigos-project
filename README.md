@@ -41,9 +41,11 @@ This will place the ui components in the `components` directory.
 To use the components in your app, import them as follows:
 
 ```tsx
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 ```
+
 # petro-anigos-project
+
 # petro-anigos-project
 
 ## Sanity CMS
@@ -66,8 +68,12 @@ npm run dev
 ```
 
 Untuk aplikasi Next.js, salin `.env.example` menjadi `.env.local` lalu isi
-`NEXT_PUBLIC_SITE_URL` dengan domain produksi. Isi `SANITY_PREVIEW_SECRET`
-dengan nilai acak panjang yang sama pada environment aplikasi Next.js dan
+`NEXT_PUBLIC_SITE_URL` dengan `https://anigosjayaperkasa.com`. URL ini menjadi
+basis metadata, sitemap, robots, dan identitas Organization terstruktur.
+Production selalu menggunakan domain resmi tersebut; environment ini hanya
+dapat mengganti URL pada development/preview. Domain produksi sudah memakai
+HTTPS. Isi `SANITY_PREVIEW_SECRET` dengan nilai acak panjang yang sama pada
+environment aplikasi Next.js dan
 environment Studio saat memakai tombol preview. Project ID dan dataset Sanity
 ditetapkan tetap ke target aktif.
 
@@ -95,7 +101,8 @@ fallback sampai dokumen pertama dipublikasikan di Sanity.
 Firebase digunakan untuk data operasional, bukan untuk menggantikan Sanity:
 
 - **Sanity**: newsroom, kategori artikel, dan konten editorial publik.
-- **Firebase Authentication**: akun internal untuk admin dan recruiter.
+- **Firebase Authentication**: Google sign-in opsional untuk kandidat dan akun
+  internal admin/recruiter.
 - **Cloud Firestore**: data lamaran dan status proses rekrutmen.
 - **Cloud Storage**: file CV dan dokumen pendukung; Firestore hanya menyimpan metadata
   dan referensi file.
@@ -104,6 +111,21 @@ Firebase digunakan untuk data operasional, bukan untuk menggantikan Sanity:
 Kandidat dapat mengirim lamaran tanpa akun. Endpoint server akan memvalidasi data
 dan menulis ke Firebase menggunakan Firebase Admin SDK. Akses dashboard internal
 dibatasi oleh custom claim `role` dengan nilai `admin` atau `recruiter`.
+
+Form lamaran juga mendukung Google sign-in opsional melalui Firebase
+Authentication: profil mengisi nama/email dan endpoint memverifikasi Firebase ID
+token serta kecocokan email sebelum menyimpan lamaran. Lamaran tanpa sign-in
+tetap didukung. Untuk mengaktifkannya, aktifkan provider Google pada Firebase
+Authentication, tambahkan `anigosjayaperkasa.com` pada Firebase Authentication
+
+> Settings > Authorized domains, dan hubungkan domain ini ke deployment Vercel.
+> Pastikan environment browser memiliki
+> `NEXT_PUBLIC_FIREBASE_PROJECT_ID`,
+> `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`,
+> `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`, dan `NEXT_PUBLIC_FIREBASE_APP_ID`.
+> Firebase Admin server harus terhubung ke project yang sama. Menambah login
+> recruiter/admin atau dashboard terproteksi adalah cakupan terpisah; SSO form
+> kandidat ini tidak memberi akses internal.
 
 Konfigurasi Firebase berada di `firebase.json`, `firestore.rules`, dan
 `storage.rules`. Gunakan variabel `NEXT_PUBLIC_FIREBASE_*` untuk konfigurasi

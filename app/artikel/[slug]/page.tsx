@@ -3,10 +3,7 @@ import Image from "next/image"
 import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react"
 
-import {
-  formatArticleDate,
-  getArticleBySlug,
-} from "@/lib/newsroom-data"
+import { formatArticleDate, getArticleBySlug } from "@/lib/newsroom-data"
 import { getSanityNewsroom } from "@/lib/sanity-newsroom"
 import { SectionContainer } from "@/components/layout/section-shell"
 import { Heading, Text } from "@/components/typography"
@@ -25,24 +22,38 @@ import {
 } from "@/components/ui/breadcrumb"
 
 export async function generateStaticParams() {
-  const { articles } = await getSanityNewsroom({useDraftMode: false})
+  const { articles } = await getSanityNewsroom({
+    useDraftMode: false,
+    locale: "id",
+  })
   return articles.map((article) => ({ slug: article.slug }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
   const { articles } = await getSanityNewsroom()
   const article = getArticleBySlug(slug, articles)
   return article
-    ? { title: `${article.title} | PT. Anigos Jaya Perkasa`, description: article.excerpt }
+    ? {
+        title: `${article.title} | PT. Anigos Jaya Perkasa`,
+        description: article.excerpt,
+      }
     : { title: "Artikel | PT. Anigos Jaya Perkasa" }
 }
 
 export const dynamic = "force-dynamic"
 
-export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
-  const { articles, categories } = await getSanityNewsroom()
+  const { articles, categories, locale } = await getSanityNewsroom()
   const article = getArticleBySlug(slug, articles)
   if (!article) notFound()
 
@@ -60,15 +71,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       : categoryHref
   const recommendations = articles
     .filter((item) => item.slug !== article.slug)
-    .sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category))
+    .sort(
+      (a, b) =>
+        Number(b.category === article.category) -
+        Number(a.category === article.category)
+    )
     .slice(0, 3)
 
   return (
     <main>
       <article className="border-b border-border bg-background">
-        <SectionContainer className="pb-10 pt-28 sm:pt-32 lg:pb-16 lg:pt-36">
+        <SectionContainer className="pt-28 pb-10 sm:pt-32 lg:pt-36 lg:pb-16">
           <Breadcrumb className="max-w-full overflow-hidden">
-            <BreadcrumbList className="flex-nowrap overflow-x-auto whitespace-nowrap pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <BreadcrumbList className="[scrollbar-width:none] flex-nowrap overflow-x-auto pb-1 whitespace-nowrap [&::-webkit-scrollbar]:hidden">
               <BreadcrumbItem>
                 <BreadcrumbLink href="/">
                   <LocalizedText translationKey="articleHome" />
@@ -90,7 +105,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbLink href={categoryHref}>{category.name}</BreadcrumbLink>
+                    <BreadcrumbLink href={categoryHref}>
+                      {category.name}
+                    </BreadcrumbLink>
                   </BreadcrumbItem>
                 </>
               ) : null}
@@ -118,22 +135,33 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               <header className="max-w-4xl">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant="secondary">
-                    {category?.name ?? <LocalizedText translationKey="articleOffice" />}
+                    {category?.name ?? (
+                      <LocalizedText translationKey="articleOffice" />
+                    )}
                   </Badge>
-                  {subcategory ? <Badge variant="outline">{subcategory.name}</Badge> : null}
+                  {subcategory ? (
+                    <Badge variant="outline">{subcategory.name}</Badge>
+                  ) : null}
                 </div>
-                <Heading level={1} className="mt-6 text-4xl leading-tight lg:text-6xl">
+                <Heading
+                  level={1}
+                  className="mt-6 text-4xl leading-tight lg:text-6xl"
+                >
                   {article.title}
                 </Heading>
-                <Text variant="lead" className="mt-6 max-w-3xl text-muted-foreground">
+                <Text
+                  variant="lead"
+                  className="mt-6 max-w-3xl text-muted-foreground"
+                >
                   {article.excerpt}
                 </Text>
                 <div className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-                  <span>{formatArticleDate(article.date)}</span>
+                  <span>{formatArticleDate(article.date, locale)}</span>
                   <span aria-hidden="true">·</span>
                   <span className="inline-flex items-center gap-1.5">
                     <Clock3 className="size-4" />
-                    {article.readTime} <LocalizedText translationKey="articleReadMore" />
+                    {article.readTime}{" "}
+                    <LocalizedText translationKey="articleReadMore" />
                   </span>
                 </div>
               </header>
@@ -161,9 +189,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
               <div className="typeset typeset-docs mt-10 max-w-3xl lg:mt-14">
                 {article.content.map((paragraph) => (
-                  <p key={paragraph}>
-                    {paragraph}
-                  </p>
+                  <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
 
@@ -199,16 +225,20 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         />
                       </div>
                       <div className="min-w-0 py-0.5">
-                        <Badge variant="outline" className="max-w-full truncate text-[10px]">
-                          {                          categories.find(
-                            (item) => item.slug === recommendation.category,
-                          )?.name ?? "Artikel"}
+                        <Badge
+                          variant="outline"
+                          className="max-w-full truncate text-[10px]"
+                        >
+                          {categories.find(
+                            (item) => item.slug === recommendation.category
+                          )?.name ?? (locale === "en" ? "Article" : "Artikel")}
                         </Badge>
-                        <p className="mt-2 line-clamp-3 text-sm font-semibold leading-5 tracking-tight transition-colors group-hover:text-primary">
+                        <p className="mt-2 line-clamp-3 text-sm leading-5 font-semibold tracking-tight transition-colors group-hover:text-primary">
                           {recommendation.title}
                         </p>
                         <p className="mt-2 line-clamp-1 text-xs text-muted-foreground">
-                          {formatArticleDate(recommendation.date)} · {recommendation.readTime}
+                          {formatArticleDate(recommendation.date, locale)} ·{" "}
+                          {recommendation.readTime}
                         </p>
                       </div>
                     </Link>
@@ -217,9 +247,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               </div>
               <Link
                 href="/artikel/anigos-news"
-                className={buttonVariants({ variant: "outline", className: "mt-6 w-full" })}
+                className={buttonVariants({
+                  variant: "outline",
+                  className: "mt-6 w-full",
+                })}
               >
-                Semua artikel
+                <LocalizedText translationKey="articleBackToNewsroom" />
                 <ArrowRight data-icon="inline-end" />
               </Link>
             </aside>

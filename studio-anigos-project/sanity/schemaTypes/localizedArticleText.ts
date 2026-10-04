@@ -1,21 +1,23 @@
 import { defineField, defineType } from "sanity"
 
-export const localizedHeroText = defineType({
-  name: "localizedHeroText",
-  title: "Teks per bahasa",
+export const localizedArticleText = defineType({
+  name: "localizedArticleText",
+  title: "Teks artikel per bahasa",
   type: "object",
   fields: [
     defineField({
       name: "id",
       title: "Bahasa Indonesia",
-      type: "string",
-      validation: (rule) => rule.max(500),
+      type: "text",
+      rows: 6,
+      validation: (rule) => rule.required().max(3000),
     }),
     defineField({
       name: "en",
       title: "English",
-      type: "string",
-      validation: (rule) => rule.max(500),
+      type: "text",
+      rows: 6,
+      validation: (rule) => rule.max(3000),
     }),
     defineField({
       name: "translationSourceHash",

@@ -2,6 +2,8 @@ import {
   getSanityClientForCurrentMode,
   sanityImageUrl,
 } from "@/lib/sanity-client"
+import { cookies } from "next/headers"
+import type { Locale } from "@/lib/i18n"
 import type { SanityRichTextBlock } from "@/lib/sanity-content-types"
 
 export type TeamCategory =
@@ -10,6 +12,7 @@ export type TeamCategory =
 export type TeamMember = {
   initials: string
   image?: string
+  imageAlt?: string
   imageUploadedAt?: string
   name: string
   role: string
@@ -40,7 +43,7 @@ type SanityTeamMember = {
   divisionRole?: "anggota" | "kepala-divisi" | "tim-divisi" | "other"
   customDivisionRole?: string
   division?: { _id?: string; name?: string }
-  photo?: { asset?: { _ref?: string } }
+  photo?: { asset?: { _ref?: string }; alt?: string }
   photoUploadedAt?: string
   gallery?: Array<{
     _key?: string
@@ -66,13 +69,13 @@ const teamQuery = `*[_type == "teamMember" && isPublished != false] | order(stru
   divisionRole,
   customDivisionRole,
   division->{_id, name},
-  photo,
+  "photo": photo{"asset": asset, "alt": coalesce(alt[$lang], alt.id, alt)},
   "photoUploadedAt": photo.asset->_createdAt,
   gallery[]{
     _key,
     image,
-    alt,
-    caption,
+    "alt": coalesce(image.alt[$lang], image.alt.id, image.alt),
+    "caption": coalesce(caption[$lang], caption.id, caption),
     "uploadedAt": image.asset->_createdAt
   },
   quote,
@@ -117,9 +120,14 @@ const formatDivisionRole = (member: SanityTeamMember) => {
   return `${roleLabel} - ${member.division.name ?? "Divisi"}`
 }
 
-const toTeamMember = (member: SanityTeamMember): TeamMember => ({
+const toTeamMember = (member: SanityTeamMember, locale: Locale): TeamMember => ({
   initials: initialsFromName(member.name),
   image: sanityImageUrl(member.photo),
+  imageAlt:
+    member.photo?.alt?.trim() ||
+    (locale === "en"
+      ? `Portrait of ${member.name}`
+      : `Foto ${member.name}`),
   imageUploadedAt: member.photoUploadedAt,
   name: member.name,
   role: formatDivisionRole(member),
@@ -133,19 +141,29 @@ const toTeamMember = (member: SanityTeamMember): TeamMember => ({
     return [
       {
         src,
-        alt: image.alt?.trim() || `Foto ${member.name}`,
-        caption: image.caption?.trim() || `Dokumentasi ${member.name}`,
+        alt:
+          image.alt?.trim() ||
+          (locale === "en"
+            ? `Photo of ${member.name}`
+            : `Foto ${member.name}`),
+        caption:
+          image.caption?.trim() ||
+          (locale === "en"
+            ? `Photo documentation of ${member.name}`
+            : `Dokumentasi ${member.name}`),
         uploadedAt: image.uploadedAt,
       },
     ]
   }),
 })
 
-export async function getSanityTeam(): Promise<
+export async function getSanityTeam(locale?: Locale): Promise<
   Record<TeamCategory, TeamMember[]>
 > {
+  const lang =
+    locale ?? ((await cookies()).get("locale")?.value === "en" ? "en" : "id")
   const client = await getSanityClientForCurrentMode()
-  const rows = await client.fetch<SanityTeamMember[]>(teamQuery)
+  const rows = await client.fetch<SanityTeamMember[]>(teamQuery, { lang })
 
   const categories: Record<TeamCategory, TeamMember[]> = {
     komisaris: [],
@@ -162,13 +180,17 @@ export async function getSanityTeam(): Promise<
         : member.structuralClass
     if (!category || !categories[category]) continue
 
-    categories[category].push(toTeamMember(member))
+    categories[category].push(toTeamMember(member, lang))
   }
 
   return categories
 }
 
-export async function getSanityTeamDivisions(): Promise<TeamDivisionGroup[]> {
+export async function getSanityTeamDivisions(
+  locale?: Locale
+): Promise<TeamDivisionGroup[]> {
+  const lang =
+    locale ?? ((await cookies()).get("locale")?.value === "en" ? "en" : "id")
   const client = await getSanityClientForCurrentMode()
   const [divisions, members] = await Promise.all([
     client.fetch<
@@ -180,7 +202,7 @@ export async function getSanityTeamDivisions(): Promise<TeamDivisionGroup[]> {
     >(
       '*[_type == "teamDivision" && isActive != false] | order(order asc, name asc) {_id, name, description}'
     ),
-    client.fetch<SanityTeamMember[]>(teamQuery),
+    client.fetch<SanityTeamMember[]>(teamQuery, { lang }),
   ])
 
   return divisions.map((division) => ({
@@ -192,6 +214,6 @@ export async function getSanityTeamDivisions(): Promise<TeamDivisionGroup[]> {
           member.structuralClass === "tim-divisi" &&
           member.division?._id === division._id
       )
-      .map(toTeamMember),
+      .map((member) => toTeamMember(member, lang)),
   }))
 }

@@ -6,11 +6,20 @@ import {
 } from "../components/PageMediaImageInput"
 import { PageMediaSelectionInput } from "../components/PageMediaSelectionInput"
 import { PageMediaSlotsInput } from "../components/PageMediaSlotsInput"
+import { pageHeroMenus } from "../page-hero-registry"
+import { pageMediaFieldNames, pageMediaMenus } from "../page-media-registry"
 import {
-  pageMediaFieldNames,
-  pageMediaMenus,
-} from "../page-media-registry"
-import { maxMarineFuelVideoBytes } from "../../../shared/sanity-content-contracts"
+  maxMarineFuelVideoBytes,
+  recommendedMarineFuelVideoBytes,
+} from "../../../shared/sanity-content-contracts"
+
+const pageHeroTargets = pageHeroMenus.flatMap((menu) =>
+  menu.pages.map((page) => ({
+    title: `${menu.title} — ${page.title}`,
+    value: page.path,
+  }))
+)
+const pageHeroTargetPaths = new Set(pageHeroTargets.map(({ value }) => value))
 
 const selectionField = defineField({
   name: "selection",
@@ -126,10 +135,34 @@ const mediaSlot = defineArrayMember({
     defineField({
       name: "flipTitle",
       title: "Judul",
-      type: "string",
+      type: "localizedMediaText",
       hidden: ({ parent }) => !isCoverageFlipcardSlot(parent),
-      description: "Maksimal 120 karakter.",
-      validation: (rule) => rule.max(120),
+      description: "Judul keterangan media, maksimal 120 karakter per bahasa.",
+      validation: (rule) =>
+        rule.custom((value) => {
+          if (typeof value !== "object" || value === null) return true
+          return [value.id, value.en].every(
+            (text) => typeof text !== "string" || text.length <= 120
+          )
+            ? true
+            : "Judul maksimal 120 karakter per bahasa."
+        }),
+    }),
+    defineField({
+      name: "linkedPagePath",
+      title: "Halaman tujuan kartu",
+      type: "string",
+      options: { list: pageHeroTargets },
+      hidden: ({ parent }) => !isHomeResourceCardSlot(parent),
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          if (!isHomeResourceCardSlot(context.parent)) return true
+          return typeof value === "string" && pageHeroTargetPaths.has(value)
+            ? true
+            : "Pilih halaman tujuan dari daftar."
+        }),
+      description:
+        "Kartu akan membuka halaman ini. Nama dan keterangan otomatis mengikuti judul serta subjudul Page Hero, dan gambar mengikuti Page Hero tersebut. Jika gambar belum diatur, situs memakai gambar fallback.",
     }),
     defineField({
       name: "image",
@@ -137,15 +170,15 @@ const mediaSlot = defineArrayMember({
       type: "image",
       components: { input: PageMediaImageInput },
       options: { hotspot: true },
-      hidden: ({ parent }) => parent?.mediaType !== "image",
+      hidden: ({ parent }) =>
+        parent?.mediaType !== "image" || isHomeResourceCardSlot(parent),
       description:
         "Kosongkan untuk mempertahankan media sebelumnya. Unggah media baru untuk menggantinya. Crop/hotspot hanya mengubah potongan, bukan rasio container halaman.",
       fields: [
         defineField({
           name: "alt",
           title: "Teks alternatif",
-          type: "string",
-          validation: (rule) => rule.max(160),
+          type: "localizedMediaText",
         }),
       ],
     }),
@@ -166,8 +199,7 @@ const mediaSlot = defineArrayMember({
       components: { input: PageMediaVideoInput },
       options: { accept: "video/*" },
       hidden: ({ parent }) => parent?.mediaType !== "video",
-      description:
-        `Unggah atau ganti file video untuk slot ini. Video Marine Fuel tampil di pemutar pada segmen; gambar latar dikelola terpisah pada slot gambar. MP4 (H.264) disarankan; ukuran hingga ${Math.round(maxMarineFuelVideoBytes / 1024 / 1024)} MiB direkomendasikan.`,
+      description: `Unggah atau ganti file video untuk slot ini. Video Marine Fuel tampil di pemutar pada segmen; gambar latar dikelola terpisah pada slot gambar. MP4 (H.264) hingga ${Math.round(recommendedMarineFuelVideoBytes / 1024 / 1024)} MiB disarankan (batas pemutaran ${Math.round(maxMarineFuelVideoBytes / 1024 / 1024)} MiB).`,
     }),
   ],
   preview: {
@@ -177,7 +209,8 @@ const mediaSlot = defineArrayMember({
       mediaType: "mediaType",
       containerRatio: "containerRatio",
       currentSource: "currentSource",
-      flipTitle: "flipTitle",
+      flipTitle: "flipTitle.id",
+      linkedPagePath: "linkedPagePath",
       image: "image",
       video: "video",
     },
@@ -188,10 +221,12 @@ const mediaSlot = defineArrayMember({
       containerRatio,
       currentSource,
       flipTitle,
+      linkedPagePath,
       image,
       video,
     }) => {
       const flipcardLabel = getFlipcardLabel(slotId)
+      const resourceCardLabel = getHomeResourceCardLabel(slotId)
       const assetStatus =
         mediaType === "video"
           ? video?.asset?._ref
@@ -203,11 +238,14 @@ const mediaSlot = defineArrayMember({
       return {
         title:
           flipcardLabel ??
+          resourceCardLabel ??
           `${mediaType === "video" ? "Video" : "Gambar"} di ${sectionName ?? "Section"}`,
         subtitle:
           flipcardLabel && flipTitle
             ? `${assetStatus} · Judul: ${flipTitle}`
-            : assetStatus,
+            : resourceCardLabel
+              ? `${assetStatus} · Halaman tujuan: ${linkedPagePath ?? "belum dipilih"}`
+              : assetStatus,
         media: image,
       }
     },
@@ -222,6 +260,17 @@ function isCoverageFlipcardSlot(parent: unknown): boolean {
   return (
     typeof parent.slotId === "string" &&
     parent.slotId.startsWith("coverage-work-flipcard-")
+  )
+}
+
+function isHomeResourceCardSlot(parent: unknown): boolean {
+  if (typeof parent !== "object" || parent === null || !("slotId" in parent)) {
+    return false
+  }
+
+  return (
+    typeof parent.slotId === "string" &&
+    /^home-resource-card-[1-3]$/.test(parent.slotId)
   )
 }
 
@@ -240,6 +289,16 @@ function getFlipcardLabel(slotId: unknown): string | undefined {
   if (typeof slotId !== "string") return undefined
   const match = /^coverage-work-flipcard-(\d+)$/.exec(slotId)
   return match ? `Flipcard ${match[1]}` : undefined
+}
+
+function getHomeResourceCardLabel(slotId: unknown): string | undefined {
+  if (typeof slotId !== "string") return undefined
+  const labels: Record<string, string> = {
+    "home-resource-card-1": "Kartu pintasan 1 — CSR",
+    "home-resource-card-2": "Kartu pintasan 2 — Keselamatan Operasional",
+    "home-resource-card-3": "Kartu pintasan 3 — Publikasi",
+  }
+  return labels[slotId]
 }
 
 const pageDefinitions = pageMediaMenus.flatMap((menu) =>
@@ -337,6 +396,9 @@ const initialPageMedia = Object.fromEntries(
       fit: slot.fit,
       recommendedRatio: slot.expectedRatio,
       currentSource: slot.currentSource,
+      ...("linkedPagePath" in slot
+        ? { linkedPagePath: slot.linkedPagePath }
+        : {}),
     })),
   ])
 )

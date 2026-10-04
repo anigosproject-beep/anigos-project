@@ -31,7 +31,7 @@ function LeadershipProfile({ person }: { person: TeamMember }) {
             {person.image ? (
               <Image
                 src={person.image}
-                alt={`Foto ${person.name}`}
+                alt={person.imageAlt ?? `Foto ${person.name}`}
                 fill
                 sizes="(min-width: 1024px) 18rem, 15rem"
                 className="object-cover object-center"
@@ -68,6 +68,7 @@ function LeadershipProfile({ person }: { person: TeamMember }) {
               personName={person.name}
               personRole={person.role}
               profileImage={person.image}
+              profileImageAlt={person.imageAlt}
               gallery={person.gallery}
             />
           </div>

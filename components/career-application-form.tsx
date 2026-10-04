@@ -1,6 +1,13 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  type User,
+} from "firebase/auth"
 import { FileText, Paperclip, Send, X } from "lucide-react"
 
 import type { CareerOpening } from "@/lib/careers-data"
@@ -21,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 import { CAREER_APPLICATION_FIELDS } from "@/lib/form-contract"
+import { getFirebaseAuth } from "@/lib/firebase-client"
 
 const maxFileSize = 5 * 1024 * 1024
 const maxFiles = 5
@@ -39,16 +47,67 @@ export function CareerApplicationForm({
 }) {
   const { locale } = useLocale()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const fullNameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [googleUser, setGoogleUser] = useState<User | null>(null)
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const [googleError, setGoogleError] = useState("")
   const [position, setPosition] = useState(selectedOpening ?? "")
   const selectedPosition = openings.some((opening) => opening.slug === position)
     ? position
     : openings.some((opening) => opening.slug === selectedOpening)
       ? (selectedOpening ?? "")
       : ""
+
+  useEffect(() => {
+    try {
+      return onAuthStateChanged(getFirebaseAuth(), (user) => {
+        setGoogleUser(user)
+        if (!user) return
+        if (fullNameRef.current && !fullNameRef.current.value)
+          fullNameRef.current.value = user.displayName ?? ""
+        if (emailRef.current && !emailRef.current.value)
+          emailRef.current.value = user.email ?? ""
+      })
+    } catch (authError) {
+      console.error("Unable to initialize Google sign-in.", authError)
+    }
+  }, [])
+
+  async function handleGoogleSignIn() {
+    setGoogleLoading(true)
+    setGoogleError("")
+    try {
+      const credential = await signInWithPopup(
+        getFirebaseAuth(),
+        new GoogleAuthProvider()
+      )
+      if (fullNameRef.current)
+        fullNameRef.current.value = credential.user.displayName ?? ""
+      if (emailRef.current) emailRef.current.value = credential.user.email ?? ""
+      setGoogleUser(credential.user)
+    } catch (authError) {
+      console.error("Google sign-in failed.", authError)
+      setGoogleError(translate(locale, "googleSignInFailed"))
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
+
+  async function handleGoogleSignOut() {
+    setGoogleError("")
+    try {
+      await signOut(getFirebaseAuth())
+      setGoogleUser(null)
+    } catch (authError) {
+      console.error("Google sign-out failed.", authError)
+      setGoogleError(translate(locale, "googleSignOutFailed"))
+    }
+  }
 
   function selectFiles(nextFiles: FileList | null) {
     if (!nextFiles?.length) return
@@ -112,9 +171,11 @@ export function CareerApplicationForm({
         formData.append(CAREER_APPLICATION_FIELDS.files, file)
       )
 
+      const idToken = await googleUser?.getIdToken()
       const response = await fetch("/api/career-applications", {
         method: "POST",
         body: formData,
+        headers: idToken ? { Authorization: `Bearer ${idToken}` } : undefined,
       })
       const payload = (await response.json()) as {
         error?: string
@@ -122,6 +183,9 @@ export function CareerApplicationForm({
       }
 
       if (!response.ok) {
+        if (payload.errorCode === "google-identity-mismatch") {
+          throw new Error(translate(locale, "googleIdentityMismatch"))
+        }
         if (payload.errorCode === "opening-unavailable") {
           throw new Error(translate(locale, "careerOpeningUnavailable"))
         }
@@ -180,6 +244,44 @@ export function CareerApplicationForm({
           </div>
         ) : (
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="rounded-2xl border border-border bg-muted/30 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium">
+                    {googleUser
+                      ? translate(locale, "googleSignedInAs")
+                      : translate(locale, "googleSignInPrompt")}
+                  </p>
+                  {googleUser?.email ? (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {googleUser.email}
+                    </p>
+                  ) : null}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={googleLoading}
+                  onClick={
+                    googleUser ? handleGoogleSignOut : handleGoogleSignIn
+                  }
+                >
+                  {googleLoading
+                    ? translate(locale, "googleSigningIn")
+                    : googleUser
+                      ? translate(locale, "googleSignOut")
+                      : translate(locale, "googleSignIn")}
+                </Button>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {translate(locale, "googleSignInOptional")}
+              </p>
+              {googleError ? (
+                <p role="alert" className="mt-2 text-sm text-destructive">
+                  {googleError}
+                </p>
+              ) : null}
+            </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="full-name">
@@ -187,6 +289,7 @@ export function CareerApplicationForm({
                 </Label>
                 <Input
                   id="full-name"
+                  ref={fullNameRef}
                   name={CAREER_APPLICATION_FIELDS.fullName}
                   required
                   placeholder={translate(locale, "fullNamePlaceholder")}
@@ -196,6 +299,7 @@ export function CareerApplicationForm({
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  ref={emailRef}
                   name={CAREER_APPLICATION_FIELDS.email}
                   type="email"
                   required

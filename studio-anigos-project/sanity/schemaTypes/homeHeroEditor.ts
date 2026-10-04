@@ -9,6 +9,7 @@ import { HomeHeroSlidesInput } from "../components/HomeHeroSlidesInput"
 import {
   maxHomeHeroSlides,
   maxHomeHeroVideoBytes,
+  recommendedHomeHeroVideoBytes,
 } from "../../../shared/sanity-content-contracts"
 
 function getParentMediaType(parent: unknown): string | undefined {
@@ -123,8 +124,7 @@ const heroSlide = defineArrayMember({
         defineField({
           name: "alt",
           title: "Teks alternatif",
-          type: "string",
-          validation: (rule) => rule.max(160),
+          type: "localizedMediaText",
         }),
       ],
     }),
@@ -141,7 +141,7 @@ const heroSlide = defineArrayMember({
             : true
         ),
       hidden: ({ parent }) => parent?.mediaType !== "video",
-      description: `Gunakan video web teroptimasi maksimal ${Math.round(maxHomeHeroVideoBytes / 1024 / 1024)} MiB. Aplikasi menampilkan gambar fallback, bukan mengunduh video yang lebih besar.`,
+      description: `Video sampai ${Math.round(maxHomeHeroVideoBytes / 1024 / 1024)} MiB dapat diputar. Maksimal ${Math.round(recommendedHomeHeroVideoBytes / 1024 / 1024)} MiB disarankan agar pemutaran awal cepat; video lebih besar dari batas pemutaran menampilkan gambar fallback.`,
     }),
     defineField({
       name: "cta",
@@ -231,6 +231,8 @@ const heroSlide = defineArrayMember({
 
 const initialHeroSlides = [
   {
+    _key: "hero-primary-video",
+    _type: "homeHeroSlide",
     isActive: true,
     position: 1,
     eyebrow: { id: "Petro Anigos", en: "Petro Anigos" },
@@ -243,7 +245,14 @@ const initialHeroSlides = [
       id: "Melayani kebutuhan distribusi BBM berkualitas untuk kebutuhan industri dengan jangkauan operasional yang terus berkembang.",
       en: "Serving quality fuel distribution needs for industries with a continuously expanding operational reach.",
     },
-    mediaType: "image",
+    mediaType: "video",
+    video: {
+      _type: "file",
+      asset: {
+        _type: "reference",
+        _ref: "file-38459dac5103ee419775644080357842e5c062ed-webm",
+      },
+    },
     cta: {
       label: { id: "Kenali Produk", en: "Explore Products" },
       kind: "internal",
@@ -251,6 +260,8 @@ const initialHeroSlides = [
     },
   },
   {
+    _key: "hero-product-image",
+    _type: "homeHeroSlide",
     isActive: true,
     position: 2,
     eyebrow: { id: "Produk Berkualitas", en: "Quality Products" },
@@ -264,53 +275,17 @@ const initialHeroSlides = [
       en: "Petro Anigos products and services are designed to support operational needs across different scales.",
     },
     mediaType: "image",
+    image: {
+      _type: "image",
+      asset: {
+        _type: "reference",
+        _ref: "image-99da3f440fd50a5aee37eccfa82bd48868480fef-4000x2252-jpg",
+      },
+    },
     cta: {
       label: { id: "Ajukan Penawaran", en: "Request an Offer" },
       kind: "internal",
       route: "/produk/penawaran",
-    },
-  },
-  {
-    isActive: true,
-    position: 3,
-    eyebrow: { id: "Distribusi Terpercaya", en: "Trusted Distribution" },
-    progressLabel: { id: "Jangkauan luas", en: "Wide-reaching service" },
-    title: {
-      id: "Dukungan armada untuk distribusi yang aman dan tepat waktu.",
-      en: "Fleet support for safe and on-time distribution.",
-    },
-    description: {
-      id: "Didukung pilihan kapasitas armada dan mitra transportir untuk menjangkau kebutuhan distribusi ant wilayah.",
-      en: "Supported by flexible fleet capacities and transport partners to reach distribution needs across regions.",
-    },
-    mediaType: "image",
-    cta: {
-      label: { id: "Lihat Armada", en: "View Fleet" },
-      kind: "internal",
-      route: "/produk/armada",
-    },
-  },
-  {
-    isActive: true,
-    position: 4,
-    eyebrow: { id: "Bersama untuk Masa Depan", en: "Together for the Future" },
-    progressLabel: {
-      id: "Kemitraan berkelanjutan",
-      en: "Sustainable partnerships",
-    },
-    title: {
-      id: "Membangun kemitraan energi yang berkelanjutan.",
-      en: "Building sustainable energy partnerships.",
-    },
-    description: {
-      id: "Kami terbuka untuk membangun hubungan bisnis yang profesional, transparan, dan saling menguntungkan.",
-      en: "We are open to building professional, transparent, and mutually beneficial business relationships.",
-    },
-    mediaType: "image",
-    cta: {
-      label: { id: "Lihat Client", en: "Explore Clients" },
-      kind: "internal",
-      route: "/tentang-kami/client",
     },
   },
 ]

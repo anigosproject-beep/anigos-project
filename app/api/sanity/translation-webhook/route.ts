@@ -1,7 +1,10 @@
 import { createClient } from "@sanity/client"
 import { NextResponse } from "next/server"
 
-import { translateText } from "@/lib/translation-handler"
+import {
+  isSupportedTranslationDocumentType,
+  translateSanityDocument,
+} from "@/lib/sanity-translation"
 import { assertSanityTarget, sanityTarget } from "@/shared/sanity-target"
 
 export const runtime = "nodejs"
@@ -13,24 +16,6 @@ assertSanityTarget(
 const { projectId, dataset } = sanityTarget
 
 const maxBodyBytes = 8 * 1024
-const careerTextFields = [
-  "title",
-  "department",
-  "location",
-  "employmentType",
-  "summary",
-] as const
-
-type CareerTranslationDocument = {
-  _id: string
-  _type: "careerOpening"
-  title?: { id?: string }
-  department?: { id?: string }
-  location?: { id?: string }
-  employmentType?: { id?: string }
-  summary?: { id?: string }
-  responsibilities?: Array<{ _key: string; id?: string }>
-}
 
 type WebhookPayload = {
   _id?: unknown
@@ -47,7 +32,7 @@ export async function POST(request: Request) {
     )
   }
 
-  if (request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!matchesWebhookAuthorization(request, secret)) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 })
   }
 
@@ -66,18 +51,34 @@ export async function POST(request: Request) {
     )
   }
 
+  let body: string
+  try {
+    body = await request.text()
+  } catch {
+    return NextResponse.json(
+      { error: "Unable to read webhook body." },
+      { status: 400 }
+    )
+  }
+  if (new TextEncoder().encode(body).byteLength > maxBodyBytes) {
+    return NextResponse.json(
+      { error: "Webhook body is too large." },
+      { status: 413 }
+    )
+  }
+
   let payload: WebhookPayload
   try {
-    payload = (await request.json()) as WebhookPayload
+    payload = JSON.parse(body) as WebhookPayload
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 })
   }
 
   if (
-    payload._type !== "careerOpening" ||
     typeof payload._id !== "string" ||
     payload._id.length === 0 ||
-    payload._id.startsWith("drafts.")
+    payload._id.startsWith("drafts.") ||
+    !isSupportedTranslationDocumentType(payload._type)
   ) {
     return NextResponse.json(
       { error: "Unsupported Sanity document." },
@@ -87,7 +88,9 @@ export async function POST(request: Request) {
 
   const token = process.env.SANITY_AUTH_TOKEN
   if (!token) {
-    console.error("Sanity translation webhook write configuration is incomplete.")
+    console.error(
+      "Sanity translation webhook write configuration is incomplete."
+    )
     return NextResponse.json(
       { error: "Webhook is not configured." },
       { status: 503 }
@@ -103,56 +106,28 @@ export async function POST(request: Request) {
   })
 
   try {
-    const document = await client.fetch<CareerTranslationDocument | null>(
-      `*[_id == $id && _type == "careerOpening"][0]{
-        _id, _type,
-        title { id },
-        department { id },
-        location { id },
-        employmentType { id },
-        summary { id },
-        responsibilities[] { _key, id }
-      }`,
-      { id: payload._id }
+    const document = await client.fetch<{
+      _id: string
+      _type: string
+      _rev: string
+      [key: string]: unknown
+    } | null>(
+      '*[_id == $id && _type == $type && !(_id in path("drafts.**"))][0]',
+      { id: payload._id, type: payload._type }
     )
 
     if (!document) {
-      return NextResponse.json({ error: "Document not found." }, { status: 404 })
+      return NextResponse.json(
+        { error: "Document not found." },
+        { status: 404 }
+      )
     }
 
-    const updates: Record<string, string> = {}
-    for (const field of careerTextFields) {
-      const source = document[field]?.id?.trim()
-      if (source) {
-        updates[`${field}.en`] = await translateText({
-          text: source,
-          sourceLocale: "id",
-          targetLocale: "en",
-        })
-      }
-    }
-
-    for (const responsibility of document.responsibilities ?? []) {
-      const source = responsibility.id?.trim()
-      if (source) {
-        const key = responsibility._key.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
-        updates[`responsibilities[_key=="${key}"].en`] = await translateText({
-          text: source,
-          sourceLocale: "id",
-          targetLocale: "en",
-        })
-      }
-    }
-
-    if (Object.keys(updates).length === 0) {
-      return NextResponse.json({ translatedFields: 0 })
-    }
-
-    await client.patch(document._id).set(updates).commit()
-    return NextResponse.json({ translatedFields: Object.keys(updates).length })
-  } catch (error) {
+    const result = await translateSanityDocument(client, document)
+    return NextResponse.json(result)
+  } catch (error: unknown) {
     console.error(
-      "Sanity career translation failed.",
+      "Sanity document translation failed.",
       error instanceof Error ? error.message : "Unknown error"
     )
     return NextResponse.json(
@@ -160,4 +135,16 @@ export async function POST(request: Request) {
       { status: 502 }
     )
   }
+}
+
+function matchesWebhookAuthorization(request: Request, secret: string) {
+  const expected = `Bearer ${secret}`
+  const provided = request.headers.get("authorization") ?? ""
+  if (provided.length !== expected.length) return false
+
+  let mismatch = 0
+  for (let index = 0; index < expected.length; index += 1) {
+    mismatch |= expected.charCodeAt(index) ^ provided.charCodeAt(index)
+  }
+  return mismatch === 0
 }

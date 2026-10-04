@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n"
+
 export type NewsroomCategory = {
   slug: string
   name: string
@@ -61,8 +63,8 @@ export function getArticleBySlug(slug: string, articles: NewsroomArticle[]) {
   return articles.find((article) => article.slug === slug)
 }
 
-export function formatArticleDate(date: string) {
-  return new Intl.DateTimeFormat("id-ID", {
+export function formatArticleDate(date: string, locale: Locale = "id") {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",

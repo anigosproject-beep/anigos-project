@@ -19,27 +19,38 @@ export const newsroomArticle = defineType({
     defineField({
       name: "title",
       title: "Judul artikel",
-      type: "string",
+      type: "localizedHeroText",
       group: "main",
-      validation: (rule) => rule.required().max(120),
+      validation: (rule) =>
+        rule.custom((value) => {
+          const id = (value as { id?: unknown } | undefined)?.id
+          return typeof id === "string" && id.trim()
+            ? id.length <= 120 || "Judul maksimal 120 karakter."
+            : "Judul Bahasa Indonesia wajib diisi."
+        }),
     }),
     defineField({
       name: "slug",
       title: "Slug URL",
       type: "slug",
       group: "main",
-      options: { source: "title", maxLength: 96 },
+      options: { source: "title.id", maxLength: 96 },
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "excerpt",
       title: "Ringkasan artikel",
-      type: "text",
-      rows: 3,
+      type: "localizedArticleText",
       group: "main",
       description:
         "Tampil sebagai ringkasan pada daftar artikel dan di bawah judul halaman detail. Maksimal 280 karakter.",
-      validation: (rule) => rule.required().max(280),
+      validation: (rule) =>
+        rule.custom((value) => {
+          const id = (value as { id?: unknown } | undefined)?.id
+          return typeof id === "string" && id.trim()
+            ? id.length <= 280 || "Ringkasan maksimal 280 karakter."
+            : "Ringkasan Bahasa Indonesia wajib diisi."
+        }),
     }),
     defineField({
       name: "category",
@@ -68,17 +79,16 @@ export const newsroomArticle = defineType({
     defineField({
       name: "readTime",
       title: "Estimasi waktu baca",
-      type: "string",
+      type: "localizedHeroText",
       group: "main",
       description: 'Contoh: "5 menit".',
       validation: (rule) =>
-        rule
-          .required()
-          .max(20)
-          .regex(/^\d+\s+menit$/i, {
-            name: "estimasi waktu baca",
-            invert: false,
-          }),
+        rule.custom((value) => {
+          const id = (value as { id?: unknown } | undefined)?.id
+          return typeof id === "string" && /^\d+\s+menit$/i.test(id)
+            ? true
+            : 'Masukkan estimasi dalam Bahasa Indonesia, misalnya "5 menit".'
+        }),
     }),
     defineField({
       name: "featured",
@@ -100,8 +110,7 @@ export const newsroomArticle = defineType({
         defineField({
           name: "alt",
           title: "Teks alternatif",
-          type: "string",
-          validation: (rule) => rule.max(160),
+          type: "localizedMediaText",
         }),
       ],
       validation: (rule) => rule.required(),
@@ -127,8 +136,7 @@ export const newsroomArticle = defineType({
         defineField({
           name: "alt",
           title: "Teks alternatif",
-          type: "string",
-          validation: (rule) => rule.max(160),
+          type: "localizedMediaText",
         }),
       ],
     }),
@@ -148,13 +156,18 @@ export const newsroomArticle = defineType({
             defineField({
               name: "text",
               title: "Teks paragraf",
-              type: "text",
-              rows: 6,
-              validation: (rule) => rule.required().max(3000),
+              type: "localizedArticleText",
+              validation: (rule) =>
+                rule.custom((value) => {
+                  const id = (value as { id?: unknown } | undefined)?.id
+                  return typeof id === "string" && id.trim()
+                    ? true
+                    : "Teks paragraf Bahasa Indonesia wajib diisi."
+                }),
             }),
           ],
           preview: {
-            select: { title: "text" },
+            select: { title: "text.id" },
             prepare: ({ title }) => ({
               title: title
                 ? `${title.slice(0, 90)}${title.length > 90 ? "…" : ""}`
@@ -168,9 +181,9 @@ export const newsroomArticle = defineType({
   ],
   preview: {
     select: {
-      title: "title",
+      title: "title.id",
       date: "date",
-      category: "category.name",
+      category: "category.name.id",
       media: "image",
     },
     prepare: ({ title, date, category, media }) => ({

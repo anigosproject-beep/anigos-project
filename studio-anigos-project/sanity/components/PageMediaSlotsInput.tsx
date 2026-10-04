@@ -17,6 +17,7 @@ type SupportingMediaSlot = {
   fit?: "cover" | "contain"
   recommendedRatio?: string
   currentSource?: string
+  linkedPagePath?: string
   [key: string]: unknown
 }
 
@@ -55,6 +56,7 @@ export function PageMediaSlotsInput(
       fit: slot.fit,
       recommendedRatio: slot.expectedRatio,
       currentSource: slot.currentSource,
+      ...(slot.linkedPagePath ? { linkedPagePath: slot.linkedPagePath } : {}),
     }))
 
     props.onChange(PatchEvent.from(set([...slots, ...newSlots])))

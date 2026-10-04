@@ -288,9 +288,8 @@ export const partner = defineType({
                 defineField({
                   name: "alt",
                   title: "Teks alternatif",
-                  type: "string",
+                  type: "localizedMediaText",
                   description: "Jelaskan isi foto untuk aksesibilitas.",
-                  validation: (rule) => rule.max(160),
                 }),
               ],
               validation: (rule) => rule.required(),
@@ -298,14 +297,13 @@ export const partner = defineType({
             defineField({
               name: "caption",
               title: "Keterangan foto (opsional)",
-              type: "string",
-              validation: (rule) => rule.max(160),
+              type: "localizedMediaText",
             }),
           ],
           preview: {
             select: {
-              title: "caption",
-              alt: "image.alt",
+              title: "caption.id",
+              alt: "image.alt.id",
               media: "image",
             },
             prepare: ({ title, alt, media }) => ({

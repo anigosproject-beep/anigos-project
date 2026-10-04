@@ -3,10 +3,7 @@ import type { MetadataRoute } from "next"
 import { getSanityNewsroom } from "@/lib/sanity-newsroom"
 import { getPageVisibilityMap } from "@/lib/page-visibility"
 import { isPagePathVisible } from "@/shared/page-visibility-registry"
-
-const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://petroanigos.com"
-).replace(/\/$/, "")
+import { siteUrl } from "@/lib/site-config"
 
 const publicRoutes = [
   { path: "/", priority: 1, changeFrequency: "weekly" as const },
@@ -105,7 +102,7 @@ const publicRoutes = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [{ articles }, visibility] = await Promise.all([
-    getSanityNewsroom({ useDraftMode: false }),
+    getSanityNewsroom({ useDraftMode: false, locale: "id" }),
     getPageVisibilityMap(),
   ])
   const routes = publicRoutes

@@ -52,8 +52,7 @@ const galleryItem = defineArrayMember({
         defineField({
           name: "alt",
           title: "Teks alternatif",
-          type: "string",
-          validation: (rule) => rule.max(160),
+          type: "localizedMediaText",
         }),
       ],
       validation: (rule) => rule.required(),
@@ -61,12 +60,15 @@ const galleryItem = defineArrayMember({
     defineField({
       name: "caption",
       title: "Keterangan foto",
-      type: "string",
-      validation: (rule) => rule.max(160),
+      type: "localizedMediaText",
     }),
   ],
   preview: {
-    select: { title: "caption", alt: "image.alt", media: "image" },
+    select: {
+      title: "caption.id",
+      alt: "image.alt.id",
+      media: "image",
+    },
     prepare: ({ title, alt, media }) => ({
       title: title || alt || "Foto galeri",
       media,
@@ -116,8 +118,7 @@ export const teamMember = defineType({
         defineField({
           name: "alt",
           title: "Teks alternatif",
-          type: "string",
-          validation: (rule) => rule.max(160),
+          type: "localizedMediaText",
         }),
       ],
     }),

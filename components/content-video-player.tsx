@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  Maximize,
-  Pause,
-  Play,
-  Volume2,
-  VolumeX,
-} from "lucide-react"
+import { Maximize, Pause, Play, Volume2, VolumeX } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { cn } from "@/lib/utils"
@@ -21,6 +15,7 @@ type ContentVideoPlayerProps = {
   className?: string
   autoPlay?: boolean
   loop?: boolean
+  deferUntilVisible?: boolean
 }
 
 function formatTime(seconds: number) {
@@ -39,10 +34,12 @@ export function ContentVideoPlayer({
   className,
   autoPlay = false,
   loop = false,
+  deferUntilVisible = false,
 }: ContentVideoPlayerProps) {
   const { locale } = useLocale()
   const resolvedTitle = title ?? translate(locale, "videoContent")
   const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<HTMLDivElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
   const hideControlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [isPlaying, setIsPlaying] = useState(autoPlay)
@@ -51,7 +48,33 @@ export function ContentVideoPlayer({
   const [duration, setDuration] = useState(0)
   const [controlsVisible, setControlsVisible] = useState(true)
   const [generatedPoster, setGeneratedPoster] = useState<string>()
+  const [shouldLoad, setShouldLoad] = useState(!deferUntilVisible)
   const resolvedPoster = poster ?? thumbnail ?? generatedPoster
+
+  useEffect(() => {
+    if (!deferUntilVisible || shouldLoad) return
+
+    const player = playerRef.current
+    if (!player) return
+
+    if (typeof IntersectionObserver === "undefined") {
+      const fallbackTimer = window.setTimeout(() => setShouldLoad(true), 0)
+      return () => window.clearTimeout(fallbackTimer)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldLoad(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: "400px 0px" }
+    )
+    observer.observe(player)
+
+    return () => observer.disconnect()
+  }, [deferUntilVisible, shouldLoad])
 
   const scheduleControlsHide = useCallback(() => {
     if (hideControlsTimer.current) {
@@ -156,15 +179,19 @@ export function ContentVideoPlayer({
 
   return (
     <div
+      ref={playerRef}
       className={cn(
         "group relative overflow-hidden rounded-3xl bg-foreground text-background shadow-xl",
-        className,
+        className
       )}
       onPointerMove={revealControls}
       onPointerEnter={revealControls}
       onClickCapture={(event) => {
         const target = event.target
-        if (!(target instanceof Element) || !target.closest("[data-media-control]")) {
+        if (
+          !(target instanceof Element) ||
+          !target.closest("[data-media-control]")
+        ) {
           setControlsVisible(false)
         }
       }}
@@ -172,14 +199,14 @@ export function ContentVideoPlayer({
     >
       <video
         ref={videoRef}
-        src={src}
+        src={shouldLoad ? src : undefined}
         poster={resolvedPoster}
         title={resolvedTitle}
         autoPlay={autoPlay}
-        muted={autoPlay}
+        muted={isMuted}
         loop={loop}
         playsInline
-        preload="metadata"
+        preload={deferUntilVisible ? "none" : "metadata"}
         className="block aspect-video size-full object-cover"
         onLoadedMetadata={(event) => {
           setDuration(event.currentTarget.duration)
@@ -188,7 +215,9 @@ export function ContentVideoPlayer({
         }}
         onDurationChange={(event) => setDuration(event.currentTarget.duration)}
         onLoadedData={(event) => generatePoster(event.currentTarget)}
-        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+        onTimeUpdate={(event) =>
+          setCurrentTime(event.currentTarget.currentTime)
+        }
         onSeeking={(event) => setCurrentTime(event.currentTarget.currentTime)}
         onPlay={() => setIsPlaying(true)}
         onPause={() => {
@@ -206,19 +235,23 @@ export function ContentVideoPlayer({
         onClick={togglePlayback}
         className={cn(
           "absolute inset-0 m-auto flex size-14 items-center justify-center rounded-full bg-background/90 text-foreground transition-opacity focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-background",
-          controlsVisible ? "opacity-100" : "pointer-events-none opacity-0",
+          controlsVisible ? "opacity-100" : "pointer-events-none opacity-0"
         )}
         data-media-control
         aria-label={translate(locale, isPlaying ? "videoPause" : "videoPlay")}
       >
-        {isPlaying ? <Pause className="size-5" /> : <Play className="ml-1 size-5" />}
+        {isPlaying ? (
+          <Pause className="size-5" />
+        ) : (
+          <Play className="ml-1 size-5" />
+        )}
       </button>
 
       <div
         ref={controlsRef}
         className={cn(
-          "absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-10 transition-opacity duration-200",
-          controlsVisible ? "opacity-100" : "pointer-events-none opacity-0",
+          "absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pt-10 pb-4 transition-opacity duration-200",
+          controlsVisible ? "opacity-100" : "pointer-events-none opacity-0"
         )}
         data-media-control
       >
@@ -239,9 +272,16 @@ export function ContentVideoPlayer({
             type="button"
             onClick={togglePlayback}
             className="rounded-md p-1.5 hover:bg-background/15 focus-visible:outline-2 focus-visible:outline-background"
-            aria-label={translate(locale, isPlaying ? "videoPause" : "videoPlay")}
+            aria-label={translate(
+              locale,
+              isPlaying ? "videoPause" : "videoPlay"
+            )}
           >
-            {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
+            {isPlaying ? (
+              <Pause className="size-4" />
+            ) : (
+              <Play className="size-4" />
+            )}
           </button>
           <span className="min-w-20 text-xs tabular-nums">
             {formatTime(currentTime)} / {formatTime(duration)}
@@ -250,9 +290,16 @@ export function ContentVideoPlayer({
             type="button"
             onClick={toggleMute}
             className="rounded-md p-1.5 hover:bg-background/15 focus-visible:outline-2 focus-visible:outline-background"
-            aria-label={translate(locale, isMuted ? "videoUnmute" : "videoMute")}
+            aria-label={translate(
+              locale,
+              isMuted ? "videoUnmute" : "videoMute"
+            )}
           >
-            {isMuted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+            {isMuted ? (
+              <VolumeX className="size-4" />
+            ) : (
+              <Volume2 className="size-4" />
+            )}
           </button>
           <button
             type="button"

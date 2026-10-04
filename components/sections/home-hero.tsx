@@ -180,8 +180,8 @@ export function HomeHero() {
             const shouldPlayVideo =
               item.mediaType === "video" &&
               Boolean(item.videoUrl) &&
-              typeof item.videoSize === "number" &&
-              item.videoSize <= maxHomeHeroVideoBytes
+              (typeof item.videoSize !== "number" ||
+                item.videoSize <= maxHomeHeroVideoBytes)
             const hasUsableMedia =
               item.mediaType === "image" ? Boolean(image) : shouldPlayVideo
             const href =
@@ -193,7 +193,7 @@ export function HomeHero() {
             if (!hasLocalizedText(item.title)) return null
             if (!hasUsableMedia) {
               console.warn(
-                `Home Hero slide ${String(item.position ?? "?")} has no media within the playback limit; using the local fallback image.`
+                `Home Hero slide ${String(item.position ?? "?")} has no playable media; using the local fallback image.`
               )
             }
             return {
@@ -258,8 +258,7 @@ export function HomeHero() {
     const timer = videoIsPlaying
       ? null
       : window.setTimeout(advanceSlide, durationMs)
-    let frame = 0
-    const updateProgress = () => {
+    const progressInterval = window.setInterval(() => {
       if (videoIsPlaying) {
         const video = videoRef.current
         if (video && Number.isFinite(video.duration) && video.duration > 0) {
@@ -268,13 +267,11 @@ export function HomeHero() {
       } else {
         setElapsed(Math.min(performance.now() - startedAt, durationMs))
       }
-      frame = window.requestAnimationFrame(updateProgress)
-    }
-    frame = window.requestAnimationFrame(updateProgress)
+    }, 100)
 
     return () => {
       if (timer !== null) window.clearTimeout(timer)
-      window.cancelAnimationFrame(frame)
+      window.clearInterval(progressInterval)
     }
   }, [activeSlide, advanceSlide, durationMs, slide, videoIsPlaying])
 
@@ -315,12 +312,13 @@ export function HomeHero() {
               disablePictureInPicture
               disableRemotePlayback
               controlsList="nodownload noplaybackrate noremoteplayback"
-              preload={index === activeSlide ? "auto" : "metadata"}
+              preload="metadata"
               poster={item.image || videoPoster}
               onCanPlay={(event) => {
                 if (videoIsPlaying) {
                   const video = event.currentTarget
                   video.muted = true
+                  video.defaultMuted = true
                   void video.play().catch((error: unknown) => {
                     console.warn("Home Hero video autoplay was blocked.", error)
                     setVideoPlaybackBlocked((current) => ({
@@ -450,7 +448,11 @@ export function HomeHero() {
           </motion.div>
         </AnimatePresence>
         <div className="mt-7 w-full max-w-3xl sm:mt-10">
-          <div className="grid grid-cols-4 gap-1.5 sm:gap-2" role="tablist">
+          <div
+            className="grid grid-cols-4 gap-1.5 sm:gap-2"
+            role="group"
+            aria-label={translate(locale, "heroSlideLabel")}
+          >
             {Array.from({ length: maxHomeHeroSlides }, (_, index) => {
               const item = heroSlides[index]
 
@@ -465,45 +467,77 @@ export function HomeHero() {
               }
 
               return (
-                <button
+                <div
                   key={`${item.image}-${item.video ?? ""}-${item.href}-${index}`}
-                  type="button"
-                  role="tab"
-                  aria-label={`${translate(locale, "heroSlideLabel")} ${index + 1}: ${text(item.eyebrow ?? item.title, "heroPrimaryTitle")}`}
-                  aria-selected={index === activeSlide}
-                  data-active={index === activeSlide}
-                  className="group flex min-h-12 min-w-0 touch-manipulation flex-col text-left transition-opacity duration-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:outline-none data-[active=false]:opacity-70"
-                  onClick={() => {
-                    transitionLockRef.current = null
-                    selectSlide(index)
-                  }}
+                  className="flex min-w-0 flex-col"
                 >
-                  <Progress
-                    value={
-                      index < activeSlide
-                        ? 100
-                        : index > activeSlide
-                          ? 0
-                          : durationMs > 0
-                            ? Math.min((elapsed / durationMs) * 100, 100)
-                            : 0
-                    }
-                    className={cn(
-                      "w-full flex-none gap-0 [&_[data-slot=progress-indicator]]:bg-gradient-to-r [&_[data-slot=progress-indicator]]:from-white [&_[data-slot=progress-indicator]]:via-white/80 [&_[data-slot=progress-indicator]]:to-white [&_[data-slot=progress-indicator]]:bg-[length:200%_100%] [&_[data-slot=progress-indicator]]:transition-none [&_[data-slot=progress-track]]:h-1.5 [&_[data-slot=progress-track]]:bg-white/25 [&_[data-slot=progress-track]]:shadow-[inset_0_1px_1px_rgb(255_255_255/0.12)]",
-                      !prefersReducedMotion &&
-                        index === activeSlide &&
-                        elapsed > 120 &&
-                        "[&_[data-slot=progress-indicator]]:relative [&_[data-slot=progress-indicator]]:after:pointer-events-none [&_[data-slot=progress-indicator]]:after:absolute [&_[data-slot=progress-indicator]]:after:top-1/2 [&_[data-slot=progress-indicator]]:after:right-0.5 [&_[data-slot=progress-indicator]]:after:size-1 [&_[data-slot=progress-indicator]]:after:-translate-y-1/2 [&_[data-slot=progress-indicator]]:after:animate-[hero-progress-glow_2.2s_ease-in-out_infinite] [&_[data-slot=progress-indicator]]:after:rounded-full [&_[data-slot=progress-indicator]]:after:bg-white/90 [&_[data-slot=progress-indicator]]:after:shadow-[0_0_4px_1px_rgb(255_255_255/0.35)] [&_[data-slot=progress-indicator]]:after:content-['']"
+                  <div className="relative">
+                    <Progress
+                      value={
+                        index < activeSlide
+                          ? 100
+                          : index > activeSlide
+                            ? 0
+                            : durationMs > 0
+                              ? Math.min((elapsed / durationMs) * 100, 100)
+                              : 0
+                      }
+                      className={cn(
+                        "w-full flex-none gap-0 [&_[data-slot=progress-indicator]]:bg-gradient-to-r [&_[data-slot=progress-indicator]]:from-white [&_[data-slot=progress-indicator]]:via-white/80 [&_[data-slot=progress-indicator]]:to-white [&_[data-slot=progress-indicator]]:bg-[length:200%_100%] [&_[data-slot=progress-indicator]]:transition-none [&_[data-slot=progress-track]]:h-1.5 [&_[data-slot=progress-track]]:bg-white/25 [&_[data-slot=progress-track]]:shadow-[inset_0_1px_1px_rgb(255_255_255/0.12)]",
+                        !prefersReducedMotion &&
+                          index === activeSlide &&
+                          elapsed > 120 &&
+                          "[&_[data-slot=progress-indicator]]:relative [&_[data-slot=progress-indicator]]:after:pointer-events-none [&_[data-slot=progress-indicator]]:after:absolute [&_[data-slot=progress-indicator]]:after:top-1/2 [&_[data-slot=progress-indicator]]:after:right-0.5 [&_[data-slot=progress-indicator]]:after:size-1 [&_[data-slot=progress-indicator]]:after:-translate-y-1/2 [&_[data-slot=progress-indicator]]:after:animate-[hero-progress-glow_2.2s_ease-in-out_infinite] [&_[data-slot=progress-indicator]]:after:rounded-full [&_[data-slot=progress-indicator]]:after:bg-white/90 [&_[data-slot=progress-indicator]]:after:shadow-[0_0_4px_1px_rgb(255_255_255/0.35)] [&_[data-slot=progress-indicator]]:after:content-['']"
+                      )}
+                      aria-label={`${translate(locale, "slideDurationLabel")} ${index + 1}`}
+                      aria-valuetext={`${index + 1} dari ${heroSlides.length}`}
+                    />
+                    {index === activeSlide && videoIsPlaying && (
+                      <input
+                        type="range"
+                        min={0}
+                        max={Math.ceil(durationMs / 1000)}
+                        step={1}
+                        value={Math.min(
+                          Math.floor(elapsed / 1000),
+                          Math.ceil(durationMs / 1000)
+                        )}
+                        aria-label={translate(locale, "heroVideoSeek")}
+                        aria-valuetext={`${Math.floor(elapsed / 1000)} / ${Math.ceil(durationMs / 1000)} s`}
+                        className="absolute inset-x-0 top-0 h-6 w-full cursor-ew-resize opacity-0 focus-visible:opacity-100 focus-visible:outline-none"
+                        onChange={(event) => {
+                          const video = videoRef.current
+                          const seekTime = Number(event.currentTarget.value)
+                          if (
+                            video &&
+                            Number.isFinite(seekTime) &&
+                            Number.isFinite(video.duration)
+                          ) {
+                            video.currentTime = seekTime
+                            setElapsed(seekTime * 1000)
+                          }
+                        }}
+                      />
                     )}
-                    aria-label={`${translate(locale, "slideDurationLabel")} ${index + 1}`}
-                    aria-valuetext={`${index + 1} dari ${heroSlides.length}`}
-                  />
-                  <span className="mt-2 line-clamp-2 h-8 w-full text-[10px] leading-4 break-words text-white/60 sm:text-xs">
-                    {item.progressLabel
-                      ? text(item.progressLabel, "heroPrimaryTitle")
-                      : String(index + 1).padStart(2, "0")}
-                  </span>
-                </button>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={`${translate(locale, "heroSlideLabel")} ${index + 1}: ${text(item.eyebrow ?? item.title, "heroPrimaryTitle")}`}
+                    aria-pressed={index === activeSlide}
+                    data-active={index === activeSlide}
+                    className="group flex min-h-8 min-w-0 touch-manipulation items-start text-left transition-opacity duration-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:outline-none data-[active=false]:opacity-70"
+                    onClick={() => {
+                      transitionLockRef.current = null
+                      selectSlide(index)
+                    }}
+                  >
+                    <span className="mt-2 line-clamp-2 h-8 w-full text-[10px] leading-4 break-words text-white/60 sm:text-xs">
+                      {item.progressLabel
+                        ? text(item.progressLabel, "heroPrimaryTitle")
+                        : String(index + 1).padStart(2, "0")}
+                    </span>
+                  </button>
+                </div>
               )
             })}
           </div>

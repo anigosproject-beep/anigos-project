@@ -74,11 +74,24 @@ fleksibel, bukan slot layout tetap. Schema Home Hero mewajibkan sedikitnya satu
 slide dan media untuk jenis yang dipilih; penghapusan item tetap bagian dari
 workflow editorial.
 
-Ukuran video Marine Fuel yang melewati batas aplikasi 32 MiB tidak dikirim
-sebagai URL playback oleh API; UI mempertahankan placeholder dan menampilkan
-peringatan. Batas ukuran mengurangi risiko file besar, tetapi Sanity `file`
-tetap bukan layanan transcoding/adaptive streaming; untuk video publik bertrafik
-tinggi, gunakan layanan video khusus sebelum rollout skala besar.
+Tiga kartu pintasan Resource Grid beranda memiliki slot statis di menu Beranda
+→ Halaman Beranda. Setiap slot memilih path halaman dari daftar Page Hero yang
+terdaftar. Link kartu mengikuti halaman pilihan, dan gambar diambil otomatis
+dari gambar Page Hero halaman itu; jika belum ada gambar, UI memakai gambar
+fallback yang sudah tersedia. Nama kartu dan keterangannya otomatis memakai
+judul serta subjudul Page Hero pada bahasa yang sedang aktif, sehingga editor
+hanya memilih halaman dan tidak perlu mengisi teks kartu terpisah. Slot baru
+dapat ditambahkan lewat tindakan pemulihan slot yang hilang di editor tanpa
+mengubah media kartu lain.
+
+Video Marine Fuel direkomendasikan MP4 (H.264) hingga 32 MiB; batas playback
+aplikasi adalah 64 MiB. File yang melampaui batas tidak dikirim sebagai URL oleh
+API dan UI menampilkan peringatan. Player menggunakan gambar latar sebagai
+poster, baru memasang URL video saat mendekati viewport (margin 400 px), dan
+meminta preload `none` sampai playback dimulai pengguna. Batas ukuran dan lazy
+loading mengurangi transfer yang tidak perlu, tetapi Sanity `file` tetap bukan
+layanan transcoding/adaptive streaming; untuk video publik bertrafik tinggi,
+gunakan layanan video khusus sebelum rollout skala besar.
 
 **Batas perlindungan:** kontrol Studio dan validasi schema tidak membatasi
 mutasi langsung melalui API Content Lake, token dengan hak tulis, migrasi, atau

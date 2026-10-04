@@ -39,7 +39,7 @@ export function NewsroomSubcategoryInput(props: StringInputProps) {
       .fetch<Subcategory[]>(
         `*[_id == $categoryId][0].subcategories[]{
           "slug": slug.current,
-          name
+          "name": coalesce(name.id, name)
         }`,
         { categoryId }
       )

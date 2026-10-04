@@ -2,6 +2,8 @@ import type { SchemaTypeDefinition } from "sanity"
 
 import { pageMediaEditor } from "./pageMediaEditor"
 import { localizedHeroText } from "./localizedHeroText"
+import { localizedMediaText } from "./localizedMediaText"
+import { localizedArticleText } from "./localizedArticleText"
 import { homeHeroEditor } from "./homeHeroEditor"
 import { pageHeroEditor } from "./pageHeroEditor"
 import { partner } from "./partner"
@@ -21,6 +23,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   mediaAsset,
   pageMediaEditor,
   localizedHeroText,
+  localizedMediaText,
+  localizedArticleText,
   homeHeroEditor,
   pageHeroEditor,
   partner,

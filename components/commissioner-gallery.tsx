@@ -35,6 +35,7 @@ type LeadershipGalleryProps = {
   personName: string
   personRole: string
   profileImage?: string
+  profileImageAlt?: string
   gallery?: Array<{
     src: string
     alt: string
@@ -144,6 +145,7 @@ export function LeadershipGallery({
   personName,
   personRole,
   profileImage,
+  profileImageAlt,
   gallery = [],
 }: LeadershipGalleryProps) {
   const { locale } = useLocale()
@@ -156,7 +158,7 @@ export function LeadershipGallery({
       ? [
           {
             src: profileImage,
-            alt: `Foto profil ${personName}`,
+            alt: profileImageAlt ?? `Foto profil ${personName}`,
             caption: profileCaption,
             fileName: `profil-${personName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.svg`,
             resolution: "576 × 768 px",

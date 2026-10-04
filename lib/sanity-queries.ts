@@ -1,3 +1,8 @@
+import {
+  pageHeroFieldName,
+  pageHeroMenus,
+} from "../studio-anigos-project/sanity/page-hero-registry"
+
 const groq = (strings: TemplateStringsArray, ...values: unknown[]) =>
   strings.reduce(
     (result, string, index) => `${result}${string}${values[index] ?? ""}`,
@@ -5,7 +10,13 @@ const groq = (strings: TemplateStringsArray, ...values: unknown[]) =>
   )
 
 const t = (field: string, alias?: string) =>
-  `"${alias ?? field}": coalesce(${field}[$lang], ${field}.id)`
+  `"${alias ?? field}": coalesce(${field}[$lang], ${field}.id, ${field})`
+
+const pageHeroLocalizedValue = (
+  field: string,
+  fallback: { id: string; en: string }
+) =>
+  `coalesce(${field}[$lang], ${field}.id, select($lang == "en" => ${JSON.stringify(fallback.en)}, ${JSON.stringify(fallback.id)}))`
 
 const image = groq`
   "url": asset->url,
@@ -30,6 +41,22 @@ const cta = groq`
   ),
   "isExternal": kind == "external"
 `
+
+const pageHeroImageFields = pageHeroMenus
+  .reduce<string[]>((fields, menu) => {
+    for (const page of menu.pages) {
+      const fieldName = pageHeroFieldName(page.value)
+      fields.push(
+        `"${page.path}": {
+          "title": ${pageHeroLocalizedValue(`${fieldName}.title`, page.heading)},
+          "description": ${pageHeroLocalizedValue(`${fieldName}.subtitle`, page.subtitle)},
+          "image": ${fieldName}.image{"url": asset->url, "alt": coalesce(alt[$lang], alt.id, alt)}
+        }`
+      )
+    }
+    return fields
+  }, [])
+  .join(",")
 
 const hero = groq`
   ${t("eyebrow")},
@@ -97,9 +124,9 @@ const partnership = groq`
   partnershipClosing,
   gallery[]{
     _key,
-    caption,
+    ${t("caption")},
     "url": image.asset->url,
-    "alt": coalesce(image.alt, "Foto dokumentasi kemitraan"),
+    "alt": coalesce(image.alt[$lang], image.alt.id, image.alt, select($lang == "en" => "Partnership documentation photo", "Foto dokumentasi kemitraan")),
     "width": image.asset->metadata.dimensions.width,
     "height": image.asset->metadata.dimensions.height,
     "uploadedAt": image.asset->_createdAt
@@ -142,7 +169,7 @@ export const HOME_QUERY = groq`*[_type == "homePage"][0]{
       ${t("description")},
       logo{
         "url": asset->url,
-        "alt": alt
+        ${t("alt")}
       }
     },
     products[@->isPublished != false]->{${product}},
@@ -173,14 +200,18 @@ export const HOME_PAGE_DATA_QUERY = groq`{
     page,
     section,
     slot,
-    "image": {"url": image.asset->url}
+    "image": {"url": image.asset->url, "alt": coalesce(image.alt[$lang], image.alt.id, image.alt)}
   },
   "supportingMediaSlots": *[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0].homeSlots[]{
     slotId,
     ${t("name")},
     ${t("description")},
-    "image": image{"url": asset->url, "alt": alt},
+    linkedPagePath,
+    "image": image{"url": asset->url, "alt": coalesce(alt[$lang], alt.id, alt)},
     "video": {"url": video.asset->url}
+  },
+  "pageHeroImages": *[_id == "pageHeroEditor"][0]{
+    ${pageHeroImageFields}
   }
 }`
 
@@ -269,9 +300,9 @@ export const CLIENT_PORTFOLIO_QUERY = groq`*[
   ),
   "gallery": gallery[]{
     _key,
-    caption,
+    ${t("caption")},
     "url": image.asset->url,
-    "alt": coalesce(image.alt, "Foto dokumentasi client"),
+    "alt": coalesce(image.alt[$lang], image.alt.id, image.alt, select($lang == "en" => "Client documentation photo", "Foto dokumentasi client")),
     "width": image.asset->metadata.dimensions.width,
     "height": image.asset->metadata.dimensions.height,
     "uploadedAt": image.asset->_createdAt

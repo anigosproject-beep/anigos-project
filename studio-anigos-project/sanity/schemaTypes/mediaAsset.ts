@@ -59,8 +59,7 @@ export const mediaAsset = defineType({
         defineField({
           name: "alt",
           title: "Teks alternatif",
-          type: "string",
-          validation: (rule) => rule.max(160),
+          type: "localizedMediaText",
         }),
       ],
     }),

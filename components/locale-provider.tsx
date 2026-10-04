@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 
 import { type Locale } from "@/lib/i18n"
 
@@ -18,14 +19,19 @@ export function LocaleProvider({
   initialLocale: Locale
   children: React.ReactNode
 }) {
+  const router = useRouter()
   const [locale, setLocaleState] = React.useState<Locale>(initialLocale)
 
-  const setLocale = React.useCallback((nextLocale: Locale) => {
-    setLocaleState(nextLocale)
-    window.localStorage.setItem("locale", nextLocale)
-    document.cookie = `locale=${nextLocale}; Path=/; Max-Age=31536000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`
-    document.documentElement.lang = nextLocale
-  }, [])
+  const setLocale = React.useCallback(
+    (nextLocale: Locale) => {
+      setLocaleState(nextLocale)
+      window.localStorage.setItem("locale", nextLocale)
+      document.cookie = `locale=${nextLocale}; Path=/; Max-Age=31536000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`
+      document.documentElement.lang = nextLocale
+      router.refresh()
+    },
+    [router]
+  )
 
   React.useEffect(() => {
     const storedLocale = window.localStorage.getItem("locale")

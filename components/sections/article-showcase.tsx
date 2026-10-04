@@ -11,7 +11,10 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "cn"
 import { Reveal } from "@/components/motion"
-import { SectionContainer, SectionShell } from "@/components/layout/section-shell"
+import {
+  SectionContainer,
+  SectionShell,
+} from "@/components/layout/section-shell"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 
@@ -60,7 +63,8 @@ export function ArticleShowcase() {
 
     fetch("/api/newsroom", { signal: controller.signal })
       .then((response) => {
-        if (!response.ok) throw new Error(`Newsroom request failed: ${response.status}`)
+        if (!response.ok)
+          throw new Error(`Newsroom request failed: ${response.status}`)
         return response.json() as Promise<{
           articles?: Array<{
             slug: string
@@ -95,27 +99,24 @@ export function ArticleShowcase() {
       })
 
     return () => controller.abort()
-  }, [])
+  }, [locale])
 
   const [featured, ...secondary] = articles
 
   return (
-    <SectionShell
-      id="artikel"
-      className="bg-muted/40 py-24 lg:py-32"
-    >
+    <SectionShell id="artikel" className="bg-muted/40 py-24 lg:py-32">
       <SectionContainer>
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <Reveal className="max-w-2xl" delay={0.04}>
             <Badge variant="secondary">
               {translate(locale, "articleSectionLabel")}
             </Badge>
-              <Heading level={2} className="mt-5">
-                {translate(locale, "articleSectionTitle")}
-              </Heading>
-              <Text variant="lead" className="mt-5">
-                {translate(locale, "articleSectionDescription")}
-              </Text>
+            <Heading level={2} className="mt-5">
+              {translate(locale, "articleSectionTitle")}
+            </Heading>
+            <Text variant="lead" className="mt-5">
+              {translate(locale, "articleSectionDescription")}
+            </Text>
           </Reveal>
           <Reveal delay={0.16}>
             <Link
@@ -144,7 +145,7 @@ export function ArticleShowcase() {
             </AspectRatio>
             <Link
               href={featured.href}
-              className="mt-4 block rounded-4xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-4 block rounded-4xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <Card className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
                 <CardHeader className="gap-3">
@@ -166,7 +167,11 @@ export function ArticleShowcase() {
 
           <div className="grid gap-8">
             {secondary.map((article, index) => (
-              <Reveal key={article.title} className="group" delay={0.36 + index * 0.06}>
+              <Reveal
+                key={article.title}
+                className="group"
+                delay={0.36 + index * 0.06}
+              >
                 <div className="grid gap-4 sm:grid-cols-[8rem_1fr] sm:items-start">
                   <AspectRatio
                     ratio={1}
@@ -182,7 +187,7 @@ export function ArticleShowcase() {
                   </AspectRatio>
                   <Link
                     href={article.href}
-                    className="block rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="block rounded-3xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                   >
                     <Card className="h-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
                       <CardHeader className="gap-2">
@@ -194,7 +199,7 @@ export function ArticleShowcase() {
                           <ArrowUpRight
                             className={cn(
                               "size-4 shrink-0 text-muted-foreground transition-transform",
-                              "group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
+                              "group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
                             )}
                           />
                         </CardTitle>
