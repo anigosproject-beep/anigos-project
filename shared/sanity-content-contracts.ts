@@ -7,3 +7,8 @@ export const marineFuelSlotsByVariant = {
   home: ["home-marine-fuel-background", "home-marine-fuel-video"],
   product: ["product-marine-fuel-background", "product-marine-fuel-video"],
 } as const
+export const productTransportImageSlots = {
+  land: "product-transport-land-image",
+  sea: "product-transport-sea-image",
+  partner: "product-transport-partner-image",
+} as const

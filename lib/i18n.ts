@@ -421,6 +421,8 @@ export const messages = {
       "Pilihan solar industri untuk beragam kebutuhan operasional.",
     productOverviewDescription:
       "Kami menerima kebutuhan berbagai jenis solar industri, termasuk Solar/HSD dan Biosolar. Jenis produk, spesifikasi, volume, lokasi, serta jadwal pasokan dapat disampaikan untuk dibahas bersama tim kami.",
+    productNoPublishedProducts:
+      "Belum ada produk yang dipublikasikan. Tambahkan produk melalui Sanity Studio.",
     fuelProductTitle: "Bahan Bakar Minyak",
     fuelProductDescription:
       "Produk bahan bakar minyak jenis solar yang dipasarkan dengan mutu dan spesifikasi sesuai acuan Ditjen Migas RI.",
@@ -1168,6 +1170,10 @@ export const messages = {
     fleetOpenPhoto: "Buka foto",
     fleetViewAll: "Lihat semua",
     fleetPhotoCount: "foto",
+    fleetGalleryEmpty:
+      "Belum ada foto layanan atau armada yang dipublikasikan di Sanity.",
+    fleetGalleryError:
+      "Foto galeri tidak dapat dimuat dari Sanity. Silakan muat ulang halaman.",
     fleetGalleryInstruction:
       "Pilih varian liter di bawah untuk mengganti foto dan detail.",
     fleetVariantLabel: "Varian kapasitas armada darat",
@@ -1321,6 +1327,10 @@ export const messages = {
     galleryOldest: "Terlama",
     galleryPhotoDocumentation: "Dokumentasi foto",
     galleryLoading: "Memuat galeri...",
+    serviceGalleryEyebrow: "Dokumentasi layanan",
+    serviceGalleryTitle: "Galeri Produk & Layanan",
+    serviceGalleryDescription:
+      "Foto kegiatan dan layanan yang dikelola melalui Sanity.",
     galleryShowPhoto: "Tampilkan foto",
     galleryNextCategoryPhoto: "Foto kategori berikutnya",
     galleryCollections: "Koleksi foto",
@@ -1905,6 +1915,8 @@ export const messages = {
       "Industrial diesel options for diverse operational needs.",
     productOverviewDescription:
       "We welcome a range of industrial diesel requirements, including Solar/HSD and Biosolar. Share the product type, specification, volume, location, and supply schedule with our team for discussion.",
+    productNoPublishedProducts:
+      "No products have been published yet. Add products in Sanity Studio.",
     fuelProductTitle: "Fuel oil",
     fuelProductDescription:
       "Diesel fuel marketed with quality and specifications aligned with the Directorate General of Oil and Gas reference.",
@@ -2645,6 +2657,10 @@ export const messages = {
     fleetOpenPhoto: "Open photo",
     fleetViewAll: "View all",
     fleetPhotoCount: "photos",
+    fleetGalleryEmpty:
+      "No service or fleet photos have been published in Sanity yet.",
+    fleetGalleryError:
+      "Gallery photos could not be loaded from Sanity. Please reload the page.",
     fleetGalleryInstruction:
       "Choose a capacity option below to change the photo and details.",
     fleetVariantLabel: "Land fleet capacity options",
@@ -2799,6 +2815,10 @@ export const messages = {
     galleryOldest: "Oldest",
     galleryPhotoDocumentation: "Photo documentation",
     galleryLoading: "Loading gallery...",
+    serviceGalleryEyebrow: "Service documentation",
+    serviceGalleryTitle: "Products & Services Gallery",
+    serviceGalleryDescription:
+      "Photos of activities and services managed through Sanity.",
     galleryShowPhoto: "Show photo",
     galleryNextCategoryPhoto: "Next category photo",
     galleryCollections: "Photo collections",

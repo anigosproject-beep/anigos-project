@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 
 import { MarineFuelShowcase, PageHero, VideoFeatureSection } from "@/components/sections"
+import { ServiceGallery } from "@/components/service-gallery"
 import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
@@ -24,6 +25,19 @@ import { buttonVariants } from "@/components/ui/button"
 import { useLocale } from "@/components/locale-provider"
 import { translate } from "@/lib/i18n"
 import type {SanityProduct} from "@/lib/sanity-content-types"
+import { productTransportImageSlots } from "@/shared/sanity-content-contracts"
+
+const transportImageFallbacks = {
+  [productTransportImageSlots.land]:
+    "/images/partnership/partnership-transportation.svg",
+  [productTransportImageSlots.sea]:
+    "/images/partnership/partnership-distribution.svg",
+  [productTransportImageSlots.partner]:
+    "/images/partnership/partnership-business.svg",
+} satisfies Record<
+  (typeof productTransportImageSlots)[keyof typeof productTransportImageSlots],
+  string
+>
 
 const purchaseSteps = [
   {
@@ -55,6 +69,7 @@ const purchaseSteps = [
 export default function KenaliProdukPage() {
   const { locale } = useLocale()
   const [products, setProducts] = useState<SanityProduct[]>([])
+  const [transportImages, setTransportImages] = useState(transportImageFallbacks)
 
   React.useEffect(() => {
     const controller = new AbortController()
@@ -72,22 +87,51 @@ export default function KenaliProdukPage() {
     return () => controller.abort()
   }, [locale])
 
-  const displayProducts = products.length
-    ? products
-    : [
-        {
-          _id: "fallback-solar",
-          name: translate(locale, "fuelProductTitle"),
-          description: translate(locale, "fuelProductDescription"),
-          category: "bbm-industri",
-        },
-        {
-          _id: "fallback-biosolar",
-          name: translate(locale, "biodieselBlendTitle"),
-          description: translate(locale, "biodieselBlendDescription"),
-          category: "biosolar",
-        },
-      ]
+  React.useEffect(() => {
+    const controller = new AbortController()
+    const slotIds = Object.keys(transportImageFallbacks) as Array<
+      keyof typeof transportImageFallbacks
+    >
+
+    void Promise.all(
+      slotIds.map(async (slotId) => {
+        try {
+          const response = await fetch(
+            `/api/page-media?slotId=${encodeURIComponent(slotId)}`,
+            { signal: controller.signal, cache: "no-store" }
+          )
+          if (!response.ok) {
+            throw new Error(`Transport image request failed: ${response.status}`)
+          }
+
+          const media = (await response.json()) as {
+            slotId: string
+            imageUrl?: string
+          }
+          return media.slotId === slotId && media.imageUrl
+            ? ([slotId, media.imageUrl] as const)
+            : null
+        } catch (error: unknown) {
+          if (error instanceof DOMException && error.name === "AbortError") {
+            return null
+          }
+          console.error(`Failed to load Sanity transport image: ${slotId}`, error)
+          return null
+        }
+      })
+    ).then((results) => {
+      if (controller.signal.aborted) return
+      setTransportImages((current) => {
+        const next = { ...current }
+        for (const result of results) {
+          if (result) next[result[0]] = result[1]
+        }
+        return next
+      })
+    })
+
+    return () => controller.abort()
+  }, [])
 
   return (
     <main>
@@ -107,28 +151,57 @@ export default function KenaliProdukPage() {
             title={translate(locale, "productOverviewTitle")}
             description={translate(locale, "productOverviewDescription")}
           />
-          <div className="mt-12 grid gap-5 lg:grid-cols-2">
-            {displayProducts.map((product, index) => (
-            <Card key={product._id} className={`h-full ${index % 2 === 1 ? "bg-base-color text-base-color-foreground" : ""}`}>
-              <CardHeader>
-                <div className={`flex size-12 items-center justify-center rounded-2xl ${index % 2 === 1 ? "bg-background/10" : "bg-muted"}`}>
-                  <Droplets className="size-6" />
-                </div>
-                <Badge variant={index % 2 === 1 ? "outline" : "secondary"} className={`mt-5 w-fit ${index % 2 === 1 ? "border-base-color-foreground/30 text-base-color-foreground" : ""}`}>
-                  {product.category === "biosolar" ? "B40 Biosolar" : "Solar / HSD"}
-                </Badge>
-                <CardTitle className={`text-2xl ${index % 2 === 1 ? "text-base-color-foreground" : ""}`}>{product.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Text variant="body-muted" className={index % 2 === 1 ? "text-base-color-foreground/70" : ""}>
-                  {product.description}
-                </Text>
-              </CardContent>
-            </Card>
-            ))}
-          </div>
+          {products.length > 0 ? (
+            <div className="mt-12 grid gap-5 lg:grid-cols-2">
+              {products.map((product, index) => (
+                <Card
+                  key={product._id}
+                  className={`h-full ${index % 2 === 1 ? "bg-base-color text-base-color-foreground" : ""}`}
+                >
+                  <CardHeader>
+                    <div
+                      className={`flex size-12 items-center justify-center rounded-2xl ${index % 2 === 1 ? "bg-background/10" : "bg-muted"}`}
+                    >
+                      <Droplets className="size-6" />
+                    </div>
+                    <Badge
+                      variant={index % 2 === 1 ? "outline" : "secondary"}
+                      className={`mt-5 w-fit ${index % 2 === 1 ? "border-base-color-foreground/30 text-base-color-foreground" : ""}`}
+                    >
+                      {product.category === "biosolar"
+                        ? "B40 Biosolar"
+                        : "Solar / HSD"}
+                    </Badge>
+                    <CardTitle
+                      className={`text-2xl ${index % 2 === 1 ? "text-base-color-foreground" : ""}`}
+                    >
+                      {product.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Text
+                      variant="body-muted"
+                      className={
+                        index % 2 === 1
+                          ? "text-base-color-foreground/70"
+                          : ""
+                      }
+                    >
+                      {product.description}
+                    </Text>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-12 rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              {translate(locale, "productNoPublishedProducts")}
+            </p>
+          )}
         </div>
       </section>
+
+      <ServiceGallery />
 
       <VideoFeatureSection
         eyebrow={{id: translate(locale, "productVideoEyebrow"), en: translate("en", "productVideoEyebrow")}}
@@ -207,7 +280,7 @@ export default function KenaliProdukPage() {
             <TabsContent value="darat" className="mt-8">
               <Card className="overflow-hidden p-0 lg:grid lg:grid-cols-[3fr_7fr]">
                 <div className="relative min-h-52 bg-muted lg:h-full">
-                  <Image src="/images/partnership/partnership-transportation.svg" alt={translate(locale, "landTransportIllustration")} fill className="object-cover" />
+                  <Image src={transportImages[productTransportImageSlots.land]} alt={translate(locale, "landTransportIllustration")} fill className="object-cover" />
                 </div>
                 <div className="flex flex-col justify-center p-6 lg:p-8">
                   <CardHeader className="px-0">
@@ -228,7 +301,7 @@ export default function KenaliProdukPage() {
             <TabsContent value="laut" className="mt-8">
               <Card className="overflow-hidden p-0 lg:grid lg:grid-cols-[3fr_7fr]">
                 <div className="relative min-h-52 bg-muted lg:h-full">
-                  <Image src="/images/partnership/partnership-distribution.svg" alt={translate(locale, "seaTransportIllustration")} fill className="object-cover" />
+                  <Image src={transportImages[productTransportImageSlots.sea]} alt={translate(locale, "seaTransportIllustration")} fill className="object-cover" />
                 </div>
                 <div className="flex flex-col justify-center p-6 lg:p-8">
                   <CardHeader className="px-0">
@@ -249,7 +322,7 @@ export default function KenaliProdukPage() {
             <TabsContent value="mitra" className="mt-8">
               <Card className="overflow-hidden p-0 lg:grid lg:grid-cols-[3fr_7fr]">
                 <div className="relative min-h-52 bg-muted lg:h-full">
-                  <Image src="/images/partnership/partnership-business.svg" alt={translate(locale, "partnerTransportIllustration")} fill className="object-cover" />
+                  <Image src={transportImages[productTransportImageSlots.partner]} alt={translate(locale, "partnerTransportIllustration")} fill className="object-cover" />
                 </div>
                 <div className="flex flex-col justify-center p-6 lg:p-8">
                   <CardHeader className="px-0">

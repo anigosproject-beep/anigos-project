@@ -1,4 +1,7 @@
-import { marineFuelSlotsByVariant } from "../../shared/sanity-content-contracts"
+import {
+  marineFuelSlotsByVariant,
+  productTransportImageSlots,
+} from "../../shared/sanity-content-contracts"
 
 export const pageMediaMenus = [
   {
@@ -207,6 +210,39 @@ export const pageMediaMenus = [
             expectedRatio: "16:9",
             currentSource:
               "/video-hero/0914.mp4 (fallback lokal; diganti setelah upload dan publish)",
+          },
+          {
+            id: productTransportImageSlots.land,
+            title: "Skema transportasi — Darat",
+            sectionName: "Skema transportasi — Darat",
+            mediaType: "image",
+            container: "16:9; responsif",
+            fit: "cover",
+            expectedRatio: "16:9 disarankan; crop responsif",
+            currentSource:
+              "/images/partnership/partnership-transportation.svg (fallback lokal)",
+          },
+          {
+            id: productTransportImageSlots.sea,
+            title: "Skema transportasi — Laut",
+            sectionName: "Skema transportasi — Laut",
+            mediaType: "image",
+            container: "16:9; responsif",
+            fit: "cover",
+            expectedRatio: "16:9 disarankan; crop responsif",
+            currentSource:
+              "/images/partnership/partnership-distribution.svg (fallback lokal)",
+          },
+          {
+            id: productTransportImageSlots.partner,
+            title: "Skema transportasi — Mitra",
+            sectionName: "Skema transportasi — Mitra",
+            mediaType: "image",
+            container: "16:9; responsif",
+            fit: "cover",
+            expectedRatio: "16:9 disarankan; crop responsif",
+            currentSource:
+              "/images/partnership/partnership-business.svg (fallback lokal)",
           },
         ],
       },

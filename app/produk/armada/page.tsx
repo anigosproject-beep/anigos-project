@@ -18,28 +18,10 @@ import type {SanityFleetOption} from "@/lib/sanity-content-types"
 
 type GalleryImage = {url: string; alt: string; width?: number; height?: number}
 
-const fallbackGallery: GalleryImage[] = [
-  {
-    url: "/images/partnership/transport-carrier.png",
-    alt: "Armada tangki transportir dengan identitas Petro Anigos",
-    width: 1600,
-    height: 1067,
-  },
-  {
-    url: "/images/partnership/partnership-transportation.svg",
-    alt: "Ilustrasi layanan transportasi darat",
-    width: 1200,
-    height: 900,
-  },
-  {
-    url: "/images/distribution/distribution-map.png",
-    alt: "Ilustrasi jangkauan operasional distribusi",
-    width: 1600,
-    height: 900,
-  },
-]
-
-function getGalleryImages(options: SanityFleetOption[]): GalleryImage[] {
+function getGalleryImages(
+  options: SanityFleetOption[],
+  serviceImages: GalleryImage[]
+): GalleryImage[] {
   const images = options.flatMap((option) => {
     const gallery = option.gallery?.flatMap((item) =>
       item?.image?.url
@@ -63,36 +45,91 @@ function getGalleryImages(options: SanityFleetOption[]): GalleryImage[] {
       : []
   })
 
-  const uniqueImages = [...new Map(images.map((image) => [image.url, image])).values()]
-  return uniqueImages.length ? uniqueImages : fallbackGallery
+  return [
+    ...new Map(
+      [...serviceImages, ...images].map((image) => [image.url, image])
+    ).values(),
+  ]
 }
 
 export default function ArmadaPage() {
   const {locale} = useLocale()
   const [fleet, setFleet] = React.useState<SanityFleetOption[]>([])
+  const [serviceImages, setServiceImages] = React.useState<GalleryImage[]>([])
+  const [isFleetLoading, setIsFleetLoading] = React.useState(true)
+  const [isServiceGalleryLoading, setIsServiceGalleryLoading] =
+    React.useState(true)
+  const [hasServiceGalleryError, setHasServiceGalleryError] =
+    React.useState(false)
   const [galleryOpen, setGalleryOpen] = React.useState(false)
   const [galleryImageIndex, setGalleryImageIndex] = React.useState(0)
 
   React.useEffect(() => {
     const controller = new AbortController()
-    void fetch(`/api/fleet?lang=${locale}`, {
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error(`Fleet request failed: ${response.status}`)
-        return response.json() as Promise<{fleet?: SanityFleetOption[]}>
-      })
-      .then((data) => setFleet(data.fleet ?? []))
-      .catch((error: unknown) => {
+
+    const loadFleet = async () => {
+      try {
+        const response = await fetch(`/api/fleet?lang=${locale}`, {
+          signal: controller.signal,
+          cache: "no-store",
+        })
+        if (!response.ok) {
+          throw new Error(`Fleet request failed: ${response.status}`)
+        }
+        const data = (await response.json()) as {fleet?: SanityFleetOption[]}
+        setFleet(data.fleet ?? [])
+      } catch (error: unknown) {
         if (error instanceof DOMException && error.name === "AbortError") return
         console.error("Failed to load Sanity fleet content", error)
-      })
+      } finally {
+        if (!controller.signal.aborted) setIsFleetLoading(false)
+      }
+    }
+
+    const loadServiceGallery = async () => {
+      try {
+        const response = await fetch("/api/service-gallery", {
+          signal: controller.signal,
+          cache: "no-store",
+        })
+        if (!response.ok) {
+          throw new Error(`Service gallery request failed: ${response.status}`)
+        }
+        const data = (await response.json()) as {
+          images?: Array<{
+            _key?: string
+            url: string
+            width?: number
+            height?: number
+          }>
+        }
+        setServiceImages(
+          (data.images ?? []).map((image, index) => ({
+            url: image.url,
+            alt: `Foto layanan ${index + 1}`,
+            width: image.width,
+            height: image.height,
+          }))
+        )
+        setHasServiceGalleryError(false)
+      } catch (error: unknown) {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        console.error("Failed to load Sanity service gallery", error)
+        setHasServiceGalleryError(true)
+      } finally {
+        if (!controller.signal.aborted) setIsServiceGalleryLoading(false)
+      }
+    }
+
+    void loadFleet()
+    void loadServiceGallery()
+
     return () => controller.abort()
   }, [locale])
 
-  const galleryImages = getGalleryImages(fleet)
+  const galleryImages = getGalleryImages(fleet, serviceImages)
   const selectedImage = galleryImages[galleryImageIndex] ?? galleryImages[0]
+  const isGalleryLoading = isFleetLoading || isServiceGalleryLoading
 
   return (
     <main>
@@ -111,24 +148,38 @@ export default function ArmadaPage() {
       <SectionShell id="armada-darat" className="bg-muted/40 py-20 sm:py-24 lg:py-32">
         <SectionContainer>
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
-            <button
-              type="button"
-              className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted text-left"
-              onClick={() => setGalleryOpen(true)}
-              aria-label={`${translate(locale, "fleetOpenPhoto")} ${galleryImageIndex + 1}`}
-            >
-              <Image
-                src={selectedImage.url}
-                alt={selectedImage.alt}
-                fill
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              />
-              <span className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-full bg-background/90 px-3 py-2 text-xs font-medium text-foreground sm:right-4 sm:bottom-4">
-                <Images aria-hidden="true" className="size-4" />
-                {translate(locale, "fleetGallery")}
-              </span>
-            </button>
+            {selectedImage ? (
+              <button
+                type="button"
+                className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted text-left"
+                onClick={() => setGalleryOpen(true)}
+                aria-label={`${translate(locale, "fleetOpenPhoto")} ${galleryImageIndex + 1}`}
+              >
+                <Image
+                  src={selectedImage.url}
+                  alt={selectedImage.alt}
+                  fill
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+                <span className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-full bg-background/90 px-3 py-2 text-xs font-medium text-foreground sm:right-4 sm:bottom-4">
+                  <Images aria-hidden="true" className="size-4" />
+                  {translate(locale, "fleetGallery")}
+                </span>
+              </button>
+            ) : isGalleryLoading ? (
+              <p className="flex aspect-[4/3] items-center justify-center rounded-3xl border border-dashed border-border bg-background p-8 text-center text-sm text-muted-foreground" role="status">
+                {translate(locale, "galleryLoading")}
+              </p>
+            ) : hasServiceGalleryError ? (
+              <p className="flex aspect-[4/3] items-center justify-center rounded-3xl border border-dashed border-border bg-background p-8 text-center text-sm text-destructive" role="alert">
+                {translate(locale, "fleetGalleryError")}
+              </p>
+            ) : (
+              <p className="flex aspect-[4/3] items-center justify-center rounded-3xl border border-dashed border-border bg-background p-8 text-center text-sm text-muted-foreground">
+                {translate(locale, "fleetGalleryEmpty")}
+              </p>
+            )}
 
             <div className="max-w-xl">
               <Badge variant="secondary">{translate(locale, "landServiceEyebrow")}</Badge>
@@ -147,24 +198,27 @@ export default function ArmadaPage() {
                 <ArrowRight data-icon="inline-end" />
               </Link>
 
-              <GalleryThumbnailSelector
-                images={galleryImages.map(({url}) => ({src: url}))}
-                selectedIndex={galleryImageIndex}
-                onSelect={setGalleryImageIndex}
-                photoLabel={(index) =>
-                  `${translate(locale, "fleetChoosePhoto")} ${index}`
-                }
-                previousLabel={translate(locale, "previousPhoto")}
-                nextLabel={translate(locale, "nextPhoto")}
-                positionLabel={translate(locale, "galleryPhotoPosition")}
-                className="mt-8 pb-10"
-                accent="primary"
-              />
+              {galleryImages.length > 0 ? (
+                <GalleryThumbnailSelector
+                  images={galleryImages.map(({url}) => ({src: url}))}
+                  selectedIndex={galleryImageIndex}
+                  onSelect={setGalleryImageIndex}
+                  photoLabel={(index) =>
+                    `${translate(locale, "fleetChoosePhoto")} ${index}`
+                  }
+                  previousLabel={translate(locale, "previousPhoto")}
+                  nextLabel={translate(locale, "nextPhoto")}
+                  positionLabel={translate(locale, "galleryPhotoPosition")}
+                  className="mt-8 pb-10"
+                  accent="primary"
+                />
+              ) : null}
             </div>
           </div>
         </SectionContainer>
       </SectionShell>
 
+      {selectedImage ? (
       <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
         <DialogContent className="max-w-6xl gap-4 p-4 sm:p-6">
           <DialogTitle>{translate(locale, "fleetGallery")}</DialogTitle>
@@ -205,6 +259,7 @@ export default function ArmadaPage() {
           </div>
         </DialogContent>
       </Dialog>
+      ) : null}
     </main>
   )
 }

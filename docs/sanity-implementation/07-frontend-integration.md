@@ -34,6 +34,13 @@ Jika asset Sanity kosong, gunakan fallback lokal atau tampilkan section tanpa ga
 `GET /api/galeri?lang=id|en` mempertahankan sumber Galeri yang sudah ada dan
 menambahkan foto dari singleton `serviceGalleryEditor` serta dokumen terbit
 `galleryPhoto`. Foto Halaman Layanan masuk ke kategori Produk & Layanan.
+Semua foto dari singleton tersebut juga tampil pada Galeri Produk & Layanan
+di `/produk/kenali-produk` dan digabungkan dengan foto Armada Sanity pada
+`/produk/armada`; endpoint khusus mengembalikan seluruh foto ber-asset tanpa
+batas jumlah. Galeri Armada tidak memakai gambar lokal sebagai fallback.
+Ilustrasi pada tiga tab Skema Transportasi di `/produk/kenali-produk`
+masing-masing memiliki slot gambar Sanity di dokumen Media Pendukung; gambar
+lokal hanya dipakai sebagai fallback sebelum slot diisi dan dipublikasikan.
 Foto editorial memakai kategori bawaan atau kategori baru yang direferensikan
 dari `galleryCategory`; kategori baru ditampilkan pada filter halaman Galeri
 dan halaman penelusuran kategori. Definisi enam kategori bawaan dibagikan

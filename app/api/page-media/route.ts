@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { getSanityClientForCurrentMode } from "@/lib/sanity-client"
+import { productTransportImageSlots } from "@/shared/sanity-content-contracts"
 
 const videoSlotFields = {
   "home-marine-fuel-video": "homeSlots",
@@ -11,6 +12,9 @@ const videoSlotFields = {
 
 const imageSlotFields = {
   "company-profile-journey-background": "companyProfileSlots",
+  [productTransportImageSlots.land]: "productsSlots",
+  [productTransportImageSlots.sea]: "productsSlots",
+  [productTransportImageSlots.partner]: "productsSlots",
 } as const
 
 type VideoSlotId = keyof typeof videoSlotFields
