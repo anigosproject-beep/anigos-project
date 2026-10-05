@@ -84,7 +84,7 @@ export default async function ArticlePage({
   return (
     <main>
       <article className="border-b border-border bg-background">
-        <SectionContainer className="pt-28 pb-10 sm:pt-32 lg:pt-36 lg:pb-16">
+        <SectionContainer className="pt-[calc(var(--site-header-height,9.25rem)+1.5rem)] pb-8 sm:pt-[calc(var(--site-header-height,5rem)+2rem)] sm:pb-10 lg:pt-36 lg:pb-16">
           <Breadcrumb className="max-w-full overflow-hidden">
             <BreadcrumbList className="[scrollbar-width:none] flex-nowrap overflow-x-auto pb-1 whitespace-nowrap [&::-webkit-scrollbar]:hidden">
               <BreadcrumbItem>
@@ -133,7 +133,7 @@ export default async function ArticlePage({
             </BreadcrumbList>
           </Breadcrumb>
 
-          <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(15rem,1fr)] lg:gap-16">
+          <div className="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-[minmax(0,4fr)_minmax(15rem,1fr)] lg:gap-16">
             <div className="min-w-0">
               <header className="max-w-4xl">
                 <div className="flex flex-wrap items-center gap-2">
@@ -148,17 +148,17 @@ export default async function ArticlePage({
                 </div>
                 <Heading
                   level={1}
-                  className="mt-6 text-4xl leading-tight lg:text-6xl"
+                  className="mt-5 text-3xl leading-tight sm:mt-6 sm:text-4xl lg:text-6xl"
                 >
                   {article.title}
                 </Heading>
                 <Text
                   variant="lead"
-                  className="mt-6 max-w-3xl text-muted-foreground"
+                  className="mt-4 max-w-3xl text-muted-foreground sm:mt-6"
                 >
                   {article.excerpt}
                 </Text>
-                <div className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
+                <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground sm:mt-7">
                   <span>{formatArticleDate(article.date, locale)}</span>
                   <span aria-hidden="true">·</span>
                   <span className="inline-flex items-center gap-1.5">
@@ -169,7 +169,7 @@ export default async function ArticlePage({
                 </div>
               </header>
 
-              <div className="mt-10 aspect-[16/9] overflow-hidden rounded-3xl bg-muted lg:mt-14">
+              <div className="mt-8 aspect-[16/9] overflow-hidden rounded-2xl bg-muted sm:mt-10 lg:mt-14 lg:rounded-3xl">
                 <Image
                   src={article.image}
                   alt=""
@@ -190,7 +190,7 @@ export default async function ArticlePage({
                 </div>
               ) : null}
 
-              <div className="typeset typeset-docs mt-10 max-w-3xl lg:mt-14">
+              <div className="typeset typeset-docs mt-8 max-w-3xl sm:mt-10 lg:mt-14">
                 {article.content.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
