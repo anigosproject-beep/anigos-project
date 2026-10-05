@@ -23,6 +23,14 @@ type SanityArticle = {
   video?: string
   videoPoster?: { asset?: { _ref?: string } }
   featured?: boolean
+  gallery?: Array<{
+    _key?: string
+    url?: string
+    alt?: string
+    caption?: string
+    width?: number
+    height?: number
+  }>
   content?: Array<{
     _type?: string
     children?: Array<{ text?: string }>
@@ -77,6 +85,21 @@ const newsroomQuery = `{
   }
 }`
 
+const articleGalleryQuery = `*[
+  _type in ["newsroomArticle", "article"] &&
+  slug.current == $slug &&
+  (_type != "article" || isPublished != false)
+][0]{
+  "gallery": coalesce(gallery[]{
+    _key,
+    "url": image.asset->url,
+    "alt": ${localized("image.alt")},
+    "caption": ${localized("caption")},
+    "width": image.asset->metadata.dimensions.width,
+    "height": image.asset->metadata.dimensions.height
+  }, [])
+}`
+
 const getArticleParagraphs = (content: SanityArticle["content"]): string[] =>
   (content ?? [])
     .map((block) => {
@@ -93,6 +116,7 @@ const getArticleParagraphs = (content: SanityArticle["content"]): string[] =>
 export async function getSanityNewsroom(options?: {
   useDraftMode?: boolean
   locale?: Locale
+  articleSlug?: string
 }) {
   const locale =
     options?.locale ??
@@ -101,10 +125,18 @@ export async function getSanityNewsroom(options?: {
     options?.useDraftMode === false
       ? sanityClient
       : await getSanityClientForCurrentMode()
-  const data = await client.fetch<{
-    categories: NewsroomCategory[]
-    articles: SanityArticle[]
-  }>(newsroomQuery, { lang: locale })
+  const [data, articleGallery] = await Promise.all([
+    client.fetch<{
+      categories: NewsroomCategory[]
+      articles: SanityArticle[]
+    }>(newsroomQuery, { lang: locale }),
+    options?.articleSlug
+      ? client.fetch<{ gallery?: NonNullable<SanityArticle["gallery"]> } | null>(
+          articleGalleryQuery,
+          { lang: locale, slug: options.articleSlug }
+        )
+      : Promise.resolve(null),
+  ])
 
   const categories = data.categories
 
@@ -125,6 +157,26 @@ export async function getSanityNewsroom(options?: {
       videoPoster: sanityImageUrl(article.videoPoster),
       featured: article.featured,
       content: getArticleParagraphs(article.content),
+      gallery:
+        article.slug === options?.articleSlug
+          ? articleGallery?.gallery
+              ?.filter(
+                (image): image is typeof image & { url: string } =>
+                  typeof image.url === "string" && image.url.length > 0
+              )
+              .map((image, index) => {
+                const fallbackLabel =
+                  locale === "en" ? `Article image ${index + 1}` : `Foto artikel ${index + 1}`
+                return {
+                  _key: image._key,
+                  src: image.url,
+                  alt: image.alt?.trim() || fallbackLabel,
+                  caption: image.caption?.trim() || image.alt?.trim() || fallbackLabel,
+                  width: image.width,
+                  height: image.height,
+                }
+              })
+          : undefined,
     }))
 
   return { categories, articles, locale }

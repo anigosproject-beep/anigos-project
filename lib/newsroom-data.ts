@@ -10,6 +10,15 @@ export type NewsroomCategory = {
   }>
 }
 
+export type NewsroomGalleryImage = {
+  _key?: string
+  src: string
+  alt: string
+  caption: string
+  width?: number
+  height?: number
+}
+
 export type NewsroomArticle = {
   slug: string
   title: string
@@ -23,6 +32,7 @@ export type NewsroomArticle = {
   videoPoster?: string
   featured?: boolean
   content: string[]
+  gallery?: NewsroomGalleryImage[]
 }
 
 export function getNewsroomSegments(

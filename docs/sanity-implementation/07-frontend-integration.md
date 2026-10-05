@@ -41,6 +41,10 @@ batas jumlah. Galeri Armada tidak memakai gambar lokal sebagai fallback.
 Ilustrasi pada tiga tab Skema Transportasi di `/produk/kenali-produk`
 masing-masing memiliki slot gambar Sanity di dokumen Media Pendukung; gambar
 lokal hanya dipakai sebagai fallback sebelum slot diisi dan dipublikasikan.
+Artikel `newsroomArticle` dapat memiliki galeri gambar berurutan dengan teks
+alternatif dan keterangan per bahasa. Detail artikel mengambil galeri dokumen
+yang sedang dibuka dan menampilkannya setelah isi teks menggunakan lightbox
+galeri yang sudah dipakai situs.
 Foto editorial memakai kategori bawaan atau kategori baru yang direferensikan
 dari `galleryCategory`; kategori baru ditampilkan pada filter halaman Galeri
 dan halaman penelusuran kategori. Definisi enam kategori bawaan dibagikan

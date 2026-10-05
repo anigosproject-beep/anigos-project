@@ -1116,6 +1116,7 @@ export const messages = {
     articleReadMore: "baca",
     articleBackToNewsroom: "Kembali ke newsroom",
     articleReadAlso: "Baca juga",
+    articleGalleryTitle: "Galeri Artikel",
     newsroomEyebrow: "Artikel / Anigos News",
     newsroomTitle: "Newsroom PT. Anigos Jaya Perkasa.",
     newsroomDescription:
@@ -2604,6 +2605,7 @@ export const messages = {
     articleReadMore: "read",
     articleBackToNewsroom: "Back to newsroom",
     articleReadAlso: "Read also",
+    articleGalleryTitle: "Article gallery",
     newsroomEyebrow: "Articles / Anigos News",
     newsroomTitle: "Petro Anigos newsroom.",
     newsroomDescription:

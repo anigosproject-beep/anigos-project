@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ContentVideoPlayer } from "@/components/content-video-player"
+import { ArticleGallery } from "@/components/article-gallery"
 import { LocalizedText } from "@/components/localized-text"
 import {
   Breadcrumb,
@@ -53,7 +54,9 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const { articles, categories, locale } = await getSanityNewsroom()
+  const { articles, categories, locale } = await getSanityNewsroom({
+    articleSlug: slug,
+  })
   const article = getArticleBySlug(slug, articles)
   if (!article) notFound()
 
@@ -192,6 +195,10 @@ export default async function ArticlePage({
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
+
+              {article.gallery?.length ? (
+                <ArticleGallery images={article.gallery} />
+              ) : null}
 
               <Separator className="my-10 max-w-3xl" />
               <Link

@@ -141,6 +141,60 @@ export const newsroomArticle = defineType({
       ],
     }),
     defineField({
+      name: "gallery",
+      title: "Galeri gambar artikel (opsional)",
+      type: "array",
+      group: "media",
+      description:
+        "Tambahkan beberapa gambar untuk ditampilkan di galeri setelah teks artikel. Urutan gambar mengikuti urutan di sini.",
+      of: [
+        defineArrayMember({
+          name: "articleGalleryItem",
+          title: "Gambar galeri",
+          type: "object",
+          fields: [
+            defineField({
+              name: "image",
+              title: "Pilih gambar",
+              type: "image",
+              options: { hotspot: true },
+              fields: [
+                defineField({
+                  name: "alt",
+                  title: "Teks alternatif",
+                  type: "localizedMediaText",
+                  validation: (rule) =>
+                    rule.custom((value) => {
+                      const id = (value as { id?: unknown } | undefined)?.id
+                      return typeof id === "string" && id.trim()
+                        ? true
+                        : "Teks alternatif Bahasa Indonesia wajib diisi."
+                    }),
+                }),
+              ],
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "caption",
+              title: "Keterangan gambar (opsional)",
+              type: "localizedMediaText",
+            }),
+          ],
+          preview: {
+            select: {
+              title: "caption.id",
+              alt: "image.alt.id",
+              media: "image",
+            },
+            prepare: ({ title, alt, media }) => ({
+              title: title || alt || "Gambar galeri artikel",
+              media,
+            }),
+          },
+        }),
+      ],
+    }),
+    defineField({
       name: "content",
       title: "Isi artikel",
       type: "array",
