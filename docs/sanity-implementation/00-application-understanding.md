@@ -120,16 +120,19 @@ Kebutuhan operator:
 Kondisi aplikasi:
 
 - Schema `homePage.heroSlides` mendukung posisi, status aktif, judul,
-  deskripsi, gambar, video, poster, dan tipe media.
-- Status aktif tersimpan sebagai `isActive`; query `/api/home-hero` hanya
-  mengirimkan slide dengan `isActive != false`, sehingga dokumen lama yang
-  belum memiliki flag tetap tampil. Slide nonaktif disimpan di Studio tetapi
-  tidak ikut slider publik.
+  deskripsi, gambar, video Sanity, dan tipe media. URL embed video opsional
+  dibatasi untuk slide posisi 1 dan provider YouTube/Vimeo yang diizinkan.
+- Status aktif tersimpan sebagai `isActive`; query `/api/home-hero` memakai
+  perspektif published dan hanya mengirimkan slide dengan `isActive != false`,
+  sehingga dokumen lama yang belum memiliki flag tetap tampil. Slide nonaktif
+  disimpan di Studio tetapi tidak ikut slider publik. Embed hanya dirender dari
+  URL yang lolos validasi tersebut; fallback saat data/media tidak tersedia
+  memakai latar brand tanpa poster gambar lokal.
 - `HomeContent` belum mendeskripsikan seluruh field `heroSlides`, sehingga
   kontrak type/provider harus dibuktikan sebelum perubahan.
 
 Gate pemahaman: dapat mengikuti data dari dokumen Sanity sampai prop
-`HomeHero`, termasuk mode kosong, video, poster, urutan, dan fallback.
+`HomeHero`, termasuk mode kosong, video, embed terbit, urutan, dan placeholder.
 
 ### 3.4 Page hero
 

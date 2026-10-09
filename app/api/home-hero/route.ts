@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { isSanityAvailabilityError } from "@/lib/sanity-client"
 import { getSanityHomeHeroSlides } from "@/lib/sanity-hero"
+import { getAllowedHomeHeroEmbedUrl } from "@/shared/sanity-home-hero-embed"
 
 type CroppedImage = {
   url?: string
@@ -34,10 +35,23 @@ function applySanityCrop(image: CroppedImage | null | undefined) {
 export async function GET() {
   try {
     const slides = await getSanityHomeHeroSlides()
-    const mappedSlides = (slides ?? []).map((slide) => ({
-      ...slide,
-      image: { url: applySanityCrop(slide.image) },
-    }))
+    const mappedSlides = (slides ?? []).map((slide) => {
+      const supportsEmbed = slide.position === 1 && slide.mediaType === "video"
+      const videoEmbedUrl = supportsEmbed
+        ? getAllowedHomeHeroEmbedUrl(slide.videoEmbedUrl)
+        : undefined
+      if (supportsEmbed && slide.videoEmbedUrl && !videoEmbedUrl) {
+        console.warn(
+          `Home Hero slide ${String(slide.position ?? "?")} has an unsupported video embed URL.`
+        )
+      }
+
+      return {
+        ...slide,
+        videoEmbedUrl,
+        image: { url: applySanityCrop(slide.image) },
+      }
+    })
     return NextResponse.json(
       { slides: mappedSlides },
       {

@@ -11,6 +11,7 @@ export const SANITY_HERO_CACHE_TAG = "sanity-hero"
 const homeHeroQuery = `*[_type == "homePage"][0].heroSlides[isActive != false] | order(position asc, _key asc) {
   position,
   mediaType,
+  videoEmbedUrl,
   eyebrow,
   title,
   description,
@@ -29,6 +30,9 @@ type HeroImage = {
 }
 
 export type SanityHomeHeroSlide = {
+  position?: number
+  mediaType?: "image" | "video"
+  videoEmbedUrl?: string
   image?: HeroImage
   videoUrl?: string
   videoSize?: number
@@ -38,7 +42,7 @@ export type SanityHomeHeroSlide = {
 const getPublishedHomeHeroSlides = unstable_cache(
   async () =>
     sanityAvailabilityClient.fetch<SanityHomeHeroSlide[]>(homeHeroQuery),
-  ["sanity-home-hero-v2"],
+  ["sanity-home-hero-v3"],
   { revalidate: 60, tags: [SANITY_HERO_CACHE_TAG] }
 )
 

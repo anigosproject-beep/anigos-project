@@ -33,7 +33,8 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+            value:
+              "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; frame-src 'self' https://youtube.com https://www.youtube.com https://youtube-nocookie.com https://www.youtube-nocookie.com https://player.vimeo.com",
           },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },

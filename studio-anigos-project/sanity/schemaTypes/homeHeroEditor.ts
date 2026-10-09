@@ -11,6 +11,7 @@ import {
   maxHomeHeroVideoBytes,
   recommendedHomeHeroVideoBytes,
 } from "../../../shared/sanity-content-contracts"
+import { getAllowedHomeHeroEmbedUrl } from "../../../shared/sanity-home-hero-embed"
 
 function getParentMediaType(parent: unknown): string | undefined {
   if (
@@ -23,6 +24,33 @@ function getParentMediaType(parent: unknown): string | undefined {
   }
 
   return undefined
+}
+
+function getParentPosition(parent: unknown): number | undefined {
+  if (
+    typeof parent === "object" &&
+    parent !== null &&
+    "position" in parent &&
+    typeof parent.position === "number"
+  ) {
+    return parent.position
+  }
+
+  return undefined
+}
+
+function getParentVideoEmbedUrl(parent: unknown): string | undefined {
+  if (
+    typeof parent !== "object" ||
+    parent === null ||
+    !("position" in parent) ||
+    parent.position !== 1 ||
+    !("videoEmbedUrl" in parent)
+  ) {
+    return undefined
+  }
+
+  return getAllowedHomeHeroEmbedUrl(parent.videoEmbedUrl)
 }
 
 function hasLocalizedValue(value: unknown): boolean {
@@ -136,12 +164,36 @@ const heroSlide = defineArrayMember({
       options: { accept: "video/*" },
       validation: (rule) =>
         rule.custom((video, context) =>
-          getParentMediaType(context.parent) === "video" && !video
-            ? "Tambahkan video untuk slide dengan jenis media video."
+          getParentMediaType(context.parent) === "video" &&
+          !video &&
+          !getParentVideoEmbedUrl(context.parent)
+            ? "Tambahkan video atau URL embed valid untuk slide video."
             : true
         ),
       hidden: ({ parent }) => parent?.mediaType !== "video",
-      description: `Video sampai ${Math.round(maxHomeHeroVideoBytes / 1024 / 1024)} MiB dapat diputar. Maksimal ${Math.round(recommendedHomeHeroVideoBytes / 1024 / 1024)} MiB disarankan agar pemutaran awal cepat; video lebih besar dari batas pemutaran menampilkan gambar fallback.`,
+      description: `Video sampai ${Math.round(maxHomeHeroVideoBytes / 1024 / 1024)} MiB dapat diputar. Maksimal ${Math.round(recommendedHomeHeroVideoBytes / 1024 / 1024)} MiB disarankan agar pemutaran awal cepat.`,
+    }),
+    defineField({
+      name: "videoEmbedUrl",
+      title: "URL embed video (khusus slide 1)",
+      type: "url",
+      hidden: ({ parent }) =>
+        parent?.mediaType !== "video" || parent?.position !== 1,
+      description:
+        "Opsional. URL player embed HTTPS YouTube, YouTube NoCookie, atau Vimeo (bukan markup iframe). Webhook harus menyimpan URL ke field ini; embed hanya ditampilkan jika slide posisi 1 aktif dan terbit.",
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          if (value == null || value === "") return true
+          if (getParentMediaType(context.parent) !== "video") {
+            return "URL embed hanya dapat digunakan pada slide video."
+          }
+          if (getParentPosition(context.parent) !== 1) {
+            return "URL embed hanya dapat digunakan pada slide posisi 1."
+          }
+          return getAllowedHomeHeroEmbedUrl(value)
+            ? true
+            : "Gunakan URL embed HTTPS YouTube (/embed/ID), YouTube NoCookie (/embed/ID), atau Vimeo (/video/ID)."
+        }),
     }),
     defineField({
       name: "cta",

@@ -19,14 +19,17 @@ import {
   maxHomeHeroSlides,
   maxHomeHeroVideoBytes,
 } from "@/shared/sanity-content-contracts"
+import { getAllowedHomeHeroEmbedUrl } from "@/shared/sanity-home-hero-embed"
 
 type HeroSlide = {
+  position?: number
   eyebrow?: string | LocalizedText
   progressLabel?: LocalizedText
   title: string | LocalizedText
   description: string | LocalizedText
   image?: string
   video?: string
+  videoEmbedUrl?: string
   href?: string
   action?: string | LocalizedText
   durationMs?: number
@@ -59,15 +62,14 @@ type SanityHeroSlide = {
   image?: { url?: string }
   videoUrl?: string
   videoSize?: number
+  videoEmbedUrl?: string
 }
 
 const imageSlideDurationMs = 7000
-const videoPoster = "/images/hero/home-distribution.png"
 const fallbackHeroSlide: HeroSlide = {
   eyebrow: "heroPrimaryEyebrow",
   title: "heroPrimaryTitle",
   description: "heroPrimaryDescription",
-  image: videoPoster,
   action: "heroPrimaryAction",
   href: "/produk/kenali-produk",
 }
@@ -150,9 +152,13 @@ export function HomeHero() {
     Boolean(slide?.video) &&
     !prefersReducedMotion &&
     !videoPlaybackBlocked[activeSlide]
+  const videoEmbedIsDisplayed =
+    Boolean(slide?.videoEmbedUrl) && !prefersReducedMotion
   const durationMs = videoIsPlaying
     ? (videoDurations[activeSlide] ?? 0)
-    : (slide?.durationMs ?? imageSlideDurationMs)
+    : videoEmbedIsDisplayed
+      ? 0
+      : (slide?.durationMs ?? imageSlideDurationMs)
   const contentVariants = prefersReducedMotion
     ? reducedHeroContentVariants
     : heroContentVariants
@@ -177,13 +183,20 @@ export function HomeHero() {
         const mapped = slides
           .map((item): HeroSlide | null => {
             const image = item.image?.url
+            const videoEmbedUrl =
+              item.position === 1 && item.mediaType === "video"
+                ? getAllowedHomeHeroEmbedUrl(item.videoEmbedUrl)
+                : undefined
             const shouldPlayVideo =
               item.mediaType === "video" &&
+              !videoEmbedUrl &&
               Boolean(item.videoUrl) &&
               (typeof item.videoSize !== "number" ||
                 item.videoSize <= maxHomeHeroVideoBytes)
             const hasUsableMedia =
-              item.mediaType === "image" ? Boolean(image) : shouldPlayVideo
+              item.mediaType === "image"
+                ? Boolean(image)
+                : Boolean(videoEmbedUrl) || shouldPlayVideo
             const href =
               item.cta?.kind === "external"
                 ? item.cta.url
@@ -193,18 +206,20 @@ export function HomeHero() {
             if (!hasLocalizedText(item.title)) return null
             if (!hasUsableMedia) {
               console.warn(
-                `Home Hero slide ${String(item.position ?? "?")} has no playable media; using the local fallback image.`
+                `Home Hero slide ${String(item.position ?? "?")} has no playable media; showing the branded placeholder.`
               )
             }
             return {
+              position: item.position,
               eyebrow: item.eyebrow,
               progressLabel: item.progressLabel,
               title: item.title,
               description: hasLocalizedText(item.description)
                 ? item.description
                 : {},
-              image: item.mediaType === "image" && image ? image : videoPoster,
+              image: item.mediaType === "image" && image ? image : undefined,
               video: shouldPlayVideo ? item.videoUrl : undefined,
+              videoEmbedUrl,
               durationMs:
                 item.mediaType === "image" ? imageSlideDurationMs : undefined,
               href,
@@ -255,31 +270,45 @@ export function HomeHero() {
     if (!slide) return
 
     const startedAt = performance.now()
-    const timer = videoIsPlaying
+    const timer =
+      videoIsPlaying || videoEmbedIsDisplayed
+        ? null
+        : window.setTimeout(advanceSlide, durationMs)
+    const progressInterval = videoEmbedIsDisplayed
       ? null
-      : window.setTimeout(advanceSlide, durationMs)
-    const progressInterval = window.setInterval(() => {
-      if (videoIsPlaying) {
-        const video = videoRef.current
-        if (video && Number.isFinite(video.duration) && video.duration > 0) {
-          setElapsed(video.currentTime * 1000)
-        }
-      } else {
-        setElapsed(Math.min(performance.now() - startedAt, durationMs))
-      }
-    }, 100)
+      : window.setInterval(() => {
+          if (videoIsPlaying) {
+            const video = videoRef.current
+            if (
+              video &&
+              Number.isFinite(video.duration) &&
+              video.duration > 0
+            ) {
+              setElapsed(video.currentTime * 1000)
+            }
+          } else {
+            setElapsed(Math.min(performance.now() - startedAt, durationMs))
+          }
+        }, 100)
 
     return () => {
       if (timer !== null) window.clearTimeout(timer)
-      window.clearInterval(progressInterval)
+      if (progressInterval !== null) window.clearInterval(progressInterval)
     }
-  }, [activeSlide, advanceSlide, durationMs, slide, videoIsPlaying])
+  }, [
+    activeSlide,
+    advanceSlide,
+    durationMs,
+    slide,
+    videoEmbedIsDisplayed,
+    videoIsPlaying,
+  ])
 
   if (!slide) return null
 
   return (
     <section
-      className="relative isolate min-h-[100svh] overflow-hidden bg-foreground text-white"
+      className="relative isolate min-h-[100svh] overflow-hidden bg-[radial-gradient(ellipse_at_78%_18%,rgba(0,115,100,0.36),transparent_46%),linear-gradient(135deg,#071e2f,#123b47_56%,#0b2029)] text-white"
       aria-label={translate(locale, "heroLabel")}
       data-motion="hero"
     >
@@ -295,9 +324,9 @@ export function HomeHero() {
             ...((index === activeSlide ||
               index === (activeSlide + 1) % heroSlides.length) &&
             (!item.video || (index === activeSlide && !videoIsPlaying)) &&
-            (item.image || item.video)
+            item.image
               ? {
-                  backgroundImage: `url("${item.image || videoPoster}")`,
+                  backgroundImage: `url("${item.image}")`,
                 }
               : {}),
           }}
@@ -313,7 +342,7 @@ export function HomeHero() {
               disableRemotePlayback
               controlsList="nodownload noplaybackrate noremoteplayback"
               preload="metadata"
-              poster={item.image || videoPoster}
+              poster={item.image}
               onCanPlay={(event) => {
                 if (videoIsPlaying) {
                   const video = event.currentTarget
@@ -350,7 +379,7 @@ export function HomeHero() {
               onError={(event) => {
                 const video = event.currentTarget
                 console.warn(
-                  "Home Hero video unavailable; showing poster fallback.",
+                  "Home Hero video unavailable; showing the branded placeholder.",
                   {
                     source: video.currentSrc,
                     errorCode: video.error?.code ?? null,
@@ -376,6 +405,21 @@ export function HomeHero() {
               />
             </video>
           )}
+          {item.videoEmbedUrl &&
+            item.position === 1 &&
+            index === activeSlide &&
+            !prefersReducedMotion && (
+              <iframe
+                src={item.videoEmbedUrl}
+                title={text(item.title, "heroPrimaryTitle")}
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+                sandbox="allow-scripts allow-same-origin allow-presentation"
+                className="size-full border-0"
+              />
+            )}
         </div>
       ))}
       <div

@@ -1027,7 +1027,7 @@ export const messages = {
     productSupport:
       "Didukung kapabilitas distribusi Petro Anigos untuk kebutuhan konsumen dengan pilihan layanan darat dan antarwilayah.",
     partnershipTrustHeading:
-      "Perusahaan yang mempercayai PT Anigos Jaya Perkasa",
+      "Perusahaan pengguna akhir yang kami layani",
     partnershipSectionLabel: "Kemitraan Petro Anigos",
     partnershipTitle: "Bertumbuh melalui kolaborasi yang terpercaya.",
     partnershipDescription:
@@ -2516,7 +2516,7 @@ export const messages = {
     productPosition: "Product position",
     productSupport:
       "Supported by Petro Anigos distribution capabilities for customers requiring land and interregional services.",
-    partnershipTrustHeading: "Companies that trust PT Anigos Jaya Perkasa",
+    partnershipTrustHeading: "End-user companies we serve",
     partnershipSectionLabel: "Petro Anigos Partnerships",
     partnershipTitle: "Growing through trusted collaboration.",
     partnershipDescription:
