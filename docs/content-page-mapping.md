@@ -100,7 +100,7 @@ Sumber: `app/jangkauan/page.tsx`.
 | Pengantar coverage | Penjelasan wilayah, kemampuan melayani, dan konteks distribusi | 0 | Heading ≤70; deskripsi ≤220 | Tidak ada gambar |
 | Video jaringan distribusi | Video pengantar Jangkauan dikelola melalui slot `coverage-distribution-video` di Media Pendukung; placeholder tampil bila slot belum memiliki video | 1 | Teks section saat ini lokal | Video MP4 dari Sanity; rasio pemutar 16:9 |
 | Area layanan | Satu card untuk setiap item `coverageAreas`/kota | Data-driven sesuai array | Nama kota ≤30; body ≤160 | Tidak wajib gambar; gunakan ikon |
-| Perencanaan pengiriman bisnis | Tiga flip card untuk tinjau lokasi, pilih moda, dan konfirmasi rencana; judul, keterangan, serta gambar dikelola pada slot `coverage-work-flipcard-1..3` di Media Pendukung | 3 | Judul ≤120; keterangan ≤360 | Gambar per slot; fallback lokal jika belum diunggah |
+| Perencanaan pengiriman bisnis | Tiga flip card untuk tinjau lokasi, pilih moda, dan konfirmasi rencana; judul, keterangan, serta gambar dikelola pada slot `coverage-work-flipcard-1..3` di Media Pendukung, terpisah dari dokumen halaman Jangkauan | 3 | Judul ≤120; keterangan ≤360 | Gambar dari Sanity; skeleton saat memuat dan placeholder netral jika slot belum memiliki gambar |
 | Kapabilitas distribusi | Card ikon untuk layanan/kemampuan distribusi | Data-driven, saat ini set kecil tetap | Judul ≤45; deskripsi ≤140 | Tidak wajib gambar |
 | CTA | Ajakan meminta penawaran atau menghubungi tim; gambar latar dikelola melalui slot `coverage-requirement-background` di Media Pendukung dengan overlay gradasi tetap | 0 | Heading ≤60; body ≤180; CTA ≤25 | Gambar dari Sanity; fallback lokal jika belum diunggah |
 

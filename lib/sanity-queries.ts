@@ -239,7 +239,15 @@ export const JANGKAUAN_QUERY = groq`*[_type == "jangkauanPage"][0]{
       active
     }
   },
-  "workSteps": *[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0].coverageSlots[]{
+  capabilities{
+    ${t("title")},
+    items[]{icon, ${t("title")}, ${t("body")}}
+  },
+  closing{${t("title")}, ${t("body")}, actions[]{${cta}}}
+}`
+
+export const COVERAGE_MEDIA_QUERY = groq`*[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0]{
+  "workSteps": coverageSlots[]{
     slotId,
     "title": coalesce(flipTitle[$lang], flipTitle.id, flipTitle.en),
     flipDescription,
@@ -248,14 +256,9 @@ export const JANGKAUAN_QUERY = groq`*[_type == "jangkauanPage"][0]{
       "alt": coalesce(alt[$lang], alt.id, alt)
     }
   },
-  "requirementBackground": *[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0].coverageSlots[slotId == "coverage-requirement-background"][0]{
+  "requirementBackground": coverageSlots[slotId == "coverage-requirement-background"][0]{
     "image": image{"url": asset->url}
-  },
-  capabilities{
-    ${t("title")},
-    items[]{icon, ${t("title")}, ${t("body")}}
-  },
-  closing{${t("title")}, ${t("body")}, actions[]{${cta}}}
+  }
 }`
 
 export const PRODUCT_QUERY = groq`*[_type == "product" && isPublished != false] | order(order asc, _createdAt asc){

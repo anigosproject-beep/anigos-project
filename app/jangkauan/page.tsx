@@ -2,7 +2,14 @@
 
 import Link from "@/components/site-link"
 import Image from "next/image"
-import { ArrowRight, CircleAlert, MapPin, Ship, Truck } from "lucide-react"
+import {
+  ArrowRight,
+  CircleAlert,
+  Image as ImageIcon,
+  MapPin,
+  Ship,
+  Truck,
+} from "lucide-react"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 
@@ -38,7 +45,7 @@ function CoverageStepCard({
   locale,
   isMediaLoading,
 }: {
-  image: string
+  image?: string
   number: string
   title: string
   description: string
@@ -78,13 +85,22 @@ function CoverageStepCard({
           aria-hidden={isFlipped}
           className="absolute inset-0 overflow-hidden rounded-4xl bg-card shadow-md ring-1 ring-foreground/10 [backface-visibility:hidden]"
         >
-          <Image
-            src={image}
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 17vw, (min-width: 640px) 30vw, 90vw"
-            className="object-cover transition-transform duration-700 group-hover/step:scale-105 motion-reduce:transition-none"
-          />
+          {image ? (
+            <Image
+              src={image}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 17vw, (min-width: 640px) 30vw, 90vw"
+              className="object-cover transition-transform duration-700 group-hover/step:scale-105 motion-reduce:transition-none"
+            />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 via-muted to-base-color/20"
+            >
+              <ImageIcon className="size-10 text-muted-foreground/50" />
+            </div>
+          )}
           {isMediaLoading ? (
             <Skeleton
               aria-hidden="true"
@@ -140,28 +156,24 @@ const coverageSteps: Array<{
   number: string
   title: TranslationKey
   description: TranslationKey
-  image: string
 }> = [
   {
     slotId: "coverage-work-flipcard-1",
     number: "01",
     title: "reviewLocation",
     description: "reviewLocationDescription",
-    image: "/images/distribution/distribution-map.png",
   },
   {
     slotId: "coverage-work-flipcard-2",
     number: "02",
     title: "chooseMode",
     description: "chooseModeDescription",
-    image: "/images/distribution/fuel-distribution.png",
   },
   {
     slotId: "coverage-work-flipcard-3",
     number: "03",
     title: "confirmPlan",
     description: "confirmPlanDescription",
-    image: "/images/partnership/transport-carrier.png",
   },
 ]
 
@@ -435,7 +447,7 @@ export default function JangkauanPage() {
               return (
                 <CoverageStepCard
                   key={step.number}
-                  image={cmsStep?.image?.url || step.image}
+                  image={cmsStep?.image?.url}
                   number={step.number}
                   title={cmsStep?.title || translate(locale, step.title)}
                   description={
