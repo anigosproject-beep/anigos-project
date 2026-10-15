@@ -258,6 +258,17 @@ export const pageMediaMenus = [
         path: "/jangkauan",
         slots: [
           {
+            id: "coverage-distribution-video",
+            title: "Video jaringan distribusi",
+            sectionName: "Jaringan distribusi nasional",
+            mediaType: "video",
+            container: "Pemutar video responsif 16:9",
+            fit: "cover",
+            expectedRatio: "16:9 disarankan",
+            currentSource:
+              "Unggah video di slot ini untuk ditampilkan pada segmen video Jangkauan.",
+          },
+          {
             id: "coverage-requirement-background",
             title: "Gambar di Verifikasi kebutuhan",
             sectionName: "Verifikasi kebutuhan",

@@ -131,9 +131,25 @@ export type SanityCoverageArea = {
   }
 }
 
+export type SanityCoverageWorkStep = {
+  slotId?: string
+  title?: string
+  flipDescription?: string
+  image?: {
+    url?: string
+    alt?: string
+  }
+}
+
 export type CoveragePageResponse = {
   serviceAreas?: {
     areas?: SanityCoverageArea[]
+  }
+  workSteps?: SanityCoverageWorkStep[]
+  requirementBackground?: {
+    image?: {
+      url?: string
+    }
   }
 }
 

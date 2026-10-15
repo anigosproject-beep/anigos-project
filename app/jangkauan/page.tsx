@@ -2,13 +2,7 @@
 
 import Link from "@/components/site-link"
 import Image from "next/image"
-import {
-  ArrowRight,
-  CircleAlert,
-  MapPin,
-  Ship,
-  Truck,
-} from "lucide-react"
+import { ArrowRight, CircleAlert, MapPin, Ship, Truck } from "lucide-react"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 
@@ -18,11 +12,13 @@ import { Heading, SectionHeading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 import { useLocale } from "@/components/locale-provider"
 import { translate, type Locale, type TranslationKey } from "@/lib/i18n"
 import type {
   CoveragePageResponse,
+  SanityCoverageWorkStep,
 } from "@/lib/sanity-content-types"
 
 type CoverageArea = {
@@ -40,12 +36,14 @@ function CoverageStepCard({
   title,
   description,
   locale,
+  isMediaLoading,
 }: {
   image: string
   number: string
   title: string
   description: string
   locale: Locale
+  isMediaLoading: boolean
 }) {
   const [isHovered, setIsHovered] = useState(false)
   const [isPinned, setIsPinned] = useState(false)
@@ -68,10 +66,10 @@ function CoverageStepCard({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group/step h-full cursor-pointer rounded-4xl text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/50"
+      className="group/step h-full cursor-pointer rounded-4xl text-left focus-visible:ring-4 focus-visible:ring-ring/50 focus-visible:outline-none"
     >
       <div
-        className="relative h-full min-h-[18.25rem] rounded-4xl transition-transform duration-700 [transform-style:preserve-3d] motion-reduce:transition-none group-hover/step:[transform:rotateY(180deg)]"
+        className="relative h-full min-h-[18.25rem] rounded-4xl transition-transform duration-700 [transform-style:preserve-3d] group-hover/step:[transform:rotateY(180deg)] motion-reduce:transition-none"
         style={{
           transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
         }}
@@ -87,6 +85,12 @@ function CoverageStepCard({
             sizes="(min-width: 1024px) 17vw, (min-width: 640px) 30vw, 90vw"
             className="object-cover transition-transform duration-700 group-hover/step:scale-105 motion-reduce:transition-none"
           />
+          {isMediaLoading ? (
+            <Skeleton
+              aria-hidden="true"
+              className="absolute inset-0 z-10 rounded-none bg-muted/70"
+            />
+          ) : null}
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5"
@@ -132,24 +136,28 @@ function CoverageStepCard({
 const coverageAreas: CoverageArea[] = []
 
 const coverageSteps: Array<{
+  slotId: string
   number: string
   title: TranslationKey
   description: TranslationKey
   image: string
 }> = [
   {
+    slotId: "coverage-work-flipcard-1",
     number: "01",
     title: "reviewLocation",
     description: "reviewLocationDescription",
     image: "/images/distribution/distribution-map.png",
   },
   {
+    slotId: "coverage-work-flipcard-2",
     number: "02",
     title: "chooseMode",
     description: "chooseModeDescription",
     image: "/images/distribution/fuel-distribution.png",
   },
   {
+    slotId: "coverage-work-flipcard-3",
     number: "03",
     title: "confirmPlan",
     description: "confirmPlanDescription",
@@ -160,6 +168,15 @@ const coverageSteps: Array<{
 export default function JangkauanPage() {
   const { locale } = useLocale()
   const [areas, setAreas] = useState(coverageAreas)
+  const [sanityWorkSteps, setSanityWorkSteps] = useState<
+    SanityCoverageWorkStep[]
+  >([])
+  const [requirementBackground, setRequirementBackground] = useState<
+    string | undefined
+  >()
+  const [loadedCoverageLocale, setLoadedCoverageLocale] =
+    useState<Locale | null>(null)
+  const isCoverageMediaLoading = loadedCoverageLocale !== locale
 
   useEffect(() => {
     const controller = new AbortController()
@@ -168,26 +185,35 @@ export default function JangkauanPage() {
       cache: "no-store",
     })
       .then((response) => {
-        if (!response.ok) throw new Error(`Coverage request failed: ${response.status}`)
+        if (!response.ok)
+          throw new Error(`Coverage request failed: ${response.status}`)
         return response.json() as Promise<CoveragePageResponse | null>
       })
       .then((page) => {
-        const remoteAreas: CoverageArea[] | undefined = page?.serviceAreas?.areas
-          ?.filter((area) => area.active !== false && area.city && area.island)
-          .map((area) => ({
-            city: area.city as string,
-            province: area.province ?? "",
-            island: area.island as string,
-            image: area.image?.url,
-            description: area.body ?? "",
-            modes: area.modes?.length ? area.modes : ["landMode"],
-          }))
+        const remoteAreas: CoverageArea[] | undefined =
+          page?.serviceAreas?.areas
+            ?.filter(
+              (area) => area.active !== false && area.city && area.island
+            )
+            .map((area) => ({
+              city: area.city as string,
+              province: area.province ?? "",
+              island: area.island as string,
+              image: area.image?.url,
+              description: area.body ?? "",
+              modes: area.modes?.length ? area.modes : ["landMode"],
+            }))
 
         if (remoteAreas?.length) setAreas(remoteAreas)
+        setSanityWorkSteps(page?.workSteps ?? [])
+        setRequirementBackground(page?.requirementBackground?.image?.url)
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return
         console.error("Failed to load Sanity coverage areas", error)
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadedCoverageLocale(locale)
       })
 
     return () => controller.abort()
@@ -201,7 +227,9 @@ export default function JangkauanPage() {
         description={translate(locale, "reachPageDescription")}
         image="/images/page-hero/tentang-kami.webp"
         pageKey="jangkauan"
-        breadcrumbs={[{ label: translate(locale, "reach"), href: "/jangkauan" }]}
+        breadcrumbs={[
+          { label: translate(locale, "reach"), href: "/jangkauan" },
+        ]}
       />
 
       <section className="relative isolate overflow-hidden border-b border-border bg-muted/40 py-24 lg:py-32">
@@ -209,7 +237,9 @@ export default function JangkauanPage() {
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
             <div>
-              <Badge variant="secondary">{translate(locale, "operationalNetwork")}</Badge>
+              <Badge variant="secondary">
+                {translate(locale, "operationalNetwork")}
+              </Badge>
               <Heading level={2} className="mt-5">
                 {translate(locale, "coverageOverviewTitle")}
               </Heading>
@@ -218,52 +248,72 @@ export default function JangkauanPage() {
               </Text>
               <div className="mt-8 grid grid-cols-2 gap-3 sm:max-w-md">
                 <div className="rounded-2xl border border-border bg-background/75 p-4 backdrop-blur-sm">
-                  <p className="text-3xl font-semibold text-primary">{translate(locale, "reachNational")}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{translate(locale, "servicePoints")}</p>
+                  <p className="text-3xl font-semibold text-primary">
+                    {translate(locale, "reachNational")}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {translate(locale, "servicePoints")}
+                  </p>
                 </div>
                 <div className="rounded-2xl border border-border bg-background/75 p-4 backdrop-blur-sm">
-                  <p className="text-3xl font-semibold text-primary">{translate(locale, "reachB2B")}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{translate(locale, "mainRegions")}</p>
+                  <p className="text-3xl font-semibold text-primary">
+                    {translate(locale, "reachB2B")}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {translate(locale, "mainRegions")}
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="relative min-h-80 overflow-hidden rounded-4xl border border-base-color-foreground/10 bg-base-color p-6 text-base-color-foreground shadow-xl sm:p-8">
-              <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(to_right,rgba(255,255,255,0.18)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:32px_32px]" />
-              <div className="absolute -right-16 -top-16 size-56 rounded-full bg-primary/30 blur-3xl" />
+              <div className="absolute inset-0 [background-image:linear-gradient(to_right,rgba(255,255,255,0.18)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:32px_32px] opacity-20" />
+              <div className="absolute -top-16 -right-16 size-56 rounded-full bg-primary/30 blur-3xl" />
               <div className="relative flex h-full min-h-68 flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-base-color-foreground/70">{translate(locale, "coverageMap")}</p>
-                    <p className="mt-1 text-xl font-semibold">{translate(locale, "nationwideIndonesia")}</p>
+                    <p className="text-sm font-medium text-base-color-foreground/70">
+                      {translate(locale, "coverageMap")}
+                    </p>
+                    <p className="mt-1 text-xl font-semibold">
+                      {translate(locale, "nationwideIndonesia")}
+                    </p>
                   </div>
                   <MapPin className="size-7 text-primary" />
                 </div>
 
                 <motion.div
                   className="relative mt-4 min-h-44 flex-1"
-                    initial={{opacity: 0, scale: 0.98}}
-                    animate={{opacity: 1, scale: 1}}
-                    transition={{duration: 0.45, ease: "easeOut"}}
-                  >
-                    <Image
-                      src="/animated/Peta%20Indonesia.svg"
-                      alt=""
-                      fill
-                      sizes="(min-width: 1024px) 45vw, 90vw"
-                      className="coverage-map-artwork object-cover opacity-90 brightness-0 invert"
-                      aria-hidden="true"
-                    />
-                  </motion.div>
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.45, ease: "easeOut" }}
+                >
+                  <Image
+                    src="/animated/Peta%20Indonesia.svg"
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 45vw, 90vw"
+                    className="coverage-map-artwork object-cover opacity-90 brightness-0 invert"
+                    aria-hidden="true"
+                  />
+                </motion.div>
 
                 <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div className="rounded-2xl border border-base-color-foreground/15 bg-base-color-foreground/10 p-3">
-                    <p className="text-xs text-base-color-foreground/60">{translate(locale, "coverageOverviewTitle")}</p>
-                    <p className="mt-1 text-sm font-medium">{translate(locale, "coverageOverviewDescription")}</p>
+                    <p className="text-xs text-base-color-foreground/60">
+                      {translate(locale, "coverageOverviewTitle")}
+                    </p>
+                    <p className="mt-1 text-sm font-medium">
+                      {translate(locale, "coverageOverviewDescription")}
+                    </p>
                   </div>
                   <div className="rounded-2xl border border-base-color-foreground/15 bg-base-color-foreground/10 p-3">
-                    <p className="text-xs text-base-color-foreground/60">{translate(locale, "mainRegions")}</p>
-                    <p className="mt-1 text-sm font-medium">{translate(locale, "coverageNotice")}</p>
+                    <p className="text-xs text-base-color-foreground/60">
+                      {translate(locale, "mainRegions")}
+                    </p>
+                    <p className="mt-1 text-sm font-medium">
+                      {translate(locale, "coverageNotice")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -273,10 +323,27 @@ export default function JangkauanPage() {
       </section>
 
       <VideoFeatureSection
-        eyebrow={{id: "Jaringan distribusi nasional", en: "National distribution network"}}
-        title={{id: "Mendukung kebutuhan industri di seluruh Indonesia.", en: "Supporting industrial requirements across Indonesia."}}
-        description={{id: "Pelajari bagaimana Petro Anigos mengoordinasikan kebutuhan BBM industri, pilihan moda distribusi, dan jadwal pengiriman untuk pelanggan bisnis di seluruh Indonesia.", en: "Learn how Petro Anigos coordinates industrial fuel requirements, distribution modes, and delivery schedules for business customers across Indonesia."}}
-        videoTitle={{id: "Video jangkauan distribusi PT. Anigos Jaya Perkasa", en: "PT. Anigos Jaya Perkasa distribution coverage video"}}
+        eyebrow={{
+          id: "Jaringan distribusi nasional",
+          en: "National distribution network",
+        }}
+        title={{
+          id: "Mendukung kebutuhan industri di seluruh Indonesia.",
+          en: "Supporting industrial requirements across Indonesia.",
+        }}
+        description={{
+          id: "Pelajari bagaimana Petro Anigos mengoordinasikan kebutuhan BBM industri, pilihan moda distribusi, dan jadwal pengiriman untuk pelanggan bisnis di seluruh Indonesia.",
+          en: "Learn how Petro Anigos coordinates industrial fuel requirements, distribution modes, and delivery schedules for business customers across Indonesia.",
+        }}
+        videoTitle={{
+          id: "Video jangkauan distribusi PT. Anigos Jaya Perkasa",
+          en: "PT. Anigos Jaya Perkasa distribution coverage video",
+        }}
+        mediaSlotId="coverage-distribution-video"
+        cmsPlaceholder={{
+          id: "Video jangkauan akan segera tersedia",
+          en: "Coverage video coming soon",
+        }}
       />
 
       <section className="border-b border-border bg-background py-24 lg:py-32">
@@ -289,7 +356,10 @@ export default function JangkauanPage() {
           {areas.length > 0 ? (
             <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {areas.map((area, index) => (
-                <Card key={area.city} className="group h-full transition-transform duration-300 hover:-translate-y-1">
+                <Card
+                  key={area.city}
+                  className="group h-full transition-transform duration-300 hover:-translate-y-1"
+                >
                   {area.image ? (
                     <div className="relative aspect-[3/2] overflow-hidden rounded-t-xl">
                       <Image
@@ -309,7 +379,9 @@ export default function JangkauanPage() {
                       <Badge variant="outline">{area.island}</Badge>
                     </div>
                     <CardTitle className="mt-5">{area.city}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{area.province}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {area.province}
+                    </p>
                   </CardHeader>
                   <CardContent>
                     <Text variant="body-muted">
@@ -320,8 +392,15 @@ export default function JangkauanPage() {
                     <Separator className="my-5" />
                     <div className="flex flex-wrap gap-2">
                       {area.modes.map((mode) => (
-                        <span key={mode} className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-medium">
-                          {mode === "seaMode" ? <Ship className="size-3.5" /> : <Truck className="size-3.5" />}
+                        <span
+                          key={mode}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-medium"
+                        >
+                          {mode === "seaMode" ? (
+                            <Ship className="size-3.5" />
+                          ) : (
+                            <Truck className="size-3.5" />
+                          )}
                           {translate(locale, mode as TranslationKey)}
                         </span>
                       ))}
@@ -348,16 +427,26 @@ export default function JangkauanPage() {
             description={translate(locale, "coverageWorkDescription")}
           />
           <div className="grid gap-4 sm:grid-cols-3">
-            {coverageSteps.map((step) => (
-              <CoverageStepCard
-                key={step.number}
-                image={step.image}
-                number={step.number}
-                title={translate(locale, step.title)}
-                description={translate(locale, step.description)}
-                locale={locale}
-              />
-            ))}
+            {coverageSteps.map((step) => {
+              const cmsStep = sanityWorkSteps.find(
+                (item) => item.slotId === step.slotId
+              )
+
+              return (
+                <CoverageStepCard
+                  key={step.number}
+                  image={cmsStep?.image?.url || step.image}
+                  number={step.number}
+                  title={cmsStep?.title || translate(locale, step.title)}
+                  description={
+                    cmsStep?.flipDescription ||
+                    translate(locale, step.description)
+                  }
+                  locale={locale}
+                  isMediaLoading={isCoverageMediaLoading}
+                />
+              )
+            })}
           </div>
         </div>
       </section>
@@ -366,11 +455,20 @@ export default function JangkauanPage() {
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-20 bg-cover bg-center"
-          style={{backgroundImage: 'url("/images/distribution/distribution-map.png")'}}
-        />
+          style={{
+            backgroundImage: `url("${requirementBackground || "/images/distribution/distribution-map.png"}")`,
+          }}
+        >
+          {isCoverageMediaLoading ? (
+            <Skeleton
+              aria-hidden="true"
+              className="absolute inset-0 rounded-none bg-muted/40"
+            />
+          ) : null}
+        </div>
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 backdrop-blur-[1px] bg-[linear-gradient(90deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.58)_52%,rgba(0,0,0,0.42)_100%)]"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.58)_52%,rgba(0,0,0,0.42)_100%)] backdrop-blur-[1px]"
         />
         <div
           aria-hidden="true"
@@ -378,7 +476,10 @@ export default function JangkauanPage() {
         />
         <div className="relative z-10 mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
-            <Badge variant="outline" className="border-base-color-foreground/30 text-base-color-foreground">
+            <Badge
+              variant="outline"
+              className="border-base-color-foreground/30 text-base-color-foreground"
+            >
               {translate(locale, "areaVerification")}
             </Badge>
             <Heading level={2} className="mt-5 text-base-color-foreground">

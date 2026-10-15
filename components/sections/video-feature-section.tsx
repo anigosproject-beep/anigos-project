@@ -7,8 +7,9 @@ import { ContentVideoPlayer } from "@/components/content-video-player"
 import { Heading, Text } from "@/components/typography"
 import { Badge } from "@/components/ui/badge"
 import { useLocale } from "@/components/locale-provider"
+import { Skeleton } from "@/components/ui/skeleton"
 
-type LocalizedCopy = {id: string; en: string}
+type LocalizedCopy = { id: string; en: string }
 
 type VideoFeatureSectionProps = {
   eyebrow: LocalizedCopy
@@ -16,6 +17,7 @@ type VideoFeatureSectionProps = {
   description: LocalizedCopy
   videoTitle: LocalizedCopy
   mediaSlotId?: string
+  cmsPlaceholder?: LocalizedCopy
   className?: string
 }
 
@@ -25,6 +27,7 @@ export function VideoFeatureSection({
   description,
   videoTitle,
   mediaSlotId,
+  cmsPlaceholder,
   className,
 }: VideoFeatureSectionProps) {
   const { locale } = useLocale()
@@ -33,12 +36,9 @@ export function VideoFeatureSection({
     videoUrl?: string
   } | null>(null)
   const copy = (value: LocalizedCopy) => value[locale]
-  const videoSrc =
-    loadedMedia &&
-    loadedMedia.slotId === mediaSlotId &&
-    loadedMedia.videoUrl
-      ? loadedMedia.videoUrl
-      : "/video-hero/0914.mp4"
+  const mediaLoaded = loadedMedia?.slotId === mediaSlotId
+  const cmsVideoUrl = mediaLoaded ? loadedMedia?.videoUrl : undefined
+  const videoSrc = cmsVideoUrl ?? "/video-hero/0914.mp4"
 
   useEffect(() => {
     if (!mediaSlotId) return
@@ -61,13 +61,16 @@ export function VideoFeatureSection({
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return
         console.error(`Unable to load supporting video: ${mediaSlotId}`, error)
+        setLoadedMedia({ slotId: mediaSlotId })
       })
 
     return () => controller.abort()
   }, [mediaSlotId])
 
   return (
-    <section className={`border-b border-border bg-muted/40 py-20 lg:py-28 ${className ?? ""}`}>
+    <section
+      className={`border-b border-border bg-muted/40 py-20 lg:py-28 ${className ?? ""}`}
+    >
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:px-8">
         <div>
           <Badge variant="secondary">
@@ -81,11 +84,34 @@ export function VideoFeatureSection({
             {copy(description)}
           </Text>
         </div>
-        <ContentVideoPlayer
-          src={videoSrc}
-          title={copy(videoTitle)}
-          className="w-full"
-        />
+        {cmsPlaceholder && mediaSlotId ? (
+          mediaLoaded && cmsVideoUrl ? (
+            <ContentVideoPlayer
+              src={cmsVideoUrl}
+              title={copy(videoTitle)}
+              className="w-full"
+            />
+          ) : mediaLoaded ? (
+            <div
+              role="status"
+              className="flex aspect-video w-full flex-col items-center justify-center gap-4 rounded-3xl bg-base-color px-6 text-center text-base-color-foreground shadow-xl"
+            >
+              <PlayCircle aria-hidden="true" className="size-12 opacity-75" />
+              <p className="font-medium">{copy(cmsPlaceholder)}</p>
+            </div>
+          ) : (
+            <Skeleton
+              aria-hidden="true"
+              className="aspect-video w-full rounded-3xl"
+            />
+          )
+        ) : (
+          <ContentVideoPlayer
+            src={videoSrc}
+            title={copy(videoTitle)}
+            className="w-full"
+          />
+        )}
       </div>
     </section>
   )

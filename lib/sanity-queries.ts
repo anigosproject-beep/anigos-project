@@ -239,6 +239,18 @@ export const JANGKAUAN_QUERY = groq`*[_type == "jangkauanPage"][0]{
       active
     }
   },
+  "workSteps": *[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0].coverageSlots[]{
+    slotId,
+    "title": coalesce(flipTitle[$lang], flipTitle.id, flipTitle.en),
+    flipDescription,
+    "image": image{
+      "url": asset->url,
+      "alt": coalesce(alt[$lang], alt.id, alt)
+    }
+  },
+  "requirementBackground": *[_type == "pageMediaEditor" && _id == "pageMediaEditor"][0].coverageSlots[slotId == "coverage-requirement-background"][0]{
+    "image": image{"url": asset->url}
+  },
   capabilities{
     ${t("title")},
     items[]{icon, ${t("title")}, ${t("body")}}

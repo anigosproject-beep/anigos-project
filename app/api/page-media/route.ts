@@ -8,6 +8,7 @@ const videoSlotFields = {
   "company-profile-story-video": "companyProfileSlots",
   "product-marine-fuel-video": "productsSlots",
   "product-introduction-video": "productsSlots",
+  "coverage-distribution-video": "coverageSlots",
 } as const
 
 const imageSlotFields = {
@@ -33,7 +34,9 @@ export async function GET(request: NextRequest) {
 
   if (!slotId || (!isVideoSlotId(slotId) && !isImageSlotId(slotId))) {
     return NextResponse.json(
-      { error: 'Query parameter "slotId" must identify a supported media slot.' },
+      {
+        error: 'Query parameter "slotId" must identify a supported media slot.',
+      },
       { status: 400 }
     )
   }

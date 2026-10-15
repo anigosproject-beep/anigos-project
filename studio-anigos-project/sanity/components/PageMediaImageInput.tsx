@@ -82,7 +82,7 @@ export function RatioNotice({
   if (!hasAsset) {
     return (
       <p style={noticeStyle}>
-        Frame halaman tetap. Setelah gambar ditambahkan, editor akan memberi
+        Frame halaman tetap. Setelah media ditambahkan, editor akan memberi
         peringatan rasio bila slot memiliki rasio target.
       </p>
     )
@@ -123,7 +123,7 @@ export function RatioNotice({
       }}
     >
       {isMismatch
-        ? `Perhatian: rasio sumber ${actualRatioLabel} berbeda dari ${expectedLabel}. Container tetap; crop/hotspot mengatur potongan gambar.`
+        ? `Perhatian: rasio sumber ${actualRatioLabel} berbeda dari ${expectedLabel}. Container tetap; media akan menyesuaikan dengan perilaku cover/contain slot.`
         : `Rasio sumber ${actualRatioLabel} sesuai dengan ${expectedLabel}. Container tetap.`}
     </p>
   )
@@ -176,6 +176,7 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
   const isMarineFuelVideo =
     typeof slotId === "string" && slotId.endsWith("-marine-fuel-video")
   const isHomeHeroVideo = props.path.some((segment) => segment === "heroSlides")
+  const hasConfiguredPlaybackLimit = isMarineFuelVideo || isHomeHeroVideo
   const videoLimit = isMarineFuelVideo
     ? maxMarineFuelVideoBytes
     : maxHomeHeroVideoBytes
@@ -187,7 +188,9 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
     typeof loadedVideo?.size === "number" &&
     loadedVideo.size > recommendedVideoSize
   const exceedsPlaybackLimit =
-    typeof loadedVideo?.size === "number" && loadedVideo.size > videoLimit
+    hasConfiguredPlaybackLimit &&
+    typeof loadedVideo?.size === "number" &&
+    loadedVideo.size > videoLimit
 
   useEffect(() => {
     if (!assetId) return
@@ -248,7 +251,9 @@ export function PageMediaVideoInput(props: ObjectInputProps<FileValue>) {
           {formatFileSize(videoLimit)}.{" "}
           {isMarineFuelVideo
             ? "Slot Marine Fuel tidak akan memuat video."
-            : "Home Hero akan menampilkan gambar fallback."}
+            : isHomeHeroVideo
+              ? "Home Hero akan menampilkan gambar fallback."
+              : ""}
         </p>
       ) : loadedVideo?.assetId === assetId && exceedsRecommendedSize ? (
         <p role="status" style={noticeStyle}>
